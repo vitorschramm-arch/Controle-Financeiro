@@ -347,9 +347,15 @@
 
         // Initialize Firebase App
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
+        let appInstance;
+        try {
+            appInstance = initializeApp(firebaseConfig);
+            db = getFirestore(appInstance);
+            auth = getAuth(appInstance);
+        } catch (e) {
+            console.error("Firebase app initialization failed:", e);
+        }
+
         appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         // Function to handle authentication
@@ -1154,7 +1160,9 @@
         }
         
         // Start the application
-        authenticate();
+        if (appInstance) {
+            authenticate();
+        }
     </script>
 
 </body>
