@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador Financeiro Pessoal</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .container-card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .income-text { color: #16a34a; }
+        .expense-text { color: #dc2626; }
+        .investment-text { color: #2563eb; }
+        .income-bg { background-color: #bbf7d0; }
+        .expense-bg { background-color: #fca5a5; }
+        .investment-bg { background-color: #93c5fd; }
+        input, select, textarea {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            border-color: #d1d5db;
+            font-size: 0.875rem;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+        }
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        /* Style for the sortable table */
+        .sortable-table th {
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
+
+    <div id="app" class="w-full max-w-5xl space-y-4">
+
+        <!-- Header e Título -->
+        <header class="text-center mb-4">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Controle Financeiro</h1>
+            <p id="user-id" class="text-xs text-gray-500 mt-2 break-all"></p>
+        </header>
+
+        <!-- Seção de Saldo Total, Investimentos e Cartão -->
+        <div class="flex flex-col gap-4">
+            <!-- Saldo Total e Ações -->
+            <div class="flex items-center gap-4">
+                <div id="total-balance-card" class="container-card text-center flex-1 w-3/4 cursor-pointer transition-transform transform hover:scale-105">
+                    <p class="text-sm text-gray-500">Saldo Total</p>
+                    <p id="total-balance" class="text-3xl font-bold mt-1 text-gray-900">***</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <button id="toggle-balances-btn" class="p-2 rounded-full hover:bg-gray-200">
+                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors duration-200" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10c-1.274-4.057-5.064-7-9.542-7-1.554 0-3.003.5-4.302 1.291L3.707 2.293zM9.998 5.003a2 2 0 00-1.517 3.336l.793.793A2.002 2.002 0 0010.998 8a2 2 0 00-1.002-3z" clip-rule="evenodd" /><path d="M14.998 10a4.002 4.002 0 00-3.414-3.955l-1.396 1.396a4 4 0 00-3.195 3.195l-1.396 1.396A6.002 6.002 0 0110.998 10a6.002 6.002 0 01-3.414-3.955z" />
+                        </svg>
+                    </button>
+                    <button id="edit-categories-btn" class="p-2 rounded-full hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors duration-200" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Investimentos e Cartão -->
+            <div class="flex justify-between items-center gap-4">
+                <div id="total-investment-card" class="container-card text-center flex-1 cursor-pointer transition-transform transform hover:scale-105">
+                    <p class="text-xs text-gray-500">Total Investido</p>
+                    <p id="total-investment" class="text-xl font-bold mt-1 text-gray-900">***</p>
+                </div>
+                <div id="credit-card-card" class="container-card text-center flex-1 cursor-pointer transition-transform transform hover:scale-105">
+                    <p class="text-xs text-gray-500">Total no Cartão (Fatura)</p>
+                    <p id="total-credit-card" class="text-xl font-bold mt-1 text-gray-900">***</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Formulário de Transação -->
+            <div id="add-transaction-card" class="container-card transition-colors duration-300">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Adicionar Transação</h2>
+                <form id="transaction-form" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700">Tipo</label>
+                        <div id="type-selector" class="flex space-x-2 mt-1">
+                            <div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer transition-colors duration-200 bg-gray-200 text-gray-800 font-semibold" data-type="income">Entrada</div>
+                            <div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer transition-colors duration-200 bg-gray-200 text-gray-800 font-semibold" data-type="expense">Saída</div>
+                            <div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer transition-colors duration-200 bg-gray-200 text-gray-800 font-semibold" data-type="investment">Investimento</div>
+                        </div>
+                        <input type="hidden" id="type" required>
+                    </div>
+                    <div>
+                        <label for="category" class="block text-xs font-medium text-gray-700">Categoria</label>
+                        <select id="category" required class="mt-1 block w-full rounded-lg p-2 shadow-sm focus:outline-none"></select>
+                    </div>
+                    <div>
+                        <label for="value" class="block text-xs font-medium text-gray-700">Valor</label>
+                        <input type="number" id="value" required class="mt-1 block w-full rounded-lg p-2 shadow-sm focus:outline-none" placeholder="0,00" step="0.01">
+                    </div>
+                    <!-- Campos Dinâmicos para Saída -->
+                    <div id="expense-fields" class="space-y-3 hidden">
+                        <div>
+                            <label for="payment-method" class="block text-xs font-medium text-gray-700">Forma de Pagamento</label>
+                            <select id="payment-method" class="mt-1 block w-full rounded-lg p-2 shadow-sm focus:outline-none">
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                <option value="Cartão de Débito">Cartão de Débito</option>
+                            </select>
+                        </div>
+                        <div id="installments-field" class="hidden">
+                            <label for="installments" class="block text-xs font-medium text-gray-700">Parcelas</label>
+                            <select id="installments" class="mt-1 block w-full rounded-lg p-2 shadow-sm focus:outline-none">
+                                <script>
+                                    for (let i = 1; i <= 12; i++) {
+                                        document.write(`<option value="${i}">${i}</option>`);
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="date" class="block text-xs font-medium text-gray-700">Data</label>
+                        <input type="date" id="date" required class="mt-1 block w-full rounded-lg p-2 shadow-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="description" class="block text-xs font-medium text-gray-700">Descrição</label>
+                        <textarea id="description" rows="2" class="mt-1 block w-full rounded-lg p-2 shadow-sm focus:outline-none" placeholder="Ex: Salário de Janeiro, Jantar com amigos"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Adicionar Transação
+                    </button>
+                </form>
+            </div>
+
+            <!-- Seção de Histórico e Saldo -->
+            <div>
+                <!-- Histórico de Transações -->
+                <div class="container-card">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2 sm:mb-0">Histórico de Transações</h2>
+                        <div class="flex flex-row items-center space-x-2">
+                            <button id="prev-month-btn" class="p-2 rounded-full hover:bg-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <span id="current-month-display" class="text-sm font-medium text-gray-700"></span>
+                            <button id="next-month-btn" class="p-2 rounded-full hover:bg-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Seção de Saldo (Entradas e Saídas) -->
+                    <div class="flex justify-end space-x-4 text-sm font-semibold mb-4">
+                        <div id="income-summary-card" class="text-center cursor-pointer transition-transform transform hover:scale-105">
+                            <p class="text-sm text-gray-500">Entradas</p>
+                            <p id="total-income" class="text-base font-bold income-text">R$ 0,00</p>
+                        </div>
+                        <div id="expense-summary-card" class="text-center cursor-pointer transition-transform transform hover:scale-105">
+                            <p class="text-sm text-gray-500">Saídas</p>
+                            <p id="total-expense" class="text-base font-bold expense-text">R$ 0,00</p>
+                        </div>
+                    </div>
+                    <button id="export-btn" class="w-full py-2 px-4 my-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Exportar Histórico
+                    </button>
+                    <div id="transaction-list" class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                        <!-- Lista de transações será gerada via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botão de Compartilhar -->
+        <div class="container-card text-center">
+            <h2 class="text-xl font-bold text-gray-900 mb-2">Compartilhe este app</h2>
+            <p class="text-sm text-gray-600 mb-4">Clique no botão para copiar o link e compartilhar com quem você quiser.</p>
+            <button id="share-button" class="py-2 px-5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                Compartilhar Link
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para detalhes do cartão -->
+    <div id="credit-card-modal" class="modal hidden">
+        <div class="modal-content w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Transações do Cartão de Crédito</h3>
+                <span id="close-modal-btn" class="close-btn">&times;</span>
+            </div>
+            <div class="flex flex-row items-center justify-center space-x-2 mb-4">
+                <button id="prev-card-cycle-btn" class="p-2 rounded-full hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <p id="credit-card-period" class="text-sm text-gray-600 font-medium"></p>
+                <button id="next-card-cycle-btn" class="p-2 rounded-full hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+            <div id="credit-card-total" class="text-center text-lg font-bold mb-4 text-gray-900">Total: R$ 0,00</div>
+            <div id="credit-card-transactions" class="space-y-3">
+                <!-- Transactions will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Entradas e Saídas -->
+    <div id="summary-modal" class="modal hidden">
+        <div class="modal-content w-full max-w-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="summary-modal-title" class="text-xl font-bold"></h3>
+                <span id="close-summary-modal-btn" class="close-btn">&times;</span>
+            </div>
+            <p id="summary-total" class="text-lg font-bold mb-4"></p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 sortable-table">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 cursor-pointer" data-sort="category">Categoria</th>
+                            <th scope="col" class="px-6 py-3 cursor-pointer" data-sort="description">Descrição</th>
+                            <th scope="col" class="px-6 py-3 cursor-pointer" data-sort="date">Data</th>
+                            <th scope="col" class="px-6 py-3 text-right cursor-pointer" data-sort="value">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summary-transactions">
+                        <!-- Transações serão geradas via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Gerenciar Categorias -->
+    <div id="category-modal" class="modal hidden">
+        <div class="modal-content w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Gerenciar Categorias</h3>
+                <span id="close-category-modal-btn" class="close-btn">&times;</span>
+            </div>
+            
+            <div class="flex border-b border-gray-200 mb-4">
+                <button class="py-2 px-4 text-sm font-medium border-b-2 border-transparent hover:border-indigo-500 focus:outline-none" data-tab="income">Entradas</button>
+                <button class="py-2 px-4 text-sm font-medium border-b-2 border-transparent hover:border-indigo-500 focus:outline-none" data-tab="expense">Saídas</button>
+                <button class="py-2 px-4 text-sm font-medium border-b-2 border-transparent hover:border-indigo-500 focus:outline-none" data-tab="investment">Investimentos</button>
+            </div>
+
+            <div id="category-tabs-container">
+                <div id="income-category-tab" class="space-y-4">
+                    <h4 class="text-lg font-semibold">Categorias de Entrada</h4>
+                    <ul id="income-category-list" class="space-y-2 max-h-48 overflow-y-auto"></ul>
+                    <form id="add-income-category-form" class="flex gap-2">
+                        <input type="text" id="new-income-category" class="flex-1 rounded-lg p-2 text-sm" placeholder="Nova categoria de entrada" required>
+                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">Adicionar</button>
+                    </form>
+                </div>
+                <div id="expense-category-tab" class="space-y-4 hidden">
+                    <h4 class="text-lg font-semibold">Categorias de Saída</h4>
+                    <ul id="expense-category-list" class="space-y-2 max-h-48 overflow-y-auto"></ul>
+                    <form id="add-expense-category-form" class="flex gap-2">
+                        <input type="text" id="new-expense-category" class="flex-1 rounded-lg p-2 text-sm" placeholder="Nova categoria de saída" required>
+                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">Adicionar</button>
+                    </form>
+                </div>
+                <div id="investment-category-tab" class="space-y-4 hidden">
+                    <h4 class="text-lg font-semibold">Categorias de Investimento</h4>
+                    <ul id="investment-category-list" class="space-y-2 max-h-48 overflow-y-auto"></ul>
+                    <form id="add-investment-category-form" class="flex gap-2">
+                        <input type="text" id="new-investment-category" class="flex-1 rounded-lg p-2 text-sm" placeholder="Nova categoria de investimento" required>
+                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">Adicionar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase dependencies -->
+    <script type="module">
+        // Firestore dependencies
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, getDoc, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables for Firebase access.
+        let db;
+        let auth;
+        let userId;
+        let appId;
+        const categories = {
+            income: ['Salário'],
+            expense: ['Alimentação', 'Transporte', 'Moradia'],
+            investment: ['Ações', 'Fundos']
+        };
+
+        // Initialize Firebase App
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Function to handle authentication
+        async function authenticate() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                userId = auth.currentUser.uid;
+                document.getElementById('user-id').textContent = `ID do Usuário: ${userId}`;
+                console.log("Usuário autenticado:", userId);
+                setupListeners();
+                fetchCategories();
+            } catch (error) {
+                console.error("Erro na autenticação:", error);
+            }
+        }
+
+        // Global state
+        const transactions = [];
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+        let selectedDate = new Date();
+        const faturaDay = 20;
+
+        const form = document.getElementById('transaction-form');
+        const typeSelector = document.getElementById('type-selector');
+        const hiddenTypeInput = document.getElementById('type');
+        const addTransactionCard = document.getElementById('add-transaction-card');
+        const totalBalanceEl = document.getElementById('total-balance');
+        const totalIncomeEl = document.getElementById('total-income');
+        const totalExpenseEl = document.getElementById('total-expense');
+        const totalInvestmentEl = document.getElementById('total-investment');
+        const totalCreditCardEl = document.getElementById('total-credit-card');
+        const transactionListEl = document.getElementById('transaction-list');
+        const prevMonthBtn = document.getElementById('prev-month-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
+        const currentMonthDisplay = document.getElementById('current-month-display');
+        const shareButton = document.getElementById('share-button');
+        const incomeSummaryCard = document.getElementById('income-summary-card');
+        const expenseSummaryCard = document.getElementById('expense-summary-card');
+        const totalBalanceCard = document.getElementById('total-balance-card');
+        const totalInvestmentCard = document.getElementById('total-investment-card');
+        const categorySelect = document.getElementById('category');
+        
+        // New elements for expense
+        const expenseFields = document.getElementById('expense-fields');
+        const paymentMethodSelect = document.getElementById('payment-method');
+        const installmentsField = document.getElementById('installments-field');
+        
+        // Card modal elements
+        const creditCardCard = document.getElementById('credit-card-card');
+        const creditCardModal = document.getElementById('credit-card-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const creditCardTransactionsList = document.getElementById('credit-card-transactions');
+        const creditCardPeriodEl = document.getElementById('credit-card-period');
+        const prevCardCycleBtn = document.getElementById('prev-card-cycle-btn');
+        const nextCardCycleBtn = document.getElementById('next-card-cycle-btn');
+        const creditCardTotalEl = document.getElementById('credit-card-total');
+        let currentCardCycleDate = new Date();
+
+        // Summary modal elements
+        const summaryModal = document.getElementById('summary-modal');
+        const closeSummaryModalBtn = document.getElementById('close-summary-modal-btn');
+        const summaryModalTitle = document.getElementById('summary-modal-title');
+        const summaryTotal = document.getElementById('summary-total');
+        const summaryTransactionsList = document.getElementById('summary-transactions');
+        const sortableTable = document.querySelector('.sortable-table');
+        let currentSortColumn = 'date';
+        let currentSortDirection = 'asc';
+
+        // Category Modal Elements
+        const editCategoriesBtn = document.getElementById('edit-categories-btn');
+        const categoryModal = document.getElementById('category-modal');
+        const closeCategoryModalBtn = document.getElementById('close-category-modal-btn');
+        const categoryTabsContainer = document.getElementById('category-tabs-container');
+        const categoryTabs = document.querySelectorAll('#category-modal button[data-tab]');
+        const incomeCategoryList = document.getElementById('income-category-list');
+        const expenseCategoryList = document.getElementById('expense-category-list');
+        const investmentCategoryList = document.getElementById('investment-category-list');
+        const addIncomeCategoryForm = document.getElementById('add-income-category-form');
+        const addExpenseCategoryForm = document.getElementById('add-expense-category-form');
+        const addInvestmentCategoryForm = document.getElementById('add-investment-category-form');
+        
+        // New Export Button
+        const exportBtn = document.getElementById('export-btn');
+        
+        // Default selected type
+        let selectedType = 'income';
+
+        // State for hidden balances
+        let isBalanceHidden = true;
+        
+        const toggleBalancesBtn = document.getElementById('toggle-balances-btn');
+
+        // Set current date in the date input
+        document.getElementById('date').value = today.toISOString().slice(0, 10);
+        // Set initial selected type for the form
+        hiddenTypeInput.value = selectedType;
+        // Set initial active state for the type selector buttons
+        const initialTypeButton = typeSelector.querySelector(`[data-type="${selectedType}"]`);
+        if (initialTypeButton) {
+            initialTypeButton.classList.remove('bg-gray-200', 'text-gray-800');
+            initialTypeButton.classList.add('bg-green-500', 'text-white');
+        }
+
+        // Set initial background color for the form card
+        addTransactionCard.classList.remove('bg-white');
+        addTransactionCard.classList.add('income-bg');
+
+
+        // Handle type selection button clicks
+        typeSelector.addEventListener('click', (e) => {
+            const button = e.target.closest('[data-type]');
+            if (!button) return;
+
+            const newType = button.dataset.type;
+            selectedType = newType;
+            hiddenTypeInput.value = newType;
+
+            // Remove active classes from all buttons
+            Array.from(typeSelector.children).forEach(child => {
+                child.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500', 'text-white');
+                child.classList.add('bg-gray-200', 'text-gray-800');
+            });
+
+            // Add active class to the clicked button
+            let activeColorClass = '';
+            let cardBgClass = '';
+            if (newType === 'income') {
+                activeColorClass = 'bg-green-500';
+                cardBgClass = 'income-bg';
+                expenseFields.classList.add('hidden');
+            } else if (newType === 'expense') {
+                activeColorClass = 'bg-red-500';
+                cardBgClass = 'expense-bg';
+                expenseFields.classList.remove('hidden');
+            } else if (newType === 'investment') {
+                activeColorClass = 'bg-blue-500';
+                cardBgClass = 'investment-bg';
+                expenseFields.classList.add('hidden');
+            }
+            button.classList.remove('bg-gray-200', 'text-gray-800');
+            button.classList.add(activeColorClass, 'text-white');
+
+            // Update form card background color
+            addTransactionCard.classList.remove('income-bg', 'expense-bg', 'investment-bg');
+            addTransactionCard.classList.add(cardBgClass);
+
+            renderCategoryDropdown();
+        });
+
+        // Handle payment method selection
+        paymentMethodSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'Cartão de Crédito') {
+                installmentsField.classList.remove('hidden');
+            } else {
+                installmentsField.classList.add('hidden');
+            }
+        });
+
+        // Listen for form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formValue = parseFloat(document.getElementById('value').value);
+            const formDate = new Date(document.getElementById('date').value + 'T00:00:00');
+            const formDescription = document.getElementById('description').value;
+            const formCategory = document.getElementById('category').value;
+            const formType = hiddenTypeInput.value;
+
+            const baseTransaction = {
+                type: formType,
+                value: formValue,
+                category: formCategory,
+                date: formDate.toISOString().slice(0, 10),
+                description: formDescription,
+                timestamp: serverTimestamp()
+            };
+            
+            if (formType === 'expense' && paymentMethodSelect.value === 'Cartão de Crédito' && parseInt(document.getElementById('installments').value) > 1) {
+                const installments = parseInt(document.getElementById('installments').value);
+                const installmentValue = formValue / installments;
+                
+                let currentMonth = formDate.getMonth();
+                let currentYear = formDate.getFullYear();
+
+                for (let i = 0; i < installments; i++) {
+                    let nextMonthDate = new Date(currentYear, currentMonth + i, formDate.getDate());
+                    const installmentTransaction = {
+                        ...baseTransaction,
+                        value: installmentValue,
+                        description: `${formDescription} (${i + 1}/${installments})`,
+                        date: nextMonthDate.toISOString().slice(0, 10),
+                        paymentMethod: 'Cartão de Crédito',
+                        installments: i + 1,
+                        originalTransactionId: null
+                    };
+                    await addDoc(collection(db, `/artifacts/${appId}/users/${userId}/transactions`), installmentTransaction);
+                }
+            } else {
+                if (formType === 'expense') {
+                    baseTransaction.paymentMethod = paymentMethodSelect.value;
+                    if (paymentMethodSelect.value === 'Cartão de Crédito') {
+                         baseTransaction.installments = 1;
+                    }
+                }
+                await addDoc(collection(db, `/artifacts/${appId}/users/${userId}/transactions`), baseTransaction);
+            }
+
+            form.reset();
+            document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+            renderCategoryDropdown();
+            
+        });
+
+        // Month navigation with arrows
+        prevMonthBtn.addEventListener('click', () => {
+            selectedDate.setMonth(selectedDate.getMonth() - 1);
+            renderTransactions();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            const nextMonth = new Date(selectedDate);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+            // Check if next month is in the future
+            if (nextMonth.getFullYear() > today.getFullYear() || 
+                (nextMonth.getFullYear() === today.getFullYear() && nextMonth.getMonth() > today.getMonth())) {
+                return;
+            }
+
+            selectedDate.setMonth(selectedDate.getMonth() + 1);
+            renderTransactions();
+        });
+
+        // Setup real-time listener for transactions
+        function setupListeners() {
+            const transactionsRef = collection(db, `/artifacts/${appId}/users/${userId}/transactions`);
+            const q = query(transactionsRef, orderBy("timestamp", "desc"));
+            onSnapshot(q, (querySnapshot) => {
+                transactions.length = 0;
+                querySnapshot.forEach((doc) => {
+                    transactions.push({ id: doc.id, ...doc.data() });
+                });
+                renderTransactions();
+                updateBalance();
+            });
+        }
+
+        // Function to render transactions for the selected month
+        function renderTransactions() {
+            currentMonthDisplay.textContent = selectedDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            
+            const selectedMonthStr = selectedDate.toISOString().slice(0, 7);
+            const filteredTransactions = transactions.filter(t => t.date.startsWith(selectedMonthStr));
+            
+            transactionListEl.innerHTML = '';
+            if (filteredTransactions.length === 0) {
+                transactionListEl.innerHTML = '<p class="text-center text-gray-500 text-sm">Nenhuma transação neste mês.</p>';
+                return;
+            }
+
+            filteredTransactions.forEach(t => {
+                let valueClass = '';
+                let bgClass = '';
+                let icon = '';
+                let formattedValue = '';
+                let extraInfo = '';
+
+                if (t.type === 'income') {
+                    valueClass = 'income-text';
+                    bgClass = 'income-bg';
+                    icon = '↑';
+                    formattedValue = `+ R$ ${t.value.toFixed(2)}`;
+                } else if (t.type === 'expense') {
+                    valueClass = 'expense-text';
+                    bgClass = 'expense-bg';
+                    icon = '↓';
+                    formattedValue = `- R$ ${t.value.toFixed(2)}`;
+                    extraInfo = `<span> • ${t.paymentMethod}</span>`;
+                    if (t.paymentMethod === 'Cartão de Crédito' && t.installments) {
+                        extraInfo += `<span> (${t.installments}x)</span>`;
+                    }
+                } else if (t.type === 'investment') {
+                    valueClass = 'investment-text';
+                    bgClass = 'investment-bg';
+                    icon = '$';
+                    formattedValue = `+ R$ ${t.value.toFixed(2)}`;
+                }
+
+                const transactionEl = document.createElement('div');
+                transactionEl.className = `flex justify-between items-center p-3 rounded-lg ${bgClass}`;
+                transactionEl.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-base ${valueClass}">${icon}</span>
+                        <div>
+                            <p class="font-semibold text-gray-900 text-sm">${t.description || 'Sem Descrição'}</p>
+                            <p class="text-xs text-gray-500">${t.category || 'Sem Categoria'} - ${t.date} ${extraInfo}</p>
+                        </div>
+                    </div>
+                    <div class="text-sm font-bold ${valueClass}">
+                        ${formattedValue.replace('.', ',')}
+                    </div>
+                `;
+                transactionListEl.appendChild(transactionEl);
+            });
+        }
+
+        // Function to update the balance numbers
+        function updateBalance() {
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let totalInvestment = 0;
+            let totalCreditCard = 0;
+            
+            const today = new Date();
+            const currentDay = today.getDate();
+            
+            let startDate, endDate;
+            if (currentDay > faturaDay) {
+                startDate = new Date(today.getFullYear(), today.getMonth(), faturaDay + 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, faturaDay);
+            } else {
+                startDate = new Date(today.getFullYear(), today.getMonth() - 1, faturaDay + 1);
+                endDate = new Date(today.getFullYear(), today.getMonth(), faturaDay);
+            }
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
+
+
+            transactions.forEach(t => {
+                const transactionDate = new Date(t.date);
+                if (t.type === 'income') {
+                    totalIncome += t.value;
+                } else if (t.type === 'expense') {
+                    totalExpense += t.value;
+                    if (t.paymentMethod === 'Cartão de Crédito' && transactionDate >= startDate && transactionDate <= endDate) {
+                        totalCreditCard += t.value;
+                    }
+                } else if (t.type === 'investment') {
+                    totalInvestment += t.value;
+                }
+            });
+
+            const totalBalance = totalIncome - totalExpense;
+
+            const formattedBalance = `R$ ${totalBalance.toFixed(2).replace('.', ',')}`;
+            const formattedInvestment = `R$ ${totalInvestment.toFixed(2).replace('.', ',')}`;
+            const formattedCreditCard = `R$ ${totalCreditCard.toFixed(2).replace('.', ',')}`;
+
+            totalBalanceEl.textContent = isBalanceHidden ? '***' : formattedBalance;
+            totalInvestmentEl.textContent = isBalanceHidden ? '***' : formattedInvestment;
+            totalCreditCardEl.textContent = isBalanceHidden ? '***' : formattedCreditCard;
+        }
+        
+        // Toggle balance visibility
+        toggleBalancesBtn.addEventListener('click', () => {
+            isBalanceHidden = !isBalanceHidden;
+            const eyeIcon = toggleBalancesBtn.querySelector('svg');
+            if (isBalanceHidden) {
+                eyeIcon.innerHTML = `<path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10c-1.274-4.057-5.064-7-9.542-7-1.554 0-3.003.5-4.302 1.291L3.707 2.293zM9.998 5.003a2 2 0 00-1.517 3.336l.793.793A2.002 2.002 0 0010.998 8a2 2 0 00-1.002-3z" clip-rule="evenodd" /><path d="M14.998 10a4.002 4.002 0 00-3.414-3.955l-1.396 1.396a4 4 0 00-3.195 3.195l-1.396 1.396A6.002 6.002 0 0110.998 10a6.002 6.002 0 01-3.414-3.955z" />`;
+            } else {
+                eyeIcon.innerHTML = `<path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />`;
+            }
+            updateBalance();
+        });
+
+
+        // Modal for credit card transactions
+        creditCardCard.addEventListener('click', () => {
+            currentCardCycleDate = new Date(); // Start with the current date
+            renderCreditCardModal();
+        });
+
+        prevCardCycleBtn.addEventListener('click', () => {
+            currentCardCycleDate.setMonth(currentCardCycleDate.getMonth() - 1);
+            renderCreditCardModal();
+        });
+        
+        nextCardCycleBtn.addEventListener('click', () => {
+            currentCardCycleDate.setMonth(currentCardCycleDate.getMonth() + 1);
+            renderCreditCardModal();
+        });
+        
+        function renderCreditCardModal() {
+            const currentDay = currentCardCycleDate.getDate();
+            
+            let startDate, endDate;
+            if (currentDay > faturaDay) {
+                startDate = new Date(currentCardCycleDate.getFullYear(), currentCardCycleDate.getMonth(), faturaDay + 1);
+                endDate = new Date(currentCardCycleDate.getFullYear(), currentCardCycleDate.getMonth() + 1, faturaDay);
+            } else {
+                startDate = new Date(currentCardCycleDate.getFullYear(), currentCardCycleDate.getMonth() - 1, faturaDay + 1);
+                endDate = new Date(currentCardCycleDate.getFullYear(), currentCardCycleDate.getMonth(), faturaDay);
+            }
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
+
+            const cardTransactions = transactions.filter(t => 
+                t.paymentMethod === 'Cartão de Crédito' && new Date(t.date) >= startDate && new Date(t.date) <= endDate
+            );
+
+            let totalCycleValue = 0;
+            cardTransactions.forEach(t => totalCycleValue += t.value);
+
+            creditCardTransactionsList.innerHTML = '';
+            creditCardPeriodEl.textContent = `Período da Fatura: ${startDate.toLocaleDateString('pt-BR')} - ${endDate.toLocaleDateString('pt-BR')}`;
+            creditCardTotalEl.textContent = `Total: R$ ${totalCycleValue.toFixed(2).replace('.', ',')}`;
+
+            if (cardTransactions.length === 0) {
+                creditCardTransactionsList.innerHTML = '<p class="text-center text-gray-500 text-sm">Nenhuma transação no cartão de crédito neste ciclo.</p>';
+            } else {
+                cardTransactions.forEach(t => {
+                    const transactionEl = document.createElement('div');
+                    transactionEl.className = `flex justify-between items-center p-3 rounded-lg bg-red-100`;
+                    transactionEl.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <div>
+                                <p class="font-semibold text-gray-900 text-sm">${t.description || 'Sem Descrição'}</p>
+                                <p class="text-xs text-gray-500">${t.category || 'Sem Categoria'} - ${t.date}</p>
+                            </div>
+                        </div>
+                        <div class="text-sm font-bold text-red-600">
+                            - R$ ${t.value.toFixed(2).replace('.', ',')}
+                        </div>
+                    `;
+                    creditCardTransactionsList.appendChild(transactionEl);
+                });
+            }
+
+            creditCardModal.classList.remove('hidden');
+        }
+
+        closeModalBtn.addEventListener('click', () => {
+            creditCardModal.classList.add('hidden');
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === creditCardModal) {
+                creditCardModal.classList.add('hidden');
+            }
+        });
+
+        // Function to sort transactions
+        function sortTransactions(data, column, direction) {
+            return data.sort((a, b) => {
+                let aValue = a[column];
+                let bValue = b[column];
+
+                if (column === 'value') {
+                    aValue = parseFloat(aValue);
+                    bValue = parseFloat(bValue);
+                }
+
+                if (direction === 'asc') {
+                    if (aValue < bValue) return -1;
+                    if (aValue > bValue) return 1;
+                    return 0;
+                } else {
+                    if (aValue > bValue) return -1;
+                    if (aValue < bValue) return 1;
+                    return 0;
+                }
+            });
+        }
+        
+        // Function to render transactions in the summary modal
+        function renderSummaryTransactions(transactionsToRender, type) {
+            summaryTransactionsList.innerHTML = '';
+            if (transactionsToRender.length === 0) {
+                summaryTransactionsList.innerHTML = '<tr class="bg-white border-b"><td colspan="4" class="px-6 py-4 text-center text-gray-500">Nenhuma transação para este tipo neste mês.</td></tr>';
+                return;
+            }
+
+            transactionsToRender.forEach(t => {
+                let valueClass = '';
+                let formattedValue = '';
+
+                if (type === 'total') {
+                    if (t.type === 'income' || t.type === 'investment') {
+                        valueClass = 'income-text';
+                        formattedValue = `+ R$ ${t.value.toFixed(2)}`;
+                    } else if (t.type === 'expense') {
+                        valueClass = 'expense-text';
+                        formattedValue = `- R$ ${t.value.toFixed(2)}`;
+                    }
+                } else {
+                    valueClass = t.type === 'income' ? 'income-text' : 'expense-text';
+                    formattedValue = t.type === 'income' ? `+ R$ ${t.value.toFixed(2)}` : `- R$ ${t.value.toFixed(2)}`;
+                }
+                
+                if (t.type === 'investment' && type === 'investment') {
+                    valueClass = 'investment-text';
+                    formattedValue = `+ R$ ${t.value.toFixed(2)}`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'bg-white border-b hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-900">${t.category || 'Sem Categoria'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-900">${t.description || 'Sem Descrição'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-900">${t.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right font-bold ${valueClass}">
+                        ${formattedValue.replace('.', ',')}
+                    </td>
+                `;
+                summaryTransactionsList.appendChild(row);
+            });
+        }
+
+        // Modal for income/expense summary
+        function openSummaryModal(type) {
+            const selectedMonthStr = selectedDate.toISOString().slice(0, 7);
+            const filteredTransactions = transactions.filter(t => t.date.startsWith(selectedMonthStr) && t.type === type);
+            
+            let total = 0;
+            filteredTransactions.forEach(t => total += t.value);
+
+            summaryModalTitle.textContent = type === 'income' ? 'Detalhes de Entradas' : 'Detalhes de Saídas';
+            summaryTotal.textContent = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+
+            renderSummaryTransactions(filteredTransactions, type);
+
+            summaryModal.classList.remove('hidden');
+
+            // Handle sorting
+            document.querySelectorAll('#summary-modal th').forEach(header => {
+                header.onclick = () => {
+                    const column = header.dataset.sort;
+                    const sortedTransactions = sortAndRender(filteredTransactions, column, type);
+                };
+            });
+        }
+
+        // Modal for Total Balance
+        function openTotalBalanceModal() {
+            const selectedMonthStr = selectedDate.toISOString().slice(0, 7);
+            const filteredTransactions = transactions.filter(t => t.date.startsWith(selectedMonthStr));
+            
+            let total = 0;
+            filteredTransactions.forEach(t => {
+                if (t.type === 'income' || t.type === 'investment') {
+                    total += t.value;
+                } else if (t.type === 'expense') {
+                    total -= t.value;
+                }
+            });
+
+            summaryModalTitle.textContent = 'Detalhes do Saldo Total';
+            summaryTotal.textContent = `Saldo: R$ ${total.toFixed(2).replace('.', ',')}`;
+
+            renderSummaryTransactions(filteredTransactions, 'total');
+
+            summaryModal.classList.remove('hidden');
+
+            // Handle sorting
+            document.querySelectorAll('#summary-modal th').forEach(header => {
+                header.onclick = () => {
+                    const column = header.dataset.sort;
+                    const sortedTransactions = sortAndRender(filteredTransactions, column, 'total');
+                };
+            });
+        }
+
+        // Modal for Total Investment
+        function openTotalInvestmentModal() {
+            const selectedMonthStr = selectedDate.toISOString().slice(0, 7);
+            const filteredTransactions = transactions.filter(t => t.date.startsWith(selectedMonthStr) && t.type === 'investment');
+            
+            let total = 0;
+            filteredTransactions.forEach(t => total += t.value);
+
+            summaryModalTitle.textContent = 'Detalhes de Investimentos';
+            summaryTotal.textContent = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+
+            renderSummaryTransactions(filteredTransactions, 'investment');
+
+            summaryModal.classList.remove('hidden');
+
+            // Handle sorting
+            document.querySelectorAll('#summary-modal th').forEach(header => {
+                header.onclick = () => {
+                    const column = header.dataset.sort;
+                    const sortedTransactions = sortAndRender(filteredTransactions, column, 'investment');
+                };
+            });
+        }
+        
+        function sortAndRender(data, column, type) {
+            if (currentSortColumn === column) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortColumn = column;
+                currentSortDirection = 'asc';
+            }
+            const sortedData = sortTransactions(data, currentSortColumn, currentSortDirection);
+            renderSummaryTransactions(sortedData, type);
+        }
+
+        incomeSummaryCard.addEventListener('click', () => openSummaryModal('income'));
+        expenseSummaryCard.addEventListener('click', () => openSummaryModal('expense'));
+        totalBalanceCard.addEventListener('click', (e) => {
+            // Check if the click was on the edit icon or toggle button
+            if (e.target.closest('#edit-categories-btn') || e.target.closest('#toggle-balances-btn')) {
+                return;
+            }
+            openTotalBalanceModal();
+        });
+        totalInvestmentCard.addEventListener('click', openTotalInvestmentModal);
+        creditCardCard.addEventListener('click', () => {
+            currentCardCycleDate = new Date();
+            renderCreditCardModal();
+        });
+
+        
+        closeSummaryModalBtn.addEventListener('click', () => {
+            summaryModal.classList.add('hidden');
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === summaryModal) {
+                summaryModal.classList.add('hidden');
+            }
+        });
+        
+        // Share link functionality
+        shareButton.addEventListener('click', () => {
+            const shareUrl = window.location.href;
+            document.execCommand('copy');
+            console.log('Link copiado para a área de transferência!');
+        });
+        
+        // Export functionality
+        exportBtn.addEventListener('click', () => {
+            const selectedMonthStr = selectedDate.toISOString().slice(0, 7);
+            const filteredTransactions = transactions.filter(t => t.date.startsWith(selectedMonthStr));
+            
+            let csvContent = "Tipo,Categoria,Descricao,Data,Valor\n";
+            
+            filteredTransactions.forEach(t => {
+                const row = [
+                    `"${t.type}"`,
+                    `"${t.category || ''}"`,
+                    `"${t.description || ''}"`,
+                    t.date,
+                    t.value.toFixed(2).replace('.', ',')
+                ];
+                csvContent += row.join(',') + "\n";
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            
+            const monthName = selectedDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
+            link.setAttribute('download', `controle-financeiro-${monthName}.csv`);
+            
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            console.log(`Dados do mês de ${monthName} exportados com sucesso.`);
+        });
+
+        // Category Modal Logic
+        editCategoriesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            renderCategoryLists();
+            categoryModal.classList.remove('hidden');
+        });
+        
+        closeCategoryModalBtn.addEventListener('click', () => {
+            categoryModal.classList.add('hidden');
+        });
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === categoryModal) {
+                categoryModal.classList.add('hidden');
+            }
+        });
+        
+        document.querySelectorAll('[data-tab]').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                document.querySelectorAll('[data-tab]').forEach(t => t.classList.remove('border-indigo-500'));
+                e.target.classList.add('border-indigo-500');
+                document.querySelectorAll('#category-tabs-container > div').forEach(div => div.classList.add('hidden'));
+                document.getElementById(`${e.target.dataset.tab}-category-tab`).classList.remove('hidden');
+            });
+        });
+
+        function renderCategoryLists() {
+            renderCategoryList('income', incomeCategoryList);
+            renderCategoryList('expense', expenseCategoryList);
+            renderCategoryList('investment', investmentCategoryList);
+        }
+
+        function renderCategoryList(type, element) {
+            element.innerHTML = '';
+            categories[type].forEach(cat => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between py-2 px-3 bg-gray-100 rounded-lg text-sm';
+                li.innerHTML = `
+                    <span>${cat}</span>
+                    <button class="delete-category-btn text-red-500 hover:text-red-700" data-type="${type}" data-category="${cat}">&times;</button>
+                `;
+                element.appendChild(li);
+            });
+        }
+
+        async function addCategory(type, newCategory) {
+            const trimmedCat = newCategory.trim();
+            if (trimmedCat && !categories[type].includes(trimmedCat)) {
+                categories[type].push(trimmedCat);
+                await updateCategoriesInFirestore();
+            }
+        }
+
+        async function deleteCategory(type, categoryToDelete) {
+            categories[type] = categories[type].filter(cat => cat !== categoryToDelete);
+            await updateCategoriesInFirestore();
+        }
+
+        async function fetchCategories() {
+            const docRef = doc(db, `/artifacts/${appId}/users/${userId}/categories`, 'user_categories');
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const fetchedCats = docSnap.data();
+                if (fetchedCats.income) categories.income = fetchedCats.income;
+                if (fetchedCats.expense) categories.expense = fetchedCats.expense;
+                if (fetchedCats.investment) categories.investment = fetchedCats.investment;
+            } else {
+                await updateCategoriesInFirestore();
+            }
+            renderCategoryDropdown();
+        }
+
+        async function updateCategoriesInFirestore() {
+            const docRef = doc(db, `/artifacts/${appId}/users/${userId}/categories`, 'user_categories');
+            await setDoc(docRef, categories);
+            renderCategoryDropdown();
+            renderCategoryLists();
+        }
+
+        function renderCategoryDropdown() {
+            categorySelect.innerHTML = '';
+            const currentCategories = categories[selectedType];
+            if (currentCategories) {
+                currentCategories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    categorySelect.appendChild(option);
+                });
+            }
+        }
+
+        document.getElementById('add-income-category-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newCat = document.getElementById('new-income-category').value;
+            addCategory('income', newCat);
+            document.getElementById('new-income-category').value = '';
+        });
+
+        document.getElementById('add-expense-category-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newCat = document.getElementById('new-expense-category').value;
+            addCategory('expense', newCat);
+            document.getElementById('new-expense-category').value = '';
+        });
+
+        document.getElementById('add-investment-category-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newCat = document.getElementById('new-investment-category').value;
+            addCategory('investment', newCat);
+            document.getElementById('new-investment-category').value = '';
+        });
+
+        categoryModal.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-category-btn')) {
+                const type = e.target.dataset.type;
+                const category = e.target.dataset.category;
+                deleteCategory(type, category);
+            }
+        });
+        
+        // Registrar o service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').then(registration => {
+                    console.log('Service Worker registrado com sucesso:', registration.scope);
+                }).catch(err => {
+                    console.log('Falha ao registrar o Service Worker:', err);
+                });
+            });
+        }
+        
+        // Start the application
+        authenticate();
+    </script>
+
+</body>
+</html>
