@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -84,6 +85,9 @@
         <header class="text-center mb-4">
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Controle Financeiro</h1>
             <p id="user-id" class="text-xs text-gray-500 mt-2 break-all"></p>
+            <div class="absolute top-4 left-4 text-xs font-semibold text-gray-400">
+                <span id="app-version">v0.0.1</span>
+            </div>
         </header>
 
         <!-- Seção de Saldo Total, Investimentos e Cartão -->
@@ -582,15 +586,6 @@
         });
 
         nextMonthBtn.addEventListener('click', () => {
-            const nextMonth = new Date(selectedDate);
-            nextMonth.setMonth(nextMonth.getMonth() + 1);
-
-            // Check if next month is in the future
-            if (nextMonth.getFullYear() > today.getFullYear() || 
-                (nextMonth.getFullYear() === today.getFullYear() && nextMonth.getMonth() > today.getMonth())) {
-                return;
-            }
-
             selectedDate.setMonth(selectedDate.getMonth() + 1);
             renderTransactions();
         });
