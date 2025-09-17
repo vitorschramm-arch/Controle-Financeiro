@@ -713,6 +713,22 @@
             totalBalanceEl.textContent = isBalanceHidden ? '***' : formattedBalance;
             totalInvestmentEl.textContent = isBalanceHidden ? '***' : formattedInvestment;
             totalCreditCardEl.textContent = isBalanceHidden ? '***' : formattedCreditCard;
+            
+            // Update summary cards
+            const currentMonthTransactions = transactions.filter(t => t.date.startsWith(selectedDate.toISOString().slice(0, 7)));
+            
+            let currentMonthIncome = 0;
+            let currentMonthExpense = 0;
+            currentMonthTransactions.forEach(t => {
+                if(t.type === 'income') {
+                    currentMonthIncome += t.value;
+                } else if (t.type === 'expense') {
+                    currentMonthExpense += t.value;
+                }
+            });
+
+            totalIncomeEl.textContent = `R$ ${currentMonthIncome.toFixed(2).replace('.', ',')}`;
+            totalExpenseEl.textContent = `R$ ${currentMonthExpense.toFixed(2).replace('.', ',')}`;
         }
         
         // Toggle balance visibility
