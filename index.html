@@ -1,156 +1,252 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Financeiro</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Controle Financeiro Pessoal</title>
+
+    [cite_start]<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script> [cite: 1]
+    [cite_start]<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script> [cite: 1]
+    [cite_start]<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script> [cite: 1]
+
+    [cite_start]<script src="https://cdn.tailwindcss.com"></script> [cite: 1]
+    [cite_start]<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> [cite: 1]
+    [cite_start]<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> [cite: 1]
+    
+    [cite_start]<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"> [cite: 1]
+    [cite_start]<link rel="stylesheet" href="style.css"> [cite: 1]
 </head>
-<body class="p-4 md:p-8">
+<body class="bg-gray-100">
 
-    <div id="app" class="w-full max-w-7xl mx-auto space-y-6">
-        <header class="flex justify-between items-center mb-4">
-            <div>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">Dashboard Financeiro</h1>
-                <p id="user-id" class="text-xs text-gray-500 mt-1 break-all"></p>
-            </div>
-            <div class="flex items-center gap-2">
-                 <button id="forecast-btn" class="p-2 rounded-full hover:bg-gray-200" title="Previsão Financeira"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg></button>
-                 <button id="reports-btn" class="p-2 rounded-full hover:bg-gray-200" title="Ver Relatórios"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></button>
-                 <button id="settings-btn" class="p-2 rounded-full hover:bg-gray-200" title="Configurações"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg></button>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-1 space-y-6">
-                <div id="balance-card" class="container-card interactive-card">
-                    <div class="flex justify-between items-start">
-                        <div><p class="text-sm text-gray-500">Saldo Disponível</p><p id="total-balance" class="text-4xl font-bold mt-1 text-gray-900">***</p></div>
-                        <button id="toggle-main-balances-btn" class="p-2 rounded-full hover:bg-gray-200" title="Mostrar/Ocultar Saldo"></button>
-                    </div>
+    [cite_start]<div id="auth-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-90 z-[200] flex items-center justify-center hidden"> [cite: 2]
+        [cite_start]<div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm mx-4"> [cite: 2]
+            [cite_start]<h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2> [cite: 2]
+            [cite_start]<form id="auth-form"> [cite: 2]
+                <div class="mb-4">
+                    [cite_start]<label for="auth-email" class="block text-sm font-medium text-gray-700">Email</label> [cite: 3]
+                    [cite_start]<input type="email" id="auth-email" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"> [cite: 3]
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div id="investment-card" class="container-card interactive-card text-center"><p class="text-sm text-gray-500">Total Investido</p><p id="total-investment" class="text-xl font-bold mt-1 investment-text">***</p></div>
-                    <div id="credit-card-card" class="container-card interactive-card text-center"><p class="text-sm text-gray-500">Fatura Atual</p><p id="total-credit-card" class="text-xl font-bold mt-1 expense-text">***</p></div>
+                <div class="mb-6">
+                    [cite_start]<label for="auth-password" class="block text-sm font-medium text-gray-700">Senha</label> [cite: 4]
+                    [cite_start]<input type="password" id="auth-password" required minlength="6" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"> [cite: 4]
                 </div>
-                <div class="container-card">
-                    <div class="flex border-b mb-4">
-                        <button id="show-transaction-form" class="tab-btn flex-1 text-center font-semibold active">Pontual</button>
-                        <button id="show-recurring-form" class="tab-btn flex-1 text-center font-semibold">Recorrente</button>
-                    </div>
-
-                    <div id="transaction-form-container">
-                        <h2 class="text-xl font-bold text-gray-900 mb-4">Nova Transação</h2>
-                        <form id="transaction-form" class="space-y-3">
-                            <input type="hidden" id="transaction-id">
-                            <div><label class="block text-xs font-medium text-gray-700">Tipo</label><div id="type-selector" class="flex space-x-2 mt-1"><div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer" data-type="income">Entrada</div><div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer" data-type="expense">Saída</div><div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer" data-type="investment">Invest.</div></div><input type="hidden" id="type" required></div>
-                            <div class="grid grid-cols-2 gap-3"><div><label for="value" class="block text-xs font-medium text-gray-700">Valor</label><input type="number" id="value" required class="mt-1 block w-full rounded-lg p-2 shadow-sm" placeholder="0,00" step="0.01"></div><div><label for="date" class="block text-xs font-medium text-gray-700">Data</label><input type="date" id="date" required class="mt-1 block w-full rounded-lg p-2 shadow-sm"></div></div>
-                            <div><label for="category" class="block text-xs font-medium text-gray-700">Categoria</label><select id="category" required class="mt-1 block w-full rounded-lg p-2 shadow-sm"></select></div>
-                            <div id="expense-fields" class="space-y-3 hidden"><div class="grid grid-cols-2 gap-3"><div><label for="payment-method" class="block text-xs font-medium text-gray-700">Pagamento</label><select id="payment-method" class="mt-1 block w-full rounded-lg p-2 shadow-sm"><option value="Dinheiro">Dinheiro</option><option value="Pix">Pix</option><option value="Cartão de Crédito">Cartão de Crédito</option><option value="Cartão de Débito">Cartão de Débito</option></select></div><div id="installments-field" class="hidden"><label for="installments" class="block text-xs font-medium text-gray-700">Parcelas</label><select id="installments" class="mt-1 block w-full rounded-lg p-2 shadow-sm"></select></div></div></div>
-                            <div><label for="description" class="block text-xs font-medium text-gray-700">Descrição</label><textarea id="description" rows="2" class="mt-1 block w-full rounded-lg p-2 shadow-sm" placeholder="Ex: Salário, Jantar com amigos"></textarea></div>
-                            <div id="transaction-alert-message" class="alert-message hidden"></div>
-                            <div class="flex gap-2"><button type="button" id="cancel-edit-btn" class="w-1/3 py-2 px-4 border rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 hidden">Cancelar</button><button type="submit" id="submit-btn" class="w-full py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">Adicionar</button></div>
-                        </form>
-                    </div>
-
-                    <div id="recurring-form-container" class="hidden">
-                         <h2 class="text-xl font-bold text-gray-900 mb-4">Novo Recorrente</h2>
-                         <form id="recurring-form" class="space-y-3">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700">Tipo</label>
-                                <div id="recurring-type-selector-main" class="flex space-x-2 mt-1">
-                                    <div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer" data-type="income">Entrada</div>
-                                    <div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer" data-type="expense">Saída</div>
-                                    <div class="flex-1 py-2 px-4 text-center rounded-lg shadow-sm cursor-pointer" data-type="investment">Invest.</div>
-                                </div>
-                                <input type="hidden" id="recurring-type-main" value="expense" required>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div><label for="recurring-description-main" class="block text-xs font-medium text-gray-700">Descrição</label><input type="text" id="recurring-description-main" required class="mt-1 block w-full rounded-lg p-2 shadow-sm" placeholder="Ex: Aluguel"></div>
-                                <div><label for="recurring-category-main" class="block text-xs font-medium text-gray-700">Categoria</label><select id="recurring-category-main" required class="mt-1 block w-full rounded-lg p-2 shadow-sm"></select></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3 items-end">
-                                <div><label for="recurring-value-main" class="block text-xs font-medium text-gray-700">Valor Fixo / Estimativa</label><input type="number" id="recurring-value-main" class="mt-1 block w-full rounded-lg p-2 shadow-sm" placeholder="0,00" step="0.01"></div>
-                                <div class="flex items-center pb-2"><input type="checkbox" id="recurring-is-variable-main" class="h-4 w-4 text-indigo-600 border-gray-300 rounded"><label for="recurring-is-variable-main" class="ml-2 block text-sm text-gray-900">Valor Variável</label></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div><label for="recurring-day-of-month-main" class="block text-xs font-medium text-gray-700">Dia do Lançamento</label><input type="number" id="recurring-day-of-month-main" required class="mt-1 block w-full rounded-lg p-2 shadow-sm" placeholder="Ex: 10" min="1" max="31"></div>
-                                <div><label for="recurring-duration-main" class="block text-xs font-medium text-gray-700">Duração (meses)</label><input type="number" id="recurring-duration-main" class="mt-1 block w-full rounded-lg p-2 shadow-sm" placeholder="Em branco para sempre" min="1"></div>
-                            </div>
-                            <div id="recurring-payment-field-main">
-                                <label for="recurring-payment-method-main" class="block text-xs font-medium text-gray-700">Forma de Pagamento</label>
-                                <select id="recurring-payment-method-main" class="mt-1 block w-full rounded-lg p-2 shadow-sm">
-                                    <option value="Débito em Conta">Débito em Conta</option><option value="Boleto">Boleto</option><option value="Cartão de Crédito">Cartão de Crédito</option><option value="Pix Programado">Pix Programado</option>
-                                </select>
-                            </div>
-                            <div id="recurring-alert-message-main" class="alert-message hidden"></div>
-                            <button type="submit" class="w-full py-2 px-4 border rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">Adicionar Recorrente</button>
-                        </form>
-                    </div>
-                </div>
-                 <div id="pending-transactions-card" class="container-card hidden">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-gray-900">Pendentes</h2>
-                        <div class="flex flex-row items-center space-x-2">
-                            <button id="prev-pending-month-btn" class="p-2 rounded-full hover:bg-gray-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                            <span id="current-pending-month-display" class="text-sm font-medium text-gray-700 w-32 text-center"></span>
-                            <button id="next-pending-month-btn" class="p-2 rounded-full hover:bg-gray-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
-                        </div>
-                    </div>
-                    <div id="pending-transactions-list" class="space-y-3 max-h-60 overflow-y-auto pr-2"></div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-2 space-y-6">
-                <div class="container-card">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1"><h2 class="text-xl font-bold text-gray-900">Visão Geral do Mês</h2><button id="toggle-overview-balances-btn" class="p-2 rounded-full hover:bg-gray-200" title="Mostrar/Ocultar Saldos do Mês"></button></div>
-                            <div class="flex flex-row items-center space-x-2"><button id="prev-overview-month-btn" class="p-2 rounded-full hover:bg-gray-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button><span id="current-overview-month-display" class="text-sm font-medium text-gray-700 w-32 text-center"></span><button id="next-overview-month-btn" class="p-2 rounded-full hover:bg-gray-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button></div>
-                        </div>
-                        <div class="flex justify-end space-x-4 text-sm font-semibold mt-4 sm:mt-0">
-                            <div id="income-summary-card" class="text-center interactive-card p-2 rounded-lg"><p class="text-sm text-gray-500">Entradas</p><p id="total-income" class="text-lg font-bold income-text">R$ 0,00</p></div>
-                            <div id="expense-summary-card" class="text-center interactive-card p-2 rounded-lg"><p class="text-sm text-gray-500">Saídas</p><p id="total-expense" class="text-lg font-bold expense-text">R$ 0,00</p></div>
-                            <div id="monthly-balance-card" class="text-center interactive-card p-2 rounded-lg"><p class="text-sm text-gray-500">Saldo do Mês</p><p id="monthly-balance" class="text-lg font-bold text-gray-800">R$ 0,00</p></div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <div><h3 class="text-md font-bold text-gray-800 mb-2">Gastos por Categoria</h3><div class="relative h-[280px]"><canvas id="expense-chart"></canvas></div></div>
-                        <div class="space-y-4">
-                            <div>
-                                <h3 class="text-md font-bold text-gray-800 mb-2">Orçamentos do Mês</h3>
-                                <div id="budgets-list" class="space-y-3 max-h-32 overflow-y-auto pr-2"></div>
-                            </div>
-                            <div class="border-t pt-4">
-                                <h3 class="text-md font-bold text-gray-800 mb-2">Metas de Economia</h3>
-                                <div id="goals-list" class="space-y-3 max-h-32 overflow-y-auto pr-2"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="container-card">
-                    <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-gray-900">Histórico de Transações</h2><div class="flex gap-4"><button id="manage-recurring-btn" class="text-indigo-600 text-sm font-semibold hover:text-indigo-800">Recorrentes</button><button id="export-btn" class="text-green-600 text-sm font-semibold hover:text-green-800">Exportar</button></div></div>
-                    <div class="flex flex-col sm:flex-row gap-4 items-center mb-2 p-2 bg-gray-50 rounded-lg"><div class="flex flex-row items-center space-x-2 flex-grow"><button id="prev-history-month-btn" class="p-2 rounded-full hover:bg-gray-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button><span id="current-history-month-display" class="text-sm font-medium text-gray-700 w-32 text-center"></span><button id="next-history-month-btn" class="p-2 rounded-full hover:bg-gray-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button></div><select id="category-filter" class="flex-grow rounded-lg p-2 text-sm bg-white border border-gray-300"></select></div>
-                    <div class="flex justify-end items-center mb-4 pr-2"><span class="text-sm font-semibold text-gray-600 mr-2">Total Filtrado:</span><span id="filtered-sum" class="text-lg font-bold text-gray-800">R$ 0,00</span></div>
-                    <div id="transaction-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
-                </div>
-            </div>
+                [cite_start]<p id="auth-error" class="text-red-500 text-sm text-center mb-4 h-4"></p> [cite: 4]
+                [cite_start]<button type="submit" id="auth-submit-btn" class="w-full bg-blue-600 text-white py-2.5 rounded-md hover:bg-blue-700 font-semibold">Entrar</button> [cite: 4, 5]
+            </form>
+            [cite_start]<p class="text-center text-sm text-gray-600 mt-4"> [cite: 5]
+                [cite_start]<span id="auth-prompt-text">Não tem uma conta?</span> [cite: 5]
+                [cite_start]<button id="toggle-auth-mode-btn" class="font-semibold text-blue-600 hover:underline">Cadastre-se</button> [cite: 5]
+            </p>
         </div>
     </div>
 
-    <div id="settings-modal" class="modal hidden"></div>
-    <div id="recurring-modal" class="modal hidden"></div>
-    <div id="reports-modal" class="modal hidden"></div>
-    <div id="details-modal" class="modal hidden"></div>
-    <div id="forecast-modal" class="modal hidden"></div>
-    <div id="input-modal" class="modal hidden"></div>
+    [cite_start]<div id="app" class="container mx-auto p-4 md:p-6 opacity-0 transition-opacity duration-500"> [cite: 6]
+        
+        [cite_start]<header class="mb-6 flex justify-between items-center"> [cite: 6]
+            [cite_start]<h1 class="text-3xl font-bold text-gray-800">Painel Financeiro</h1> [cite: 6]
+            [cite_start]<div class="flex items-center space-x-2"> [cite: 6]
+                [cite_start]<button id="ai-btn" class="text-gray-500 hover:text-gray-800 p-2 rounded-full hover:bg-gray-200 transition-colors" title="Análise com IA"> [cite: 6]
+                     [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg> [cite: 7]
+                </button>
+                [cite_start]<button id="forecast-btn" class="text-gray-500 hover:text-gray-800 p-2 rounded-full hover:bg-gray-200 transition-colors" title="Previsão Futura"> [cite: 7]
+                   [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> [cite: 8]
+                </button>
+                [cite_start]<button id="settings-btn" class="text-gray-500 hover:text-gray-800 p-2 rounded-full hover:bg-gray-200 transition-colors" title="Configurações"> [cite: 8]
+                    [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> [cite: 8, 9]
+                </button>
+                [cite_start]<button id="logout-btn" class="text-gray-500 hover:text-red-600 p-2 rounded-full hover:bg-gray-200 transition-colors" title="Sair"> [cite: 9]
+                   [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> [cite: 10]
+                </button>
+            </div>
+        </header>
 
-    <script type="module" src="script.js"></script>
+        <main class="space-y-6">
+            [cite_start]<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"> [cite: 11]
+                [cite_start]<div data-card-type="balance" class="bg-white p-5 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"> [cite: 11]
+                    [cite_start]<div class="flex justify-between items-start"> [cite: 11]
+                        <div>
+                            [cite_start]<h3 class="text-gray-500 font-medium">Saldo</h3> [cite: 12]
+                            [cite_start]<p id="balance-value" class="text-2xl font-bold text-gray-800 value-visible">R$ 0,00</p> [cite: 12]
+                        </div>
+                        [cite_start]<button class="toggle-visibility-btn text-gray-400 hover:text-gray-600"> [cite: 13]
+                            [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> [cite: 13]
+                        </button>
+                    </div>
+                </div>
+                [cite_start]<div data-card-type="debts" class="bg-white p-5 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"> [cite: 14]
+                   [cite_start]<div class="flex justify-between items-start"> [cite: 15]
+                        <div>
+                            [cite_start]<h3 class="text-gray-500 font-medium">Dívidas</h3> [cite: 15]
+                            [cite_start]<p id="debts-value" class="text-2xl font-bold text-gray-800 value-visible">R$ 0,00</p> [cite: 16]
+                        </div>
+                        [cite_start]<button class="toggle-visibility-btn text-gray-400 hover:text-gray-600"> [cite: 16]
+                            [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> [cite: 16, 17]
+                        </button>
+                    </div>
+                </div>
+                [cite_start]<div data-card-type="investments" class="bg-white p-5 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"> [cite: 18]
+                    <div class="flex justify-between items-start">
+                        <div>
+                            [cite_start]<h3 class="text-gray-500 font-medium">Total Investido</h3> [cite: 19]
+                            [cite_start]<p id="investments-value" class="text-2xl font-bold text-gray-800 value-visible">R$ 0,00</p> [cite: 19]
+                        </div>
+                        <button class="toggle-visibility-btn text-gray-400 hover:text-gray-600">
+                            [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> [cite: 20]
+                        </button>
+                    </div>
+                </div>
+                [cite_start]<div data-card-type="invoice" class="bg-white p-5 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"> [cite: 21]
+                    <div class="flex justify-between items-start">
+                        <div>
+                            [cite_start]<h3 class="text-gray-500 font-medium">Fatura Atual</h3> [cite: 22]
+                            [cite_start]<p id="invoice-value" class="text-2xl font-bold text-gray-800 value-visible">R$ 0,00</p> [cite: 22]
+                        </div>
+                        [cite_start]<button class="toggle-visibility-btn text-gray-400 hover:text-gray-600"> [cite: 23]
+                            [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> [cite: 23, 24]
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            [cite_start]<div class="bg-white p-5 rounded-lg shadow-md"> [cite: 25]
+                [cite_start]<div class="flex justify-between items-center mb-4"> [cite: 25]
+                    [cite_start]<h3 class="text-lg font-semibold text-gray-800">Visão Geral do Mês</h3> [cite: 25]
+                    <button class="toggle-visibility-btn text-gray-400 hover:text-gray-600">
+                        [cite_start]<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> [cite: 25, 26]
+                    </button>
+                </div>
+                [cite_start]<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-6"> [cite: 26]
+                    <div>
+                        [cite_start]<p class="text-sm text-gray-500">Entradas</p> [cite: 27]
+                        [cite_start]<p id="overview-income" class="text-xl font-bold text-green-600 value-visible">R$ 0,00</p> [cite: 27]
+                        [cite_start]<p id="overview-income-pending" class="text-xs text-gray-500 value-visible h-4"></p> [cite: 27, 28]
+                    </div>
+                    <div>
+                        [cite_start]<p class="text-sm text-gray-500">Saídas</p> [cite: 28]
+                        [cite_start]<p id="overview-expenses" class="text-xl font-bold text-red-600 value-visible">R$ 0,00</p> [cite: 28, 29]
+                        [cite_start]<p id="overview-expenses-pending" class="text-xs text-gray-500 value-visible h-4"></p> [cite: 29]
+                    </div>
+                    <div>
+                        [cite_start]<p class="text-sm text-gray-500">Saldo do Mês</p> [cite: 29]
+                         [cite_start]<p id="overview-balance" class="text-xl font-bold text-blue-600 value-visible">R$ 0,00</p> [cite: 30]
+                    </div>
+                </div>
+                [cite_start]<div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"> [cite: 30]
+                    [cite_start]<div class="md:col-span-1 h-56 mx-auto"><canvas id="category-chart"></canvas></div> [cite: 31]
+                    [cite_start]<div id="budget-bars-container" class="md:col-span-2 space-y-4"></div> [cite: 31]
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg shadow-md">
+                [cite_start]<div class="flex justify-between items-center mb-4"> [cite: 32]
+                    [cite_start]<h3 class="text-lg font-semibold text-gray-800">Pendentes de Aprovação</h3> [cite: 32]
+                    [cite_start]<div class="flex items-center space-x-2"> [cite: 32]
+                        <button id="prev-month-btn" class="p-1 rounded-full hover:bg-gray-200 transition-colors">
+                             [cite_start]<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> [cite: 33]
+                        </button>
+                        [cite_start]<span id="pending-month-display" class="font-semibold text-gray-700 w-32 text-center"></span> [cite: 33]
+                         [cite_start]<button id="next-month-btn" class="p-1 rounded-full hover:bg-gray-200 transition-colors"> [cite: 34]
+                            [cite_start]<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg> [cite: 34]
+                        </button>
+                    </div>
+                </div>
+                [cite_start]<div id="pending-list-dashboard"></div> [cite: 35]
+            </div>
+        </main>
+
+        [cite_start]<button id="add-transaction-btn" class="fixed bottom-6 right-6 bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 z-40"> [cite: 35]
+           [cite_start]<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> [cite: 36]
+        </button>
+    </div>
+    
+    <div id="transaction-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modal-headline" class="text-xl font-bold text-gray-800">Nova Transação</h2>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <form id="transaction-form" class="space-y-4">
+                 <div class="flex justify-center space-x-2">
+                    <button type="button" class="transaction-type-btn" data-type="entrada">Entrada</button>
+                    <button type="button" class="transaction-type-btn" data-type="saida">Saída</button>
+                    <button type="button" class="transaction-type-btn" data-type="investimento">Investimento</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700">Valor</label>
+                        <input type="number" id="amount" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700">Data</label>
+                        <input type="date" id="date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
+                    <input type="text" id="description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                </div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700">Categoria</label>
+                        <select id="category" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></select>
+                    </div>
+                    <div>
+                        <label for="subcategory" class="block text-sm font-medium text-gray-700">Subcategoria</label>
+                        <select id="subcategory" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></select>
+                    </div>
+                </div>
+                <div id="payment-method-container" class="hidden">
+                    <label for="payment-method" class="block text-sm font-medium text-gray-700">Método de Pagamento</label>
+                    <select id="payment-method" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        <option>Débito</option>
+                        <option>Cartão de Crédito</option>
+                        <option>PIX</option>
+                        <option>Dinheiro</option>
+                    </select>
+                </div>
+                <div id="is-variable-container" class="hidden">
+                     <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="is-fixed" class="rounded">
+                        <span>É uma transação fixa?</span>
+                    </label>
+                </div>
+
+                <p id="form-error-message" class="text-red-500 text-sm text-center hidden"></p>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2.5 rounded-md hover:bg-blue-700 font-semibold">Adicionar Transação</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="settings-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Configurações</h2>
+                <button id="close-settings-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+            <p>Formulário de configurações, importação/exportação e gerenciamento de categorias iria aqui...</p>
+        </div>
+    </div>
+
+    <div id="ai-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Análise com Inteligência Artificial</h2>
+                <button id="close-ai-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+             <p>A interface de análise, com o botão "Analisar Finanças" e os estados de loading e resultado, iria aqui...</p>
+        </div>
+    </div>
+    
+    <div id="forecast-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Previsão de Despesas Futuras</h2>
+                <button id="close-forecast-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            </div>
+             <p>O gráfico de previsão e as opções de exportação iriam aqui...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
