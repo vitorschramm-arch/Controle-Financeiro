@@ -10,12 +10,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 
     <script type="module">
-      // Import the functions you need from the SDKs you need
+      // Importa as funções necessárias do SDK do Firebase
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
       import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
       import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-      // Your web app's Firebase configuration
+      // Configuração do seu aplicativo web do Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyAlvRBErv2pG8BObnX8Ew0CqOQKypTM39c",
         authDomain: "controle-612f2.firebaseapp.com",
@@ -24,18 +24,17 @@
         messagingSenderId: "39791655795",
         appId: "1:39791655795:web:1b6ad76afa568af3b86306",
         measurementId: "G-7X9S01NMWX",
-        https://vitorschramm-arch.github.io/Controle-Financeiro/,
-        // FIREBASE: Add your databaseURL here
-        databaseURL: "https://controle-612f2-default-rtdb.firebaseio.com"
+        // A URL do seu banco de dados foi inserida aqui
+        databaseURL: "https://controle-612f2-default-rtdb.firebaseio.com/"
       };
 
-      // Initialize Firebase
+      // Inicializa o Firebase
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const database = getDatabase(app);
       const provider = new GoogleAuthProvider();
 
-      // Make Firebase functions available to your main script
+      // Disponibiliza as funções do Firebase para o script principal
       window.firebaseSDK = {
           auth,
           database,
@@ -50,7 +49,7 @@
     </script>
     
     <style>
-        /* All your existing styles remain here... */
+        /* Todos os seus estilos existentes permanecem aqui... */
         body { font-family: 'Inter', sans-serif; }
         .transaction-type-btn { border-width: 1px; padding: 0.5rem; border-radius: 0.375rem; font-weight: 500; transition: background-color 0.2s, color 0.2s; cursor: pointer; }
         .transaction-type-btn.active { color: white; }
@@ -120,187 +119,33 @@
         </header>
 
         <main class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div data-card-type="balance" class="bg-white p-5 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-gray-500 font-medium">Saldo</h3>
-                            <p id="balance-value" class="text-2xl font-bold text-gray-800 value-visible">R$ 0,00</p>
-                        </div>
-                        <button class="toggle-visibility-btn text-gray-400 hover:text-gray-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div data-card-type="debts" class="bg-white p-5 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-gray-500 font-medium">Dívidas</h3>
-                            <p id="debts-value" class="text-2xl font-bold text-gray-800 value-visible">R$ 0,00</p>
-                        </div>
-                        <button class="toggle-visibility-btn text-gray-400 hover:text-gray-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div data-card-type="investments" class="bg-white p-5 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-gray-500 font-medium">Total Investido</h3>
-                            <p id="investments-value" class="text-2xl font-bold text-gray-800 value-visible">R$ 0,00</p>
-                        </div>
-                        <button class="toggle-visibility-btn text-gray-400 hover:text-gray-600">
-                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div data-card-type="invoice" class="bg-white p-5 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-gray-500 font-medium">Fatura Atual</h3>
-                            <p id="invoice-value" class="text-2xl font-bold text-gray-800 value-visible">R$ 0,00</p>
-                        </div>
-                        <button class="toggle-visibility-btn text-gray-400 hover:text-gray-600">
-                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-lg shadow-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Visão Geral do Mês</h3>
-                    <button class="toggle-visibility-btn text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                    </button>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-6">
-                    <div>
-                        <p class="text-sm text-gray-500">Entradas</p>
-                        <p id="overview-income" class="text-xl font-bold text-green-600 value-visible">R$ 0,00</p>
-                        <p id="overview-income-pending" class="text-xs text-gray-500 value-visible h-4"></p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Saídas</p>
-                        <p id="overview-expenses" class="text-xl font-bold text-red-600 value-visible">R$ 0,00</p>
-                        <p id="overview-expenses-pending" class="text-xs text-gray-500 value-visible h-4"></p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Saldo do Mês</p>
-                        <p id="overview-balance" class="text-xl font-bold text-blue-600 value-visible">R$ 0,00</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                    <div class="md:col-span-1 h-56 mx-auto">
-                        <canvas id="category-chart"></canvas>
-                    </div>
-                    <div id="budget-bars-container" class="md:col-span-2 space-y-4">
-                        </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-lg shadow-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Pendentes de Aprovação</h3>
-                    <div class="flex items-center space-x-2">
-                        <button id="prev-month-btn" class="p-1 rounded-full hover:bg-gray-200 transition-colors">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </button>
-                        <span id="pending-month-display" class="font-semibold text-gray-700 w-32 text-center"></span>
-                        <button id="next-month-btn" class="p-1 rounded-full hover:bg-gray-200 transition-colors">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                        </button>
-                    </div>
-                </div>
-                <div id="pending-list-dashboard">
-                    </div>
-            </div>
-        </main>
-
-        <button id="add-transaction-btn" class="fixed bottom-6 right-6 bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 z-40">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-        </button>
-
-        <div id="transaction-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-auto transform transition-all" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800" id="modal-headline">Nova Transação</h2>
-                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
-                </div>
-                <form id="transaction-form" novalidate>
-                    <div class="mb-4">
-                        <span class="block text-sm font-medium text-gray-700 mb-2">Tipo</span>
-                        <div id="transaction-type-container" class="grid grid-cols-3 gap-2">
-                            <div data-type="entrada" class="transaction-type-btn border-green-500 text-green-500 hover:bg-green-50 text-center">Entrada</div>
-                            <div data-type="saida" class="transaction-type-btn border-red-500 text-red-500 hover:bg-red-50 text-center">Saída</div>
-                            <div data-type="investimento" class="transaction-type-btn border-blue-500 text-blue-500 hover:bg-blue-50 text-center">Investimento</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="flex items-center"><input id="is-fixed" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"><label for="is-fixed" class="ml-2 block text-sm text-gray-900">Transação Fixa</label></div>
-                        <div id="is-variable-container" class="flex items-center hidden"><input id="is-variable" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"><label for="is-variable" class="ml-2 block text-sm text-gray-900">Valor Variável</label></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div><label for="amount" class="block text-sm font-medium text-gray-700">Valor</label><input type="number" id="amount" name="amount" step="0.01" placeholder="R$ 0,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div>
-                        <div><label for="date" class="block text-sm font-medium text-gray-700">Data</label><input type="date" id="date" name="date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div><label for="category" class="block text-sm font-medium text-gray-700">Categoria</label><select id="category" name="category" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"><option value="">Selecione</option></select></div>
-                        <div><label for="subcategory" class="block text-sm font-medium text-gray-700">Subcategoria</label><select id="subcategory" name="subcategory" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"><option value="">Selecione</option></select></div>
-                    </div>
-                    <div id="payment-method-container" class="mb-4"><label for="payment-method" class="block text-sm font-medium text-gray-700">Forma de Pagamento</label><select id="payment-method" name="payment-method" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"><option value="">Selecione</option><option>Cartão de Crédito</option><option>Cartão de Débito</option><option>Dinheiro</option><option>PIX</option><option>Transferência Bancária</option></select></div>
-                    <div class="mb-6"><label for="description" class="block text-sm font-medium text-gray-700">Descrição</label><textarea id="description" name="description" rows="2" placeholder="Ex: Compras no supermercado" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea></div>
-                    <div id="form-error-message" class="hidden text-red-600 text-sm mb-4 p-3 bg-red-100 rounded-md text-center"></div>
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors font-semibold">Adicionar Transação</button>
-                </form>
-            </div>
-        </div>
+             </main>
 
         </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // FIREBASE: Get the SDK functions from the global scope
+            // Obtém as funções do SDK do Firebase que foram disponibilizadas globalmente
             const { auth, database, provider, signInWithPopup, signOut, onAuthStateChanged, ref, set, get } = window.firebaseSDK;
 
-            // --- FIREBASE: UI Selectors for Login/Logout ---
+            // --- Seletores da UI para Login/Logout ---
             const loginScreen = document.getElementById('login-screen');
             const loginBtn = document.getElementById('login-btn');
             const logoutBtn = document.getElementById('logout-btn');
             const appContainer = document.getElementById('app');
             const userDisplay = document.getElementById('user-display');
             
-            // --- FIREBASE: State for current user ---
+            // --- Estado para o usuário atual ---
             let currentUser = null;
 
-            // --- Seletores de Elementos do DOM (Your existing selectors) ---
-            const addTransactionBtn = document.getElementById('add-transaction-btn');
-            // ... (keep all your existing selectors here)
-            const debtAmortizationTableContainer = document.getElementById('debt-amortization-table-container');
-            const simulatePrepaymentBtn = document.getElementById('simulate-prepayment-btn');
-            const confirmPrepaymentBtn = document.getElementById('confirm-prepayment-btn');
-            const prepaymentSimulationResult = document.getElementById('prepayment-simulation-result');
-            const overviewIncomeEl = document.getElementById('overview-income');
-            const overviewExpensesEl = document.getElementById('overview-expenses');
-            const overviewBalanceEl = document.getElementById('overview-balance');
-            const overviewIncomePendingEl = document.getElementById('overview-income-pending');
-            const overviewExpensesPendingEl = document.getElementById('overview-expenses-pending');
-            const categoryChartCanvas = document.getElementById('category-chart');
-            const budgetBarsContainer = document.getElementById('budget-bars-container');
-
-            // --- Estado da Aplicação (Your existing state variables) ---
+            // --- Seletores de Elementos do DOM (Seus seletores existentes) ---
+            // ... (cole todos os seus seletores de elementos do DOM aqui)
+            
+            // --- Estado da Aplicação (Suas variáveis de estado existentes) ---
             let transactions = [];
-            let fixedTransactionTemplates = [];
-            let debts = [];
-            // ... (keep all your existing state variables here)
-            let viewingDebtId = null;
+            // ... (cole todas as suas variáveis de estado aqui)
 
-            // --- Default states (for new users) ---
+            // --- Estados Padrão (para novos usuários) ---
             const defaultSettings = {
                 invoiceClosingDay: 1,
                 savingsGoal: 0,
@@ -315,9 +160,9 @@
             let settings = { ...defaultSettings };
             let categoryData = { ...defaultCategories };
 
-            // --- FIREBASE: Modified Persistence Functions ---
+            // --- Funções de Persistência de Dados Modificadas para o Firebase ---
             const saveData = async () => {
-                if (!currentUser) return; // Don't save if not logged in
+                if (!currentUser) return; // Não salva se não estiver logado
 
                 const dataToSave = {
                     transactions,
@@ -330,7 +175,7 @@
                 try {
                     await set(ref(database, 'users/' + currentUser.uid), dataToSave);
                 } catch (error) {
-                    console.error("Firebase save error:", error);
+                    console.error("Erro ao salvar no Firebase:", error);
                     showGenericModal({type: 'alert', title: 'Erro de Sincronização', message: 'Não foi possível salvar seus dados na nuvem. Verifique sua conexão.'});
                 }
             };
@@ -349,38 +194,36 @@
                         settings = data.settings || { ...defaultSettings };
                         categoryData = data.categoryData || { ...defaultCategories };
                     } else {
-                        // New user, initialize with defaults
+                        // Novo usuário, inicializa com os padrões
                         transactions = [];
                         fixedTransactionTemplates = [];
                         debts = [];
                         settings = { ...defaultSettings };
                         categoryData = { ...defaultCategories };
-                        // Save initial state for new user
+                        // Salva o estado inicial para o novo usuário
                         await saveData();
                     }
                 } catch (error) {
-                    console.error("Firebase load error:", error);
+                    console.error("Erro ao carregar do Firebase:", error);
                     showGenericModal({type: 'alert', title: 'Erro ao Carregar', message: 'Não foi possível carregar seus dados da nuvem.'});
                 }
                 
-                // Once data is loaded, render everything
+                // Assim que os dados são carregados, renderiza tudo
                 updateDashboard();
             };
 
-            // Remove STORAGE_KEYS and localStorage functions
-            // const STORAGE_KEYS = { ... }; // This is no longer needed
-            // const saveData = () => { ... }; // Replaced by Firebase version
-            // const loadData = () => { ... }; // Replaced by Firebase version
-            
-            // --- FIREBASE: Authentication Logic ---
+            // --- Lógica de Autenticação do Firebase ---
             const handleLogin = () => {
                 signInWithPopup(auth, provider)
-                    .catch((error) => console.error("Login failed:", error));
+                    .catch((error) => {
+                        console.error("Login falhou:", error);
+                        alert(`O login falhou. Verifique o console para mais detalhes. (Código: ${error.code})`);
+                    });
             };
 
             const handleLogout = () => {
                 signOut(auth)
-                    .catch((error) => console.error("Logout failed:", error));
+                    .catch((error) => console.error("Logout falhou:", error));
             };
 
             const resetAppState = () => {
@@ -389,23 +232,23 @@
                  debts = [];
                  settings = { ...defaultSettings };
                  categoryData = { ...defaultCategories };
-                 updateDashboard(); // Clear the dashboard
+                 updateDashboard(); // Limpa o painel
             };
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // User is signed in
+                    // Usuário está logado
                     currentUser = user;
                     userDisplay.textContent = `Olá, ${user.displayName.split(' ')[0]}`;
                     loginScreen.classList.add('hidden');
                     appContainer.classList.remove('hidden');
-                    loadData(); // Load data from Firebase for this user
+                    loadData(); // Carrega os dados do Firebase para este usuário
                 } else {
-                    // User is signed out
+                    // Usuário está deslogado
                     currentUser = null;
                     loginScreen.classList.remove('hidden');
                     appContainer.classList.add('hidden');
-                    resetAppState(); // Reset the app state to default
+                    resetAppState(); // Reseta o estado do aplicativo para o padrão
                 }
             });
 
@@ -413,19 +256,15 @@
             logoutBtn.addEventListener('click', handleLogout);
 
             
-            // --- Your Existing Functions ---
-            // The rest of your JavaScript code remains exactly the same.
-            // Just ensure that every time you were calling the old saveData(),
-            // it now calls the new async saveData() which works with Firebase.
-            // The structure you had is great, as we only need to change
-            // the two data persistence functions.
+            // --- Suas Funções Existentes ---
+            // O resto do seu código JavaScript permanece exatamente o mesmo.
+            // Apenas garanta que toda vez que você chamava o antigo saveData(),
+            // ele agora chame o novo saveData() assíncrono que funciona com o Firebase.
+            // A estrutura que você tinha é ótima, pois só precisamos alterar
+            // as duas funções de persistência de dados.
             
-            const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            // ... (paste ALL your other JavaScript functions here, from `formatDate` to the end of your script)
+            // ... (cole TODAS as suas outras funções JavaScript aqui, de `formatCurrency` até o final do seu script)
 
-            // --- REMOVE The Final Initialization ---
-            // loadData(); // This is now called by the onAuthStateChanged listener
-            // updateDashboard(); // This is also called after data is loaded
         });
     </script>
 </body>
