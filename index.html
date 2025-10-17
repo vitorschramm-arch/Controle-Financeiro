@@ -162,17 +162,13 @@
         <div id="debt-management-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 class="text-xl font-bold text-gray-800">Gerenciar Dívidas</h2><button id="close-debt-management-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><div id="debt-list-container" class="overflow-y-auto flex-grow mb-4"></div><div class="pt-4 border-t"><button id="add-new-debt-btn" class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700 font-semibold">+ Adicionar Nova Dívida</button></div></div></div>
         <div id="add-edit-debt-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-60 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-auto"><div class="flex justify-between items-center mb-4"><h2 id="add-edit-debt-modal-title" class="text-xl font-bold text-gray-800">Nova Dívida</h2><button id="close-add-edit-debt-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button></div><form id="debt-form" novalidate class="space-y-4"><div><label for="debt-description" class="block text-sm font-medium text-gray-700">Descrição</label><input type="text" id="debt-description" placeholder="Ex: Financiamento do Carro" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div class="grid grid-cols-2 gap-4"><div><label for="debt-total-amount" class="block text-sm font-medium text-gray-700">Valor Total da Dívida</label><input type="number" id="debt-total-amount" step="0.01" placeholder="R$ 10.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-down-payment" class="block text-sm font-medium text-gray-700">Valor de Entrada (Opcional)</label><input type="number" id="debt-down-payment" step="0.01" placeholder="R$ 2.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div></div><div class="grid grid-cols-2 gap-4"><div><label for="debt-installments-count" class="block text-sm font-medium text-gray-700">Nº de Parcelas</label><input type="number" id="debt-installments-count" step="1" placeholder="12" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-start-date" class="block text-sm font-medium text-gray-700">Data da 1ª Parcela</label><input type="date" id="debt-start-date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div></div><div class="grid grid-cols-2 gap-4"><div><label for="debt-interest-rate" class="block text-sm font-medium text-gray-700">Taxa de Juros (%)</label><input type="number" id="debt-interest-rate" step="0.01" placeholder="1.99" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-interest-period" class="block text-sm font-medium text-gray-700">Período do Juro</label><select id="debt-interest-period" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"><option value="monthly">Ao Mês</option><option value="yearly">Ao Ano</option></select></div></div><div><span class="block text-sm font-medium text-gray-700 mb-2">Sistema de Amortização</span><div class="flex items-center gap-4"><label class="amortization-radio-label"><input type="radio" name="amortization-type" value="PRICE" class="sr-only" checked> Tabela PRICE</label><label class="amortization-radio-label"><input type="radio" name="amortization-type" value="SAC" class="sr-only"> Sistema SAC</label></div></div><div id="debt-form-error-message" class="hidden text-red-600 text-sm mb-4 p-3 bg-red-100 rounded-md text-center"></div><div class="pt-4"><button type="submit" class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700 font-semibold">Salvar Dívida</button></div></form></div></div>
         <div id="debt-details-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-60 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 id="debt-details-modal-title" class="text-xl font-bold text-gray-800">Detalhes da Dívida</h2><button id="close-debt-details-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><div class="overflow-y-auto flex-grow space-y-6"><div id="debt-summary-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center p-4 bg-gray-50 rounded-lg"></div><div class="p-4 border rounded-lg"><h3 class="text-lg font-semibold text-gray-700 mb-3">Adiantar Pagamento / Simulação</h3><div class="flex flex-wrap items-end gap-4"><div><label for="prepayment-amount" class="block text-sm font-medium text-gray-700">Valor a Adiantar</label><input type="number" id="prepayment-amount" step="0.01" placeholder="R$ 1.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label for="prepayment-strategy" class="block text-sm font-medium text-gray-700">Estratégia</label><select id="prepayment-strategy" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"><option value="reduce_term">Reduzir Prazo</option><option value="reduce_installment">Reduzir Valor da Parcela</option></select></div><div class="flex items-center gap-2"><button id="simulate-prepayment-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 font-semibold text-sm">Simular</button><button id="confirm-prepayment-btn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 font-semibold text-sm">Confirmar</button></div></div><div id="prepayment-simulation-result" class="mt-3 text-sm text-gray-700 bg-blue-50 p-3 rounded-md hidden"></div></div><div><h3 class="text-lg font-semibold text-gray-700 mb-2">Tabela de Amortização</h3><div id="debt-amortization-table-container" class="overflow-auto border rounded-lg"></div></div></div></div></div>
+
     </div>
 
     <script>
-    // ESTE É O SCRIPT COMPLETO E CORRIGIDO
-    // ... todo o seu javascript original está aqui, corrigido e integrado ...
-    </script>
-</body>
-</html>
+    // SCRIPT COMPLETO E CORRIGIDO
     document.addEventListener('DOMContentLoaded', () => {
         const { auth, database, provider, signInWithPopup, signOut, onAuthStateChanged, ref, set, get } = window.firebaseSDK;
-
         const loginScreen = document.getElementById('login-screen');
         const loginBtn = document.getElementById('login-btn');
         const logoutBtn = document.getElementById('logout-btn');
@@ -313,7 +309,7 @@
                     settings = data.settings || { ...defaultSettings };
                     categoryData = data.categoryData || { ...defaultCategories };
                 } else {
-                    await saveData(); // Save initial empty/default state for new user
+                    await saveData(); 
                 }
             } catch (error) {
                 console.error("Firebase load error:", error);
@@ -350,7 +346,8 @@
         loginBtn.addEventListener('click', handleLogin);
         logoutBtn.addEventListener('click', handleLogout);
         
-        // --- INÍCIO DO CÓDIGO ORIGINAL DA APLICAÇÃO ---
+        // --- INÍCIO DO CÓDIGO ORIGINAL DA APLICAÇÃO (COMPLETO) ---
+        
         const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const formatDate = (dateString) => new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR');
 
@@ -377,6 +374,7 @@
             }).join('') + '</div>';
             pendingListDashboard.innerHTML = html;
         };
+
         const updateDashboard = () => {
             const now = new Date();
             const currentMonth = now.getMonth();
@@ -397,6 +395,7 @@
             renderPendingTransactionsOnDashboard();
             updateOverviewCard();
         };
+
         const generateTransactionListHTML = (data) => {
             if(data.length===0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
             const headers = [{key:'date',label:'Data'},{key:'description',label:'Descrição'},{key:'category',label:'Categoria'},{key:'amount',label:'Valor'}];
@@ -404,6 +403,7 @@
             const rowsHTML = data.map(t => `<tr class="border-b border-gray-200 hover:bg-gray-50" data-id="${t.id}" title="Clique para editar"><td class="p-3 whitespace-nowrap">${formatDate(t.date)}</td><td class="p-3">${t.description||'-'}</td><td class="p-3">${t.category}${t.subcategory?' ('+t.subcategory+')':''}</td><td class="p-3 text-right font-medium">${(t.type==='saida'||t.type==='investimento')?'-':''}${formatCurrency(t.amount)}</td></tr>`).join('');
             return `<div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-100"><tr>${headerHTML}</tr></thead><tbody id="transaction-list-body">${rowsHTML}</tbody></table></div>`;
         };
+        
         const handlePendingAction = async (e) => {
             const button = e.target.closest('button[data-action]');
             if (!button) return;
@@ -450,9 +450,10 @@
                     transactions.splice(transactionIndex, 1);
                 }
             }
+            await saveData();
             updateDashboard();
-            saveData();
         };
+
         const applyFiltersAndRender = (baseData) => {
             let filteredData = [...baseData];
             const startDate = document.getElementById('modal-start-date-filter')?.value;
@@ -476,6 +477,7 @@
                 });
             });
         };
+
         const openTransactionsModal = (config) => {
             transactionsModalTitle.textContent = config.title;
             modalTransactionData = config.transactions;
@@ -499,16 +501,19 @@
             applyFiltersAndRender(modalTransactionData);
             transactionsModal.classList.remove('hidden');
         };
+
         const toggleValuesVisibility = () => {
             areValuesVisible = !areValuesVisible;
             valueElements.forEach(el => { el.classList.toggle('value-hidden', !areValuesVisible); el.classList.toggle('value-visible', areValuesVisible); });
             toggleVisibilityBtns.forEach(btn => { btn.innerHTML = areValuesVisible ? `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>` : `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .525-1.666 1.489-3.14 2.675-4.325m11.313 4.325a10.049 10.049 0 01-4.425 4.425m-7.233-7.233C6.63 7.423 9.17 6 12 6c1.556 0 3.041.455 4.385 1.25M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>`; });
         };
+
         const openModal = () => { transactionModal.classList.remove('hidden'); if (!dateInput.value) dateInput.value = new Date().toISOString().split('T')[0]; setDefaultTransactionType(); };
         const closeModal = () => { transactionModal.classList.add('hidden'); transactionForm.reset(); resetTypeButtons(); isVariableContainer.classList.add('hidden'); selectedTransactionType=null; document.querySelectorAll('.invalid-field').forEach(el => el.classList.remove('invalid-field')); formErrorMessage.classList.add('hidden'); editingTransactionId=null; document.getElementById('modal-headline').textContent='Nova Transação'; transactionForm.querySelector('button[type="submit"]').textContent='Adicionar Transação'; isFixedCheckbox.disabled=false; document.getElementById('is-variable').disabled=false; };
+
         const openModalForEdit = (transactionId) => {
             const transaction = transactions.find(t => t.id === transactionId);
-            if (!transaction || transaction.status !== 'completed') { if(transaction.status==='pending') showGenericModal({type:'alert',title:'Aviso',message:'Não é possível editar uma transação pendente. Aprove-a primeiro.'}); return; };
+            if (!transaction || transaction.status !== 'completed') { if(transaction?.status==='pending') showGenericModal({type:'alert',title:'Aviso',message:'Não é possível editar uma transação pendente. Aprove-a primeiro.'}); return; };
             if (transaction.debtId) { showGenericModal({type:'alert',title:'Aviso',message:'Pagamentos de dívidas não podem ser editados diretamente.'}); return; }
             editingTransactionId = transactionId;
             document.getElementById('modal-headline').textContent = 'Editar Transação';
@@ -518,7 +523,7 @@
             if (typeBtn) { typeBtn.classList.add('active'); selectedTransactionType = transaction.type; updateFormForType(transaction.type); }
             amountInput.value = transaction.amount;
             dateInput.value = transaction.date;
-            description.value = transaction.description || '';
+            document.getElementById('description').value = transaction.description || '';
             setTimeout(() => { categorySelect.value=transaction.category; populateSubcategories(); subcategorySelect.value=transaction.subcategory||''; if(transaction.type==='saida'){paymentMethodSelect.value=transaction['payment-method']||''} }, 10);
             isFixedCheckbox.checked = transaction.isFixed;
             isFixedCheckbox.disabled = true;
@@ -528,9 +533,11 @@
             closeTransactionsModal();
             transactionModal.classList.remove('hidden');
         };
+
         const resetTypeButtons = () => transactionTypeBtns.forEach(btn => btn.classList.remove('active'));
         const updateFormForType = (type) => { populateCategories(type); paymentMethodContainer.classList.toggle('hidden', type !== 'saida'); };
         const setDefaultTransactionType = () => { resetTypeButtons(); const defaultType='saida'; const defaultBtn=document.querySelector(`.transaction-type-btn[data-type="${defaultType}"]`); if(defaultBtn){defaultBtn.classList.add('active');selectedTransactionType=defaultType;updateFormForType(defaultType)} };
+
         const populateCategories = (type) => {
             if(!categorySelect) return;
             const currentCategory=categorySelect.value;
@@ -539,6 +546,7 @@
             if(categoryData[type]?.[currentCategory]){categorySelect.value=currentCategory}
             populateSubcategories();
         };
+
         const populateSubcategories = () => {
             if(!subcategorySelect) return;
             const currentSubcategory=subcategorySelect.value;
@@ -547,7 +555,9 @@
             if(selectedCategory&&selectedTransactionType&&categoryData[selectedTransactionType]?.[selectedCategory]){categoryData[selectedTransactionType][selectedCategory].sort((a,b)=>a.localeCompare(b)).forEach(sub=>{const option=document.createElement('option');option.value=sub;option.textContent=sub;subcategorySelect.appendChild(option)})}
             if(categoryData[selectedTransactionType]?.[selectedCategory]?.includes(currentSubcategory)){subcategorySelect.value=currentSubcategory}
         };
+
         const closeTransactionsModal = () => transactionsModal.classList.add('hidden');
+
         const validateForm = () => {
             const errors=[]; let isValid=true;
             document.querySelectorAll('.invalid-field').forEach(el=>el.classList.remove('invalid-field'));
@@ -559,6 +569,7 @@
             if(!isValid){formErrorMessage.innerHTML=errors.join('<br>');formErrorMessage.classList.remove('hidden')}else{formErrorMessage.classList.add('hidden')}
             return isValid;
         };
+
         const showGenericModal = (config) => {
             return new Promise((resolve) => {
                 genericModalTitle.textContent = config.title;
@@ -580,6 +591,7 @@
                 if (config.type === 'prompt') genericModalInput.focus();
             });
         };
+
         const openSettingsModal = () => {
             invoiceClosingDayInput.value = settings.invoiceClosingDay;
             savingsGoalInput.value = settings.savingsGoal > 0 ? settings.savingsGoal : '';
@@ -587,6 +599,7 @@
             settingsModal.classList.remove('hidden');
         };
         const closeSettingsModal = () => settingsModal.classList.add('hidden');
+        
         const renderCategoryManagement = () => {
             categoryManagementContainer.innerHTML = '';
             const typeTitles = { 'entrada':'Receitas', 'saida':'Despesas', 'investimento':'Investimentos' };
@@ -629,6 +642,7 @@
                 categoryManagementContainer.appendChild(typeDetails);
             });
         };
+
         const handleCategoryManagementAction = async (e) => {
             const target = e.target;
             if (target.matches('input[data-budget-category]')) { const category = target.dataset.budgetCategory; const value = parseFloat(target.value); if (value > 0) settings.budgets[category] = value; else delete settings.budgets[category]; return; }
@@ -647,6 +661,7 @@
                 case 'edit-subcategory': { const newName = await showGenericModal({ type: 'prompt', title: 'Editar Subcategoria', message: `Novo nome para "${subcategory}":`, defaultValue: subcategory}); const index = categoryData[type][category].indexOf(subcategory); if (newName && newName !== subcategory && !categoryData[type][category].includes(newName) && index > -1) { categoryData[type][category][index] = newName; renderCategoryManagement(); populateCategories(selectedTransactionType); saveData(); } else if (newName && newName !== subcategory) { await showGenericModal({ type: 'alert', title: 'Erro', message: 'Essa subcategoria já existe.'}); } break; }
             }
         };
+
         const updateOverviewCard = () => {
             const currentMonth = currentPendingDate.getMonth();
             const currentYear = currentPendingDate.getFullYear();
@@ -694,6 +709,7 @@
             }
             if(settings.savingsGoal > 0){ const savedAmount=balance; const savedPercent=Math.max(0,(savedAmount/settings.savingsGoal)*100); budgetBarsContainer.innerHTML+=`<div class="mt-6 border-t pt-4"><div class="flex justify-between items-center mb-1 text-sm"><span class="font-semibold text-gray-700">Meta de Economia</span><span class="text-gray-500"><span class="value-visible font-medium text-gray-800">${formatCurrency(savedAmount)}</span> / ${formatCurrency(settings.savingsGoal)}</span></div><div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden"><div class="bg-blue-500 h-4" style="width:${Math.min(savedPercent,100)}%"></div></div></div>`; }
         };
+
         const openForecastModal = () => { calculateAndRenderForecast(); forecastModal.classList.remove('hidden'); };
         const closeForecastModal = () => forecastModal.classList.add('hidden');
         const calculateAndRenderForecast = () => {
@@ -715,22 +731,16 @@
             document.getElementById('forecast-avg-expense').textContent = formatCurrency(totalAvgExpense);
             document.getElementById('forecast-avg-investment').textContent = formatCurrency(totalAvgInvestment);
             document.getElementById('forecast-avg-balance').textContent = formatCurrency(totalAvgBalance);
-            const labels = [];
-            const incomeData = [];
-            const expenseData = [];
-            const balanceData = [];
+            const labels = []; const incomeData = []; const expenseData = []; const balanceData = [];
             const completedTransactions = transactions.filter(t => t.status === 'completed');
             const currentBalance = completedTransactions.filter(t => t.type === 'entrada').reduce((acc, t) => acc + t.amount, 0) - completedTransactions.filter(t => t.type === 'saida' || t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
             let cumulativeBalance = currentBalance;
             forecastDataForExport = [];
             for (let i = 1; i <= 12; i++) {
-                const futureDate = new Date();
-                futureDate.setMonth(futureDate.getMonth() + i);
+                const futureDate = new Date(); futureDate.setMonth(futureDate.getMonth() + i);
                 labels.push(futureDate.toLocaleString('pt-BR', { month: 'short', year: '2-digit' }));
                 cumulativeBalance += totalAvgBalance;
-                incomeData.push(totalAvgIncome);
-                expenseData.push(totalAvgExpense + totalAvgInvestment);
-                balanceData.push(cumulativeBalance);
+                incomeData.push(totalAvgIncome); expenseData.push(totalAvgExpense + totalAvgInvestment); balanceData.push(cumulativeBalance);
                 forecastDataForExport.push({ 'Mês': futureDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }), 'Receita Projetada': totalAvgIncome, 'Despesa Projetada': totalAvgExpense + totalAvgInvestment, 'Saldo Projetado': cumulativeBalance });
             }
             if(forecastChartInstance) forecastChartInstance.destroy();
@@ -894,7 +904,7 @@
             if (confirmed) {
                 transactions = transactions.filter(t => t.debtId !== debtId || t.status === 'completed');
                 debts = debts.filter(d => d.id !== debtId);
-                saveData(); updateDashboard(); renderDebtManagementList();
+                await saveData(); updateDashboard(); renderDebtManagementList();
             }
         };
         
@@ -933,29 +943,54 @@
                 case 'debts': openDebtManagementModal(); break;
             }
         }));
-        transactionForm.addEventListener('submit', (e) => {
+        
+        // CORREÇÃO: Lógica de submit do formulário de transação
+        transactionForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!validateForm()) return;
-            const formData = new FormData(transactionForm);
-            const transactionData = { type: selectedTransactionType };
-            for (const [key, value] of formData.entries()) { transactionData[key] = value; }
-            transactionData.amount = parseFloat(transactionData.amount);
-            if (editingTransactionId) {
-                const transactionIndex = transactions.findIndex(t => t.id === editingTransactionId);
-                if (transactionIndex > -1) { transactions[transactionIndex] = { ...transactions[transactionIndex], ...transactionData }; }
-            } else {
-                const isFixed = isFixedCheckbox.checked;
-                transactionData.isFixed = isFixed;
-                transactionData.isVariable = isFixed ? document.getElementById('is-variable').checked : false;
-                if (isFixed) {
-                    const templateBase = { ...transactionData }; delete templateBase.date; templateBase.id = `template-${Date.now()}`; fixedTransactionTemplates.push(templateBase);
-                    transactions.push({ ...transactionData, id: Date.now(), templateId: templateBase.id, status: 'pending' });
+
+            // Construção manual do objeto para evitar 'undefined'
+            const transactionData = {
+                type: selectedTransactionType,
+                amount: parseFloat(amountInput.value),
+                date: dateInput.value,
+                category: categorySelect.value,
+                subcategory: subcategorySelect.value || "",
+                'payment-method': paymentMethodSelect.value || "",
+                description: document.getElementById('description').value || ""
+            };
+
+            try {
+                if (editingTransactionId) {
+                    const transactionIndex = transactions.findIndex(t => t.id === editingTransactionId);
+                    if (transactionIndex > -1) {
+                        transactions[transactionIndex] = { ...transactions[transactionIndex], ...transactionData };
+                    }
                 } else {
-                    transactions.push({ ...transactionData, id: Date.now(), status: 'completed' });
+                    const isFixed = isFixedCheckbox.checked;
+                    transactionData.isFixed = isFixed;
+                    transactionData.isVariable = isFixed ? document.getElementById('is-variable').checked : false;
+
+                    if (isFixed) {
+                        const templateBase = { ...transactionData };
+                        delete templateBase.date;
+                        templateBase.id = `template-${Date.now()}`;
+                        fixedTransactionTemplates.push(templateBase);
+                        transactions.push({ ...transactionData, id: Date.now(), templateId: templateBase.id, status: 'pending' });
+                    } else {
+                        transactions.push({ ...transactionData, id: Date.now(), status: 'completed' });
+                    }
                 }
+                
+                await saveData(); // Espera o salvamento ser concluído
+                updateDashboard();
+                closeModal(); // Fecha o modal APÓS salvar
+            } catch (error) {
+                console.error("Erro ao salvar transação:", error);
+                showGenericModal({type: 'alert', title: 'Erro', message: 'Não foi possível salvar a transação. Tente novamente.'});
             }
-            updateDashboard(); closeModal(); saveData();
         });
+
         settingsBtn.addEventListener('click', openSettingsModal);
         closeSettingsModalBtn.addEventListener('click', closeSettingsModal);
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
@@ -964,7 +999,8 @@
             settings.invoiceClosingDay = parseInt(invoiceClosingDayInput.value) || 1;
             settings.savingsGoal = parseFloat(savingsGoalInput.value) || 0;
             document.querySelectorAll('input[data-budget-category]').forEach(input => { const category = input.dataset.budgetCategory; const value = parseFloat(input.value); if (value > 0) { settings.budgets[category] = value; } else { delete settings.budgets[category]; } });
-            updateDashboard(); saveData();
+            await saveData();
+            updateDashboard();
             await showGenericModal({ type: 'alert', title: 'Sucesso', message: 'Configurações salvas!'});
             closeSettingsModal();
         });
@@ -997,7 +1033,7 @@
             const editBtn = e.target.closest('button[data-action="edit-debt"]');
             if(editBtn){const debtId=parseInt(editBtn.dataset.id);openAddEditDebtModal(debtId)}
         });
-        debtForm.addEventListener('submit', (e) => {
+        debtForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!validateDebtForm()) return;
             const totalAmount = parseFloat(document.getElementById('debt-total-amount').value);
@@ -1025,7 +1061,10 @@
                 transactions.push({ id: Date.now() - 1, debtId: newDebtId, description: `Entrada: ${description}`, amount: downPayment, date: startDate, type: 'saida', category: 'Dívidas', subcategory: 'Entrada Financiamento', status: 'completed' });
             }
             debts.push(newDebt);
-            saveData(); updateDashboard(); closeAddEditDebtModal(); renderDebtManagementList();
+            await saveData();
+            updateDashboard();
+            closeAddEditDebtModal();
+            renderDebtManagementList();
         });
     });
     </script>
