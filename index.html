@@ -874,29 +874,36 @@ const openAddEditDebtModal = (debtId = null) => {
         const openDebtDetailsModal = (debtId) => { viewingDebtId = debtId; renderDebtDetailsModal(); debtDetailsModal.classList.remove('hidden'); };
         const closeDebtDetailsModal = () => { debtDetailsModal.classList.add('hidden'); currentSimulationResult = null; };
         
-        const renderDebtManagementList = () => {
-            if (debts.length === 0) { debtListContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhuma dívida cadastrada.</p>'; return; }
-            // CORREÇÃO: Usar o valor total da parcela (value) para o saldo devedor
-            debtListContainer.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-4 py-3">Descrição</th><th class="px-4 py-3 text-right">Saldo Devedor</th><th class="px-4 py-3 text-right">Próxima Parcela</th><th class="px-4 py-3 text-center">Ações</th></tr></thead><tbody>${debts.map(debt => { const remainingValue=debt.installments.filter(p=>p.status==='pending').reduce((s,p)=>s+p.value,0); const nextInstallment=debt.installments.find(p=>p.status==='pending'); return `<tr class="border-b hover:bg-gray-50" data-id="${debt.id}" title="Clique para ver detalhes"><td class="px-4 py-3 font-medium text-gray-900">${debt.description}</td><td class="px-4 py-3 text-right font-semibold">${formatCurrency(remainingValue)}</td><td class="px-4 py-3 text-right">${nextInstallment?`${formatCurrency(nextInstallment.value)} em ${formatDate(nextInstallment.dueDate)}`:'Quitada'}</td><td class="px-4 py-3 flex justify-center items-center space-x-2"><button data-action="edit-debt" data-id="${debt.id}" class="font-medium text-blue-600 hover:underline p-1">Editar</button><button data-action="delete-debt" data-id="${debt.id}" class="font-medium text-red-600 hover:underline p-1">Excluir</button></td></tr>`; }).join('')}</tbody></table></div>`;
-        };
-        const renderDebtDetailsModal = () => {
-            const debt = debts.find(d => d.id === viewingDebtId);
-            if (!debt) return;
-            debtDetailsModalTitle.textContent = debt.description;
-            const paidInstallments = debt.installments.filter(p => p.status === 'paid');
-            const totalPaid = paidInstallments.reduce((sum, p) => sum + p.value, 0) + debt.downPayment;
-            // CORREÇÃO: Usar o valor total da parcela (value) para o saldo devedor
-            const remainingValue = debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.value, 0);
-            const totalInterest = debt.installments.reduce((sum, p) => sum + p.interest, 0);
-            debtSummaryContainer.innerHTML = `<div><p class="text-sm text-gray-500">Valor Total</p><p class="text-lg font-bold">${formatCurrency(debt.totalAmount)}</p></div><div><p class="text-sm text-gray-500">Total Pago</p><p class="text-lg font-bold text-green-600">${formatCurrency(totalPaid)}</p></div><div><p class="text-sm text-gray-500">Saldo Devedor</p><p class="text-lg font-bold text-red-600">${formatCurrency(remainingValue)}</p></div><div><p class="text-sm text-gray-500">Total Juros</p><p class="text-lg font-bold">${formatCurrency(totalInterest)}</p></div>`;
-            const tableHeader = `<thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0"><tr><th class="px-4 py-2 text-center">#</th><th class="px-4 py-2">Vencimento</th><th class="px-4 py-2 text-right">Parcela</th><th class="px-4 py-2 text-right">Juros</th><th class="px-4 py-2 text-right">Amortização</th><th class="px-4 py-2 text-right">Saldo Devedor</th><th class="px-4 py-2 text-center">Status</th></tr></thead>`;
-            const tableBody = debt.installments.map(p => `<tr class="border-b ${p.status === 'paid' ? 'bg-green-50' : 'bg-white'}"><td class="px-4 py-2 text-center font-medium ${p.status==='paid'?'installment-paid':''}">${p.number}</td><td class="px-4 py-2 ${p.status==='paid'?'installment-paid':''}">${formatDate(p.dueDate)}</td><td class="px-4 py-2 text-right font-semibold ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.value)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.interest)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.principal)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.remainingBalance)}</td><td class="px-4 py-2 text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full ${p.status==='paid'?'bg-green-200 text-green-800':'bg-yellow-200 text-yellow-800'}">${p.status==='paid'?'Pago':'Pendente'}</span></td></tr>`).join('');
-            debtAmortizationTableContainer.innerHTML = `<table class="w-full text-sm">${tableHeader}<tbody>${tableBody}</tbody></table>`;
-            document.getElementById('prepayment-amount').value = '';
-            prepaymentSimulationResult.classList.add('hidden');
-            prepaymentSimulationResult.innerHTML = '';
-            currentSimulationResult = null;
-        };
+        // SUBSTITUA A FUNÇÃO ANTIGA POR ESTA:
+const renderDebtManagementList = () => {
+    if (debts.length === 0) { debtListContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhuma dívida cadastrada.</p>'; return; }
+    const typeLabels = { imobiliario: 'Imobiliário', veiculo: 'Veículo', pessoal: 'Pessoal', outros: 'Outros' };
+    debtListContainer.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-4 py-3">Descrição</th><th class="px-4 py-3 text-right">Saldo Devedor</th><th class="px-4 py-3 text-right">Próxima Parcela</th><th class="px-4 py-3 text-center">Ações</th></tr></thead><tbody>${debts.map(debt => { const remainingValue=debt.installments.filter(p=>p.status==='pending').reduce((s,p)=>s+p.value,0); const nextInstallment=debt.installments.find(p=>p.status==='pending'); return `<tr class="border-b hover:bg-gray-50" data-id="${debt.id}" title="Clique para ver detalhes"><td class="px-4 py-3 font-medium text-gray-900">${debt.description} <span class="text-xs font-semibold bg-gray-200 text-gray-700 py-0.5 px-1.5 rounded-full ml-2">${typeLabels[debt.type] || 'Outros'}</span></td><td class="px-4 py-3 text-right font-semibold">${formatCurrency(remainingValue)}</td><td class="px-4 py-3 text-right">${nextInstallment?`${formatCurrency(nextInstallment.value)} em ${formatDate(nextInstallment.dueDate)}`:'Quitada'}</td><td class="px-4 py-3 flex justify-center items-center space-x-2"><button data-action="edit-debt" data-id="${debt.id}" class="font-medium text-blue-600 hover:underline p-1">Editar</button><button data-action="delete-debt" data-id="${debt.id}" class="font-medium text-red-600 hover:underline p-1">Excluir</button></td></tr>`; }).join('')}</tbody></table></div>`;
+};
+
+// SUBSTITUA A FUNÇÃO ANTIGA POR ESTA:
+const renderDebtDetailsModal = () => {
+    const debt = debts.find(d => d.id === viewingDebtId);
+    if (!debt) return;
+    debtDetailsModalTitle.textContent = debt.description;
+    const paidInstallments = debt.installments.filter(p => p.status === 'paid');
+    const totalPaid = paidInstallments.reduce((sum, p) => sum + p.value, 0) + (debt.downPayment || 0);
+    const remainingValue = debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.value, 0);
+    const totalInterest = debt.installments.reduce((sum, p) => sum + p.interest, 0);
+    debtSummaryContainer.innerHTML = `<div><p class="text-sm text-gray-500">Valor Total</p><p class="text-lg font-bold">${formatCurrency(debt.totalAmount)}</p></div><div><p class="text-sm text-gray-500">Total Pago</p><p class="text-lg font-bold text-green-600">${formatCurrency(totalPaid)}</p></div><div><p class="text-sm text-gray-500">Saldo Devedor</p><p class="text-lg font-bold text-red-600">${formatCurrency(remainingValue)}</p></div><div><p class="text-sm text-gray-500">Total Juros</p><p class="text-lg font-bold">${formatCurrency(totalInterest)}</p></div>`;
+    
+    const fgtsContainer = document.getElementById('fgts-amortization-container');
+    fgtsContainer.classList.toggle('hidden', debt.type !== 'imobiliario');
+
+    const tableHeader = `<thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0"><tr><th class="px-4 py-2 text-center">#</th><th class="px-4 py-2">Vencimento</th><th class="px-4 py-2 text-right">Parcela</th><th class="px-4 py-2 text-right">Juros</th><th class="px-4 py-2 text-right">Amortização</th><th class="px-4 py-2 text-right">Saldo Devedor</th><th class="px-4 py-2 text-center">Status</th></tr></thead>`;
+    const tableBody = debt.installments.map(p => `<tr class="border-b ${p.status === 'paid' ? 'bg-green-50' : 'bg-white'}"><td class="px-4 py-2 text-center font-medium ${p.status==='paid'?'installment-paid':''}">${p.number}</td><td class="px-4 py-2 ${p.status==='paid'?'installment-paid':''}">${formatDate(p.dueDate)}</td><td class="px-4 py-2 text-right font-semibold ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.value)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.interest)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.principal)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.remainingBalance)}</td><td class="px-4 py-2 text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full ${p.status==='paid'?'bg-green-200 text-green-800':'bg-yellow-200 text-yellow-800'}">${p.status==='paid'?'Pago':'Pendente'}</span></td></tr>`).join('');
+    debtAmortizationTableContainer.innerHTML = `<table class="w-full text-sm">${tableHeader}<tbody>${tableBody}</tbody></table>`;
+    document.getElementById('prepayment-amount').value = '';
+    prepaymentSimulationResult.classList.add('hidden');
+    prepaymentSimulationResult.innerHTML = '';
+    currentSimulationResult = null;
+};
+        
         const calculateAmortization = (principal, term, monthlyRate, type) => {
             const installments = [];
             let remainingBalance = principal;
