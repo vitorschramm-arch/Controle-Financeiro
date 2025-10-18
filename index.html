@@ -179,7 +179,6 @@
         const transactionTypeBtns = document.querySelectorAll('.transaction-type-btn');
         const isFixedCheckbox = document.getElementById('is-fixed');
         const isVariableContainer = document.getElementById('is-variable-container');
-        // ALTERAÇÃO 3: Selecionando o container do período de recorrência
         const recurrencePeriodContainer = document.getElementById('recurrence-period-container');
         const amountInput = document.getElementById('amount');
         const dateInput = document.getElementById('date');
@@ -192,7 +191,6 @@
         const debtsValueEl = document.getElementById('debts-value');
         const investmentsValueEl = document.getElementById('investments-value');
         const invoiceValueEl = document.getElementById('invoice-value');
-        // ALTERAÇÃO 4: Selecionando os novos elementos da fatura
         const prevInvoiceBtn = document.getElementById('prev-invoice-btn');
         const nextInvoiceBtn = document.getElementById('next-invoice-btn');
         const invoicePeriodDisplay = document.getElementById('invoice-period-display');
@@ -267,10 +265,9 @@
         let fixedTransactionTemplates = [];
         let debts = [];
         let currentPendingDate = new Date();
-        // ALTERAÇÃO 4: Variável para controlar o mês da fatura
         let invoiceMonthOffset = 0; 
         let selectedTransactionType = null;
-        let areValuesVisible = true; // Mantido como true, será invertido no login
+        let areValuesVisible = true;
         let currentSort = { key: 'date', direction: 'desc' };
         let modalTransactionData = [];
         let currentFilteredModalData = [];
@@ -339,7 +336,6 @@
                 loginScreen.classList.add('hidden');
                 appContainer.classList.remove('hidden');
                 loadData().then(() => {
-                    // ALTERAÇÃO 1: Ocultar valores ao carregar o app
                     toggleValuesVisibility();
                 });
             } else {
@@ -380,7 +376,6 @@
             pendingListDashboard.innerHTML = html;
         };
         
-        // ALTERAÇÃO 4: Nova função para calcular o período da fatura
         const getInvoicePeriod = (offset = 0) => {
             const closingDay = settings.invoiceClosingDay || 1;
             const now = new Date();
@@ -404,7 +399,6 @@
             const totalInvestido = completedTransactions.filter(t => t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
             const totalDebtBalance = debts.reduce((sum, debt) => debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.principal, 0) + sum, 0);
             
-            // ALTERAÇÃO 4: Lógica de cálculo da fatura atualizada
             const { startDate, endDate } = getInvoicePeriod(invoiceMonthOffset);
             invoicePeriodDisplay.textContent = endDate.toLocaleString('pt-BR', { month: 'short', year: '2-digit' }).toUpperCase();
             prevInvoiceBtn.disabled = invoiceMonthOffset === 0;
@@ -469,7 +463,6 @@
                         const currentTransactionDate = new Date(transaction.date + 'T12:00:00Z');
                         const nextDate = new Date(currentTransactionDate.getTime());
                         
-                        // ALTERAÇÃO 3: Lógica de criação da próxima recorrência
                         const period = template.recurrencePeriod || 'monthly';
                         switch (period) {
                             case 'daily': nextDate.setUTCDate(nextDate.getUTCDate() + 1); break;
@@ -495,10 +488,6 @@
                 if (transaction.templateId) {
                     const choice = await showGenericModal({title:'Excluir Transação Pendente',message:'Esta é uma transação recorrente. O que você deseja fazer?',buttons:[{text:'Cancelar',value:'cancel',classes:'bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 font-semibold'},{text:'Excluir Somente Esta',value:'one',classes:'bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-semibold'},{text:'Parar Recorrência',value:'all',classes:'bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-semibold'}]});
                     if (choice === 'one') {
-                         // A lógica para criar a próxima instância ao aprovar já lida com a continuidade.
-                         // Aqui apenas removemos a atual, sem parar a recorrência.
-                         // A próxima será criada quando a anterior a esta for aprovada.
-                         // Se nenhuma anterior existir, a recorrência para. Para corrigir isso, criamos a próxima aqui.
                         const template=fixedTransactionTemplates.find(t=>t.id===transaction.templateId);
                         if(template){
                             const currentTransactionDate=new Date(transaction.date+'T12:00:00Z');
@@ -608,7 +597,6 @@
             isFixedCheckbox.checked = transaction.isFixed;
             isFixedCheckbox.disabled = true;
             isVariableContainer.classList.toggle('hidden', !transaction.isFixed);
-            // ALTERAÇÃO 3: Lógica para exibir/ocultar período de recorrência na edição
             recurrencePeriodContainer.classList.toggle('hidden', !transaction.isFixed);
             if (transaction.isFixed && transaction.recurrencePeriod) {
                 document.getElementById('recurrence-period').value = transaction.recurrencePeriod;
@@ -799,6 +787,8 @@
 
         const openForecastModal = () => { calculateAndRenderForecast(); forecastModal.classList.remove('hidden'); };
         const closeForecastModal = () => forecastModal.classList.add('hidden');
+        
+        // GRÁFICO - CORREÇÃO APLICADA AQUI
         const calculateAndRenderForecast = () => {
             const completed = transactions.filter(t => t.status === 'completed' && !t.templateId);
             const historicalMonths = new Set();
@@ -821,19 +811,33 @@
             const labels = []; const incomeData = []; const expenseData = []; const balanceData = [];
             const completedTransactions = transactions.filter(t => t.status === 'completed');
             const currentBalance = completedTransactions.filter(t => t.type === 'entrada').reduce((acc, t) => acc + t.amount, 0) - completedTransactions.filter(t => t.type === 'saida' || t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
+            
+            // Variáveis para acumular os valores projetados
             let cumulativeBalance = currentBalance;
+            let cumulativeIncome = 0; // Começa a contar a receita projetada a partir de zero
+            let cumulativeExpenses = 0; // Começa a contar a despesa projetada a partir de zero
+
             forecastDataForExport = [];
             for (let i = 1; i <= 12; i++) {
                 const futureDate = new Date(); futureDate.setMonth(futureDate.getMonth() + i);
                 labels.push(futureDate.toLocaleString('pt-BR', { month: 'short', year: '2-digit' }));
+                
+                // Acumula os valores a cada mês
                 cumulativeBalance += totalAvgBalance;
-                incomeData.push(totalAvgIncome); expenseData.push(totalAvgExpense + totalAvgInvestment); balanceData.push(cumulativeBalance);
-                forecastDataForExport.push({ 'Mês': futureDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }), 'Receita Projetada': totalAvgIncome, 'Despesa Projetada': totalAvgExpense + totalAvgInvestment, 'Saldo Projetado': cumulativeBalance });
+                cumulativeIncome += totalAvgIncome;
+                cumulativeExpenses += (totalAvgExpense + totalAvgInvestment);
+                
+                // Adiciona os valores acumulados aos arrays do gráfico
+                incomeData.push(cumulativeIncome); 
+                expenseData.push(cumulativeExpenses); 
+                balanceData.push(cumulativeBalance);
+                
+                forecastDataForExport.push({ 'Mês': futureDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }), 'Receita Projetada': cumulativeIncome, 'Despesa Projetada': cumulativeExpenses, 'Saldo Projetado': cumulativeBalance });
             }
             if(forecastChartInstance) forecastChartInstance.destroy();
-            // ALTERAÇÃO 5: Removido `hidden: true` das receitas e despesas
-            forecastChartInstance = new Chart(forecastChartCanvas, { type: 'line', data: { labels: labels, datasets: [ { label: 'Saldo', data: balanceData, borderColor: '#3b82f6', backgroundColor: '#3b82f620', fill: true, tension: 0.1 }, { label: 'Receitas', data: incomeData, borderColor: '#22c55e' }, { label: 'Despesas', data: expenseData, borderColor: '#ef4444' } ] }, options: { responsive: true, maintainAspectRatio: false } });
+            forecastChartInstance = new Chart(forecastChartCanvas, { type: 'line', data: { labels: labels, datasets: [ { label: 'Saldo', data: balanceData, borderColor: '#3b82f6', backgroundColor: '#3b82f620', fill: true, tension: 0.1 }, { label: 'Receitas', data: incomeData, borderColor: '#22c55e', tension: 0.1 }, { label: 'Despesas', data: expenseData, borderColor: '#ef4444', tension: 0.1 } ] }, options: { responsive: true, maintainAspectRatio: false } });
         };
+
         const exportForecastDataToXLSX = () => {
             if(forecastDataForExport.length===0){showGenericModal({type:'alert',title:'Aviso',message:'Não há dados para exportar.'});return}
             const worksheet=XLSX.utils.json_to_sheet(forecastDataForExport);const workbook=XLSX.utils.book_new();XLSX.utils.book_append_sheet(workbook,worksheet,"Previsao_Futura");XLSX.writeFile(workbook,"previsao_financeira.xlsx");
@@ -1024,7 +1028,6 @@
         isFixedCheckbox.addEventListener('change', () => { 
             const isChecked = isFixedCheckbox.checked;
             isVariableContainer.classList.toggle('hidden', !isChecked);
-            // ALTERAÇÃO 3: Exibe/oculta o seletor de período
             recurrencePeriodContainer.classList.toggle('hidden', !isChecked);
         });
         categorySelect.addEventListener('change', populateSubcategories);
@@ -1048,12 +1051,10 @@
         nextMonthBtn.addEventListener('click', () => { currentPendingDate.setMonth(currentPendingDate.getMonth() + 1); updateDashboard(); });
         transactionTypeBtns.forEach(btn => btn.addEventListener('click', () => { transactionTypeBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedTransactionType = btn.dataset.type; updateFormForType(selectedTransactionType); }));
         
-        // ALTERAÇÃO 4: Eventos para navegação da fatura
         prevInvoiceBtn.addEventListener('click', () => { if (invoiceMonthOffset > 0) { invoiceMonthOffset--; updateDashboard(); } });
         nextInvoiceBtn.addEventListener('click', () => { invoiceMonthOffset++; updateDashboard(); });
 
         cards.forEach(card => card.addEventListener('click', (e) => {
-            // Previne que o clique nos botões de navegação da fatura abra o modal
             if (e.target.closest('#prev-invoice-btn') || e.target.closest('#next-invoice-btn')) {
                 return;
             }
@@ -1097,7 +1098,6 @@
                     const isFixed = isFixedCheckbox.checked;
                     transactionData.isFixed = isFixed;
                     transactionData.isVariable = isFixed ? document.getElementById('is-variable').checked : false;
-                    // ALTERAÇÃO 3: Salva o período de recorrência
                     transactionData.recurrencePeriod = isFixed ? document.getElementById('recurrence-period').value : null;
 
                     if (isFixed) {
@@ -1194,7 +1194,6 @@
         pendingListDashboard.addEventListener('click', handlePendingAction);
         closeDebtManagementModalBtn.addEventListener('click', closeDebtManagementModal);
         debtManagementModal.addEventListener('click', (e) => { if(e.target === debtManagementModal) closeDebtManagementModal() });
-        // ALTERAÇÃO 2: Fechar modal de gerenciamento ao abrir o de adição
         addNewDebtBtn.addEventListener('click', () => {
             closeDebtManagementModal();
             openAddEditDebtModal();
