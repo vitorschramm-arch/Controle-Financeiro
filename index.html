@@ -875,12 +875,20 @@
             if(!isValid){debtFormErrorMessage.innerHTML=errors.join('<br>');debtFormErrorMessage.classList.remove('hidden')}else{debtFormErrorMessage.classList.add('hidden')}
             return isValid;
         };
+
+        // CORREÇÃO: Função de exclusão de dívidas mais robusta
         const handleDebtDeletion = async (debtId) => {
-            const confirmed = await showGenericModal({type:'confirm',title:'Excluir Dívida',message:'Tem certeza? Todas as parcelas pendentes associadas serão removidas.'});
+            const confirmed = await showGenericModal({type:'confirm', title:'Excluir Dívida', message:'Tem certeza? Isso removerá a dívida e todas as suas parcelas pendentes.'});
             if (confirmed) {
-                transactions = transactions.filter(t => t.debtId !== debtId || t.status === 'completed');
+                // Remove as transações PENDENTES associadas à dívida
+                transactions = transactions.filter(t => !(t.debtId === debtId && t.status === 'pending'));
+                
+                // Remove a dívida da lista de dívidas
                 debts = debts.filter(d => d.id !== debtId);
-                await saveData(); updateDashboard(); renderDebtManagementList();
+                
+                await saveData(); 
+                updateDashboard(); 
+                renderDebtManagementList(); // Atualiza a lista de dívidas no modal
             }
         };
         
@@ -982,7 +990,9 @@
             }
         });
 
+        // CORREÇÃO: Adicionando o event listener para o botão de configurações
         settingsBtn.addEventListener('click', openSettingsModal);
+        
         closeSettingsModalBtn.addEventListener('click', closeSettingsModal);
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
         settingsForm.addEventListener('submit', async (e) => {
@@ -1017,41 +1027,68 @@
         closeDebtDetailsModalBtn.addEventListener('click', closeDebtDetailsModal);
         debtDetailsModal.addEventListener('click', (e) => { if(e.target === debtDetailsModal) closeDebtDetailsModal() });
         debtListContainer.addEventListener('click', (e) => {
-            const row = e.target.closest('tr[data-id]');
-            if(row){const debtId=parseInt(row.dataset.id);openDebtDetailsModal(debtId)}
-            const deleteBtn = e.target.closest('button[data-action="delete-debt"]');
-            if(deleteBtn){const debtId=parseInt(deleteBtn.dataset.id);handleDebtDeletion(debtId)}
             const editBtn = e.target.closest('button[data-action="edit-debt"]');
-            if(editBtn){const debtId=parseInt(editBtn.dataset.id);openAddEditDebtModal(debtId)}
+            if(editBtn){
+                const debtId=parseInt(editBtn.dataset.id);
+                openAddEditDebtModal(debtId);
+                return;
+            }
+
+            const deleteBtn = e.target.closest('button[data-action="delete-debt"]');
+            if(deleteBtn){
+                const debtId=parseInt(deleteBtn.dataset.id);
+                handleDebtDeletion(debtId);
+                return;
+            }
+
+            const row = e.target.closest('tr[data-id]');
+            if(row){
+                const debtId=parseInt(row.dataset.id);
+                openDebtDetailsModal(debtId);
+            }
         });
         debtForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!validateDebtForm()) return;
-            const totalAmount = parseFloat(document.getElementById('debt-total-amount').value);
-            const downPayment = parseFloat(document.getElementById('debt-down-payment').value) || 0;
-            const principal = totalAmount - downPayment;
-            const term = parseInt(document.getElementById('debt-installments-count').value);
-            const rate = parseFloat(document.getElementById('debt-interest-rate').value) / 100;
-            const ratePeriod = document.getElementById('debt-interest-period').value;
-            const startDate = document.getElementById('debt-start-date').value;
-            const amortizationType = debtForm.querySelector('input[name="amortization-type"]:checked').value;
-            const description = document.getElementById('debt-description').value;
-            const monthlyRate = ratePeriod === 'yearly' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
-            const installments = calculateAmortization(principal, term, monthlyRate, amortizationType);
-            const newDebtId = Date.now();
-            const newDebt = { id: newDebtId, description, totalAmount, downPayment, financedAmount: principal, installmentsCount: term, interestRate: monthlyRate, interestPeriod: 'monthly', startDate, amortizationType, installments: [] };
-            const firstInstallmentDate = new Date(startDate + 'T12:00:00Z');
-            installments.forEach((inst, index) => {
-                const installmentDate = new Date(firstInstallmentDate.getTime());
-                installmentDate.setUTCMonth(installmentDate.getUTCMonth() + index);
-                const dueDate = installmentDate.toISOString().split('T')[0];
-                newDebt.installments.push({ ...inst, dueDate, status: 'pending' });
-                transactions.push({ id: Date.now() + index, debtId: newDebtId, description: `${description} - Parcela ${inst.number}/${term}`, amount: inst.value, date: dueDate, type: 'saida', category: 'Dívidas', subcategory: 'Parcela Financiamento', status: 'pending', installmentNumber: inst.number, installmentsTotal: term });
-            });
-            if (downPayment > 0) {
-                transactions.push({ id: Date.now() - 1, debtId: newDebtId, description: `Entrada: ${description}`, amount: downPayment, date: startDate, type: 'saida', category: 'Dívidas', subcategory: 'Entrada Financiamento', status: 'completed' });
+            if(editingDebtId) { // Se estiver editando, só permite mudar a descrição
+                const newDescription = document.getElementById('debt-description').value;
+                if(!newDescription) {
+                    debtFormErrorMessage.innerHTML = 'A descrição é obrigatória.';
+                    debtFormErrorMessage.classList.remove('hidden');
+                    return;
+                }
+                const debtIndex = debts.findIndex(d => d.id === editingDebtId);
+                if(debtIndex > -1) {
+                    debts[debtIndex].description = newDescription;
+                }
+            } else { // Lógica para adicionar nova dívida
+                if (!validateDebtForm()) return;
+                const totalAmount = parseFloat(document.getElementById('debt-total-amount').value);
+                const downPayment = parseFloat(document.getElementById('debt-down-payment').value) || 0;
+                const principal = totalAmount - downPayment;
+                const term = parseInt(document.getElementById('debt-installments-count').value);
+                const rate = (parseFloat(document.getElementById('debt-interest-rate').value) || 0) / 100;
+                const ratePeriod = document.getElementById('debt-interest-period').value;
+                const startDate = document.getElementById('debt-start-date').value;
+                const amortizationType = debtForm.querySelector('input[name="amortization-type"]:checked').value;
+                const description = document.getElementById('debt-description').value;
+                const monthlyRate = ratePeriod === 'yearly' ? Math.pow(1 + rate, 1 / 12) - 1 : rate;
+                const installments = calculateAmortization(principal, term, monthlyRate, amortizationType);
+                const newDebtId = Date.now();
+                const newDebt = { id: newDebtId, description, totalAmount, downPayment, financedAmount: principal, installmentsCount: term, interestRate: monthlyRate, interestPeriod: 'monthly', startDate, amortizationType, installments: [] };
+                const firstInstallmentDate = new Date(startDate + 'T12:00:00Z');
+                installments.forEach((inst, index) => {
+                    const installmentDate = new Date(firstInstallmentDate.getTime());
+                    installmentDate.setUTCMonth(installmentDate.getUTCMonth() + index);
+                    const dueDate = installmentDate.toISOString().split('T')[0];
+                    newDebt.installments.push({ ...inst, dueDate, status: 'pending' });
+                    transactions.push({ id: Date.now() + index, debtId: newDebtId, description: `${description} - Parcela ${inst.number}/${term}`, amount: inst.value, date: dueDate, type: 'saida', category: 'Dívidas', subcategory: 'Parcela Financiamento', status: 'pending', installmentNumber: inst.number, installmentsTotal: term });
+                });
+                if (downPayment > 0) {
+                    transactions.push({ id: Date.now() - 1, debtId: newDebtId, description: `Entrada: ${description}`, amount: downPayment, date: startDate, type: 'saida', category: 'Dívidas', subcategory: 'Entrada Financiamento', status: 'completed' });
+                }
+                debts.push(newDebt);
             }
-            debts.push(newDebt);
+            
             await saveData();
             updateDashboard();
             closeAddEditDebtModal();
