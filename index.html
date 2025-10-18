@@ -833,37 +833,42 @@ const updateDashboard = () => {
         const openDebtManagementModal = () => { renderDebtManagementList(); debtManagementModal.classList.remove('hidden'); };
         const closeDebtManagementModal = () => debtManagementModal.classList.add('hidden');
         
-        const openAddEditDebtModal = (debtId = null) => {
-            debtForm.reset();
-            debtForm.querySelectorAll('.invalid-field').forEach(el => el.classList.remove('invalid-field'));
-            document.getElementById('debt-form-error-message').classList.add('hidden');
-            editingDebtId = debtId;
-            
-            const fields = ['debt-description', 'debt-total-amount', 'debt-down-payment', 'debt-installments-count', 'debt-interest-rate', 'debt-interest-period', 'debt-start-date'];
-            fields.forEach(id => { document.getElementById(id).disabled = false; });
-            debtForm.querySelectorAll('input[name="amortization-type"]').forEach(radio => radio.disabled = false);
+        // SUBSTITUA A FUNÇÃO ANTIGA POR ESTA:
+const openAddEditDebtModal = (debtId = null) => {
+    debtForm.reset();
+    debtForm.querySelectorAll('.invalid-field').forEach(el => el.classList.remove('invalid-field'));
+    document.getElementById('debt-form-error-message').classList.add('hidden');
+    editingDebtId = debtId;
+    
+    const fields = ['debt-description', 'debt-type', 'debt-total-amount', 'debt-down-payment', 'debt-installments-count', 'debt-interest-rate', 'debt-interest-period', 'debt-start-date'];
+    fields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).disabled = false; });
+    debtForm.querySelectorAll('input[name="amortization-type"]').forEach(radio => radio.disabled = false);
 
-            if(debtId){
-                const debt = debts.find(d => d.id === debtId);
-                if(!debt) return;
-                addEditDebtModalTitle.textContent = "Editar Dívida";
-                debtForm.querySelector('button[type="submit"]').textContent = "Salvar Alterações (Recalcular)";
-                document.getElementById('debt-description').value = debt.description;
-                document.getElementById('debt-total-amount').value = debt.totalAmount;
-                document.getElementById('debt-down-payment').value = debt.downPayment;
-                document.getElementById('debt-installments-count').value = debt.installmentsCount;
-                document.getElementById('debt-start-date').value = debt.startDate;
-                document.getElementById('debt-interest-rate').value = (debt.interestRate * 100).toFixed(2);
-                document.getElementById('debt-interest-period').value = debt.interestPeriod || 'monthly';
-                debtForm.querySelector(`input[name="amortization-type"][value="${debt.amortizationType}"]`).checked = true;
-            } else {
-                addEditDebtModalTitle.textContent = "Nova Dívida";
-                debtForm.querySelector('button[type="submit"]').textContent = "Salvar Dívida";
-                fields.forEach(id => { document.getElementById(id).value = ''; });
-                debtForm.querySelector('input[name="amortization-type"][value="PRICE"]').checked = true;
-            }
-            addEditDebtModal.classList.remove('hidden');
-        };
+    if(debtId){
+        const debt = debts.find(d => d.id === debtId);
+        if(!debt) return;
+        
+        addEditDebtModalTitle.textContent = "Editar Dívida";
+        debtForm.querySelector('button[type="submit"]').textContent = "Salvar Alterações (Recalcular)";
+        
+        document.getElementById('debt-description').value = debt.description;
+        document.getElementById('debt-type').value = debt.type || 'outros';
+        document.getElementById('debt-total-amount').value = debt.totalAmount;
+        document.getElementById('debt-down-payment').value = debt.downPayment;
+        document.getElementById('debt-installments-count').value = debt.installmentsCount;
+        document.getElementById('debt-start-date').value = debt.startDate;
+        document.getElementById('debt-interest-rate').value = (debt.interestRate * 100).toFixed(2);
+        document.getElementById('debt-interest-period').value = debt.interestPeriod || 'monthly';
+        debtForm.querySelector(`input[name="amortization-type"][value="${debt.amortizationType}"]`).checked = true;
+    } else {
+        addEditDebtModalTitle.textContent = "Nova Dívida";
+        debtForm.querySelector('button[type="submit"]').textContent = "Salvar Dívida";
+        fields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
+        document.getElementById('debt-type').value = 'pessoal';
+        debtForm.querySelector('input[name="amortization-type"][value="PRICE"]').checked = true;
+    }
+    addEditDebtModal.classList.remove('hidden');
+};
         
         const closeAddEditDebtModal = () => addEditDebtModal.classList.add('hidden');
         const openDebtDetailsModal = (debtId) => { viewingDebtId = debtId; renderDebtDetailsModal(); debtDetailsModal.classList.remove('hidden'); };
