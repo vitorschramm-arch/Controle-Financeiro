@@ -282,7 +282,10 @@
                     transactions = data.transactions || [];
                     fixedTransactionTemplates = data.fixedTransactionTemplates || [];
                     debts = data.debts || [];
-                    settings = data.settings || { ...defaultSettings };
+                    // CORREÇÃO APLICADA AQUI
+                    // Garante que 'settings' e 'settings.budgets' sejam sempre objetos
+                    settings = { ...defaultSettings, ...(data.settings || {}) };
+                    settings.budgets = settings.budgets || {}; 
                     categoryData = data.categoryData || { ...defaultCategories };
                 } else {
                     await saveData(); 
