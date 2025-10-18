@@ -567,14 +567,6 @@
                 if (config.type === 'prompt') genericModalInput.focus();
             });
         };
-
-        const openSettingsModal = () => {
-            invoiceClosingDayInput.value = settings.invoiceClosingDay;
-            savingsGoalInput.value = settings.savingsGoal > 0 ? settings.savingsGoal : '';
-            renderCategoryManagement();
-            settingsModal.classList.remove('hidden');
-        };
-        const closeSettingsModal = () => settingsModal.classList.add('hidden');
         
         const renderCategoryManagement = () => {
             categoryManagementContainer.innerHTML = '';
@@ -985,11 +977,29 @@
             }
         });
 
-        // *** CORREÇÃO DEFINITIVA DO BOTÃO DE CONFIGURAÇÕES ***
+        // =============================================================
+        // LÓGICA DO MODAL DE CONFIGURAÇÕES - CORREÇÃO DEFINITIVA
+        // =============================================================
+        const openSettingsModal = () => {
+            invoiceClosingDayInput.value = settings.invoiceClosingDay;
+            savingsGoalInput.value = settings.savingsGoal > 0 ? settings.savingsGoal : '';
+            renderCategoryManagement();
+            settingsModal.classList.remove('hidden');
+        };
+
         settingsBtn.addEventListener('click', openSettingsModal);
         
-        closeSettingsModalBtn.addEventListener('click', closeSettingsModal);
-        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
+        closeSettingsModalBtn.addEventListener('click', () => {
+            settingsModal.classList.add('hidden');
+        });
+        
+        settingsModal.addEventListener('click', (e) => { 
+            if (e.target === settingsModal) {
+                settingsModal.classList.add('hidden');
+            }
+        });
+        // =============================================================
+
         settingsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             settings.invoiceClosingDay = parseInt(invoiceClosingDayInput.value) || 1;
@@ -998,8 +1008,9 @@
             await saveData();
             updateDashboard();
             await showGenericModal({ type: 'alert', title: 'Sucesso', message: 'Configurações salvas!'});
-            closeSettingsModal();
+            settingsModal.classList.add('hidden');
         });
+
         budgetBarsContainer.addEventListener('click', (e) => {
             const regularizeButton = e.target.closest('button[data-action="regularize"]');
             if(regularizeButton) { e.stopPropagation(); openSettingsModal(); return; }
