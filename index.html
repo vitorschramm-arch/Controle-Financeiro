@@ -371,11 +371,9 @@
             updateOverviewCard();
         };
 
-        // INÍCIO: Adição do botão de exclusão na tabela
         const generateTransactionListHTML = (data, cardType) => {
             if(data.length===0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
             let headers = [{key:'date',label:'Data'},{key:'description',label:'Descrição'},{key:'category',label:'Categoria'},{key:'amount',label:'Valor'}];
-            // Adiciona a coluna Ações apenas para o Extrato Completo
             if (cardType === 'balance') {
                 headers.push({key:'actions', label: 'Ações'});
             }
@@ -384,9 +382,10 @@
             const rowsHTML = data.map(t => {
                 let actionCell = '';
                 if (cardType === 'balance') {
+                    // CORREÇÃO: Removido o onclick="event.stopPropagation()"
                     actionCell = `<td class="p-3 text-center">
-                                    <button data-action="delete-transaction" data-id="${t.id}" onclick="event.stopPropagation()" class="p-1 text-gray-400 hover:text-red-600 rounded-full" title="Excluir Transação">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    <button data-action="delete-transaction" data-id="${t.id}" class="p-1 text-gray-400 hover:text-red-600 rounded-full" title="Excluir Transação">
+                                        <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </td>`;
                 }
@@ -401,7 +400,6 @@
             
             return `<div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-100"><tr>${headerHTML}</tr></thead><tbody id="transaction-list-body">${rowsHTML}</tbody></table></div>`;
         };
-        // FIM: Adição do botão de exclusão
         
         const handlePendingAction = async (e) => {
             const button = e.target.closest('button[data-action]');
@@ -467,7 +465,7 @@
             if(totalEl){totalEl.textContent=`Total Filtrado: ${formatCurrency(totalAmount)}`;totalEl.className=totalAmount>=0?'font-bold text-green-600':'font-bold text-red-600'}
             filteredData.sort((a,b)=>{let valA=a[currentSort.key];let valB=b[currentSort.key];if(typeof valA==='string'){valA=valA.toLowerCase();valB=valB.toLowerCase()}if(valA<valB)return currentSort.direction==='asc'?-1:1;if(valA>valB)return currentSort.direction==='asc'?1:-1;return 0});
             currentFilteredModalData = filteredData;
-            transactionsModalList.innerHTML = generateTransactionListHTML(filteredData, cardType); // Passa o cardType
+            transactionsModalList.innerHTML = generateTransactionListHTML(filteredData, cardType);
             transactionsModalList.querySelectorAll('.sortable-header').forEach(header => {
                 header.addEventListener('click', () => {
                     const sortKey = header.dataset.sortKey;
@@ -479,7 +477,7 @@
 
         const openTransactionsModal = (config) => {
             transactionsModalTitle.textContent = config.title;
-            modalTransactionData = config.transactions;
+            modalTransactionData = [...config.transactions];
             transactionsModalFilters.innerHTML = '';
             transactionsModalList.innerHTML = '';
             activeFilters = { type: 'all', category: 'all', subcategory: 'all', startDate: '', endDate: '' };
@@ -1011,65 +1009,55 @@
             openTransactionsModal({ title: `Lançamentos de ${category}`, transactions: transactionsForCategory, filters: ['subcategory'] });
         });
         
-        // INÍCIO: Lógica para exclusão de transação no modal
-        const handleDeleteTransaction = async (e) => {
+        // CORREÇÃO: Unificando os event listeners da lista de transações
+        transactionsModalList.addEventListener('click', async (e) => {
             const deleteButton = e.target.closest('button[data-action="delete-transaction"]');
-            if (!deleteButton) return;
+            const row = e.target.closest('tr[data-id]');
 
-            const transactionId = parseInt(deleteButton.dataset.id);
-            const transactionIndex = transactions.findIndex(t => t.id === transactionId);
-            if (transactionIndex === -1) return;
+            if (deleteButton) {
+                // Lógica de Exclusão
+                const transactionId = parseInt(deleteButton.dataset.id);
+                const transactionIndex = transactions.findIndex(t => t.id === transactionId);
+                if (transactionIndex === -1) return;
 
-            const transaction = transactions[transactionIndex];
-            
-            let confirmed = false;
-            if (transaction.debtId) {
-                if(transaction.subcategory === 'Entrada Financiamento') {
-                    await showGenericModal({ type: 'alert', title: 'Ação Bloqueada', message: 'A entrada de um financiamento não pode ser excluída. Para corrigir, exclua a dívida inteira e a recadastre.' });
-                    return;
+                const transaction = transactions[transactionIndex];
+                
+                let confirmed = false;
+                if (transaction.debtId) {
+                    if(transaction.subcategory === 'Entrada Financiamento') {
+                        await showGenericModal({ type: 'alert', title: 'Ação Bloqueada', message: 'A entrada de um financiamento não pode ser excluída. Para corrigir, exclua a dívida inteira e a recadastre.' });
+                        return;
+                    }
+                    confirmed = await showGenericModal({ type: 'confirm', title: 'Excluir Pagamento de Dívida', message: 'Este é um pagamento de dívida. Excluí-lo marcará a parcela como "pendente" novamente. Deseja continuar?' });
+                } else {
+                    confirmed = await showGenericModal({ type: 'confirm', title: 'Excluir Transação', message: 'Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.' });
                 }
-                confirmed = await showGenericModal({ type: 'confirm', title: 'Excluir Pagamento de Dívida', message: 'Este é um pagamento de dívida. Excluí-lo marcará a parcela como "pendente" novamente. Deseja continuar?' });
-            } else {
-                confirmed = await showGenericModal({ type: 'confirm', title: 'Excluir Transação', message: 'Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.' });
-            }
 
-            if (confirmed) {
-                // Se for uma parcela de dívida, reverte o status da parcela
-                if (transaction.debtId && transaction.installmentNumber) {
-                    const debt = debts.find(d => d.id === transaction.debtId);
-                    if (debt) {
-                        const installment = debt.installments.find(p => p.number === transaction.installmentNumber);
-                        if (installment) {
-                            installment.status = 'pending';
+                if (confirmed) {
+                    if (transaction.debtId && transaction.installmentNumber) {
+                        const debt = debts.find(d => d.id === transaction.debtId);
+                        if (debt) {
+                            const installment = debt.installments.find(p => p.number === transaction.installmentNumber);
+                            if (installment) {
+                                installment.status = 'pending';
+                            }
                         }
                     }
+
+                    transactions.splice(transactionIndex, 1);
+                    modalTransactionData = modalTransactionData.filter(t => t.id !== transactionId);
+
+                    await saveData();
+                    updateDashboard();
+                    applyFiltersAndRender(modalTransactionData, 'balance');
                 }
-
-                // Remove a transação da lista principal
-                transactions.splice(transactionIndex, 1);
-
-                // Remove a transação da lista do modal (para atualização visual imediata)
-                const modalTransactionIndex = modalTransactionData.findIndex(t => t.id === transactionId);
-                if (modalTransactionIndex > -1) {
-                    modalTransactionData.splice(modalTransactionIndex, 1);
-                }
-
-                await saveData();
-                updateDashboard();
-                // Re-renderiza a lista do modal com os dados atualizados
-                applyFiltersAndRender(modalTransactionData, 'balance');
+            } else if (row) {
+                // Lógica de Edição
+                const transactionId = parseInt(row.dataset.id);
+                openModalForEdit(transactionId);
             }
-        };
-        transactionsModalList.addEventListener('click', handleDeleteTransaction);
-        // FIM: Lógica para exclusão de transação no modal
-        
-        transactionsModalList.addEventListener('click', (e) => { 
-            const row = e.target.closest('tr[data-id]'); 
-            if(row && !e.target.closest('button')) { 
-                const transactionId=parseInt(row.dataset.id); 
-                openModalForEdit(transactionId); 
-            } 
         });
+
         categoryManagementContainer.addEventListener('click', handleCategoryManagementAction);
         categoryManagementContainer.addEventListener('change', handleCategoryManagementAction);
         pendingListDashboard.addEventListener('click', handlePendingAction);
