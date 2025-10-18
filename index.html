@@ -2340,466 +2340,138 @@ debtForm.addEventListener('submit', async (e) => {
 
 });
 
-        // INÍCIO: Lógica de Simulação e Adiantamento
-
+       // INÍCIO: Lógica de Simulação, Adiantamento e FGTS
         simulatePrepaymentBtn.addEventListener('click', () => {
-
             const amount = parseFloat(document.getElementById('prepayment-amount').value);
-
             const strategy = document.getElementById('prepayment-strategy').value;
-
             const debt = debts.find(d => d.id === viewingDebtId);
-
             if (!debt || isNaN(amount) || amount <= 0) {
-
                 prepaymentSimulationResult.innerHTML = `<strong class="text-red-600">Por favor, insira um valor válido.</strong>`;
-
                 prepaymentSimulationResult.classList.remove('hidden');
-
                 currentSimulationResult = null;
-
                 return;
-
             }
-
-
-
             const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-
             const remainingPrincipal = pendingInstallments.reduce((sum, p) => sum + p.principal, 0);
-
-
-
             if (amount > remainingPrincipal) {
-
                 prepaymentSimulationResult.innerHTML = `<strong class="text-red-600">O valor a adiantar não pode ser maior que o saldo devedor principal (${formatCurrency(remainingPrincipal)}).</strong>`;
-
                 prepaymentSimulationResult.classList.remove('hidden');
-
                 currentSimulationResult = null;
-
                 return;
-
             }
-
-            
-
             let resultText = '';
-
             currentSimulationResult = { amount, strategy, debtId: debt.id, changes: {} };
-
-
-
             if (strategy === 'reduce_term') {
-
                 let remainingAmount = amount;
-
                 let installmentsPaidOff = 0;
-
                 let interestSaved = 0;
-
                 const installmentsToPay = [...pendingInstallments].reverse();
-
-
-
                 for (const inst of installmentsToPay) {
-
                     if (remainingAmount >= inst.principal) {
-
                         remainingAmount -= inst.principal;
-
                         installmentsPaidOff++;
-
                         interestSaved += inst.interest;
-
-                    } else {
-
-                        break; 
-
-                    }
-
+                    } else break;
                 }
-
                 resultText = `Com ${formatCurrency(amount)}, você quitará <strong>${installmentsPaidOff} parcelas</strong> do final do contrato. A economia total em juros será de <strong>${formatCurrency(interestSaved)}</strong>.`;
-
                 currentSimulationResult.changes = { type: 'reduce_term', installmentsPaidOff };
-
-            } else { // reduce_installment
-
+            } else {
                 const newPrincipal = remainingPrincipal - amount;
-
                 const newInstallments = calculateAmortization(newPrincipal, pendingInstallments.length, debt.interestRate, debt.amortizationType);
-
                 const oldInstallmentValue = pendingInstallments[0].value;
-
                 const newInstallmentValue = newInstallments[0].value;
-
                 const oldTotalInterest = pendingInstallments.reduce((sum, p) => sum + p.interest, 0);
-
                 const newTotalInterest = newInstallments.reduce((sum, p) => sum + p.interest, 0);
-
                 const interestSaved = oldTotalInterest - newTotalInterest;
-
-                
-
                 resultText = `O valor das suas próximas <strong>${pendingInstallments.length} parcelas</strong> será reduzido de ${formatCurrency(oldInstallmentValue)} para <strong>${formatCurrency(newInstallmentValue)}</strong>. A economia total em juros será de <strong>${formatCurrency(interestSaved)}</strong>.`;
-
                 currentSimulationResult.changes = { type: 'reduce_installment', newInstallments };
-
             }
-
-            
-
             prepaymentSimulationResult.innerHTML = resultText;
-
             prepaymentSimulationResult.classList.remove('hidden');
-
         });
-
-
 
         confirmPrepaymentBtn.addEventListener('click', async () => {
-
             if (!currentSimulationResult) {
-
                 await showGenericModal({type: 'alert', title: 'Ação Necessária', message: 'Por favor, clique em "Simular" antes de confirmar.'});
-
                 return;
-
             }
+            const defaultDescription = `Adiantamento de Parcela: ${debts.find(d => d.id === currentSimulationResult.debtId)?.description}`;
+            const defaultSubcategory = 'Adiantamento de Parcela';
 
+            const {
+                amount,
+                debtId,
+                changes,
+                description = defaultDescription,
+                subcategory = defaultSubcategory
+            } = currentSimulationResult;
 
-
-            const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Adiantamento', message: `Confirma o adiantamento de ${formatCurrency(currentSimulationResult.amount)}? Uma nova transação será criada.`});
-
+            const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Adiantamento', message: `Confirma a operação de ${formatCurrency(amount)}? Uma nova transação será criada.`});
             if (!confirmed) return;
 
-
-
-            const debt = debts.find(d => d.id === currentSimulationResult.debtId);
-
+            const debt = debts.find(d => d.id === debtId);
             if (!debt) return;
-
-
-
-            const changes = currentSimulationResult.changes;
-
-
-
+            
             if (changes.type === 'reduce_term') {
-
                 const paidOffCount = changes.installmentsPaidOff;
-
                 const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-
                 const paidOffInstallments = pendingInstallments.slice(-paidOffCount);
-
                 const paidOffNumbers = paidOffInstallments.map(p => p.number);
-
-                
-
-                // Remove as transações pendentes correspondentes
-
                 transactions = transactions.filter(t => !(t.debtId === debt.id && paidOffNumbers.includes(t.installmentNumber)));
-
-                
-
-                // Remove as parcelas da dívida
-
                 debt.installments = debt.installments.filter(p => p.status === 'paid' || !paidOffNumbers.includes(p.number));
-
-
-
             } else { // reduce_installment
-
                 const newInstallmentsData = changes.newInstallments;
-
                 const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-
                 const firstPendingNumber = pendingInstallments[0].number;
-
-                
-
-                // Remove as transações pendentes antigas
-
                 transactions = transactions.filter(t => !(t.debtId === debt.id && t.status === 'pending'));
-
-
-
-                // Atualiza as parcelas na dívida e cria novas transações
-
                 debt.installments = debt.installments.filter(p => p.status === 'paid');
-
                 newInstallmentsData.forEach((newInst, index) => {
-
                     const installmentNumber = firstPendingNumber + index;
-
                     const installmentDate = new Date(pendingInstallments[index].dueDate + 'T12:00:00Z');
-
                     const dueDate = installmentDate.toISOString().split('T')[0];
-
-                    
-
                     debt.installments.push({ ...newInst, number: installmentNumber, dueDate, status: 'pending' });
-
                     transactions.push({ id: Date.now() + index, debtId: debt.id, description: `${debt.description} - Parcela ${installmentNumber}/${debt.installmentsCount}`, amount: newInst.value, date: dueDate, type: 'saida', category: 'Dívidas', subcategory: 'Parcela Financiamento', status: 'pending', isFixed: true, isVariable: false, installmentNumber, installmentsTotal: debt.installmentsCount });
-
                 });
-
             }
 
-
-
-            // Adiciona a transação do adiantamento
-
-            transactions.push({ id: Date.now() - 1, debtId: debt.id, description: `Adiantamento de Parcela: ${debt.description}`, amount: currentSimulationResult.amount, date: new Date().toISOString().split('T')[0], type: 'saida', category: 'Dívidas', subcategory: 'Adiantamento de Parcela', status: 'completed' });
-
-
-
+            transactions.push({ id: Date.now() - 1, debtId: debt.id, description: description, amount: amount, date: new Date().toISOString().split('T')[0], type: 'saida', category: 'Dívidas', subcategory: subcategory, status: 'completed' });
+            
             await saveData();
-
             updateDashboard();
-
-            renderDebtDetailsModal(); // Re-renderiza o modal com os dados atualizados
-
-            await showGenericModal({type: 'alert', title: 'Sucesso', message: 'Adiantamento confirmado e registrado com sucesso!'});
-
-        });
-
-        // ADICIONE ESTE BLOCO NOVO NO FINAL DO SEU SCRIPT
-
-simulatePrepaymentBtn.addEventListener('click', () => {
-
-    const amount = parseFloat(document.getElementById('prepayment-amount').value);
-
-    const strategy = document.getElementById('prepayment-strategy').value;
-
-    const debt = debts.find(d => d.id === viewingDebtId);
-
-    if (!debt || isNaN(amount) || amount <= 0) {
-
-        prepaymentSimulationResult.innerHTML = `<strong class="text-red-600">Por favor, insira um valor válido.</strong>`;
-
-        prepaymentSimulationResult.classList.remove('hidden');
-
-        currentSimulationResult = null;
-
-        return;
-
-    }
-
-    const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-
-    const remainingPrincipal = pendingInstallments.reduce((sum, p) => sum + p.principal, 0);
-
-    if (amount > remainingPrincipal) {
-
-        prepaymentSimulationResult.innerHTML = `<strong class="text-red-600">O valor a adiantar não pode ser maior que o saldo devedor principal (${formatCurrency(remainingPrincipal)}).</strong>`;
-
-        prepaymentSimulationResult.classList.remove('hidden');
-
-        currentSimulationResult = null;
-
-        return;
-
-    }
-
-    let resultText = '';
-
-    currentSimulationResult = { amount, strategy, debtId: debt.id, changes: {} };
-
-    if (strategy === 'reduce_term') {
-
-        let remainingAmount = amount;
-
-        let installmentsPaidOff = 0;
-
-        let interestSaved = 0;
-
-        const installmentsToPay = [...pendingInstallments].reverse();
-
-        for (const inst of installmentsToPay) {
-
-            if (remainingAmount >= inst.principal) {
-
-                remainingAmount -= inst.principal;
-
-                installmentsPaidOff++;
-
-                interestSaved += inst.interest;
-
-            } else break; 
-
-        }
-
-        resultText = `Com ${formatCurrency(amount)}, você quitará <strong>${installmentsPaidOff} parcelas</strong> do final do contrato. A economia total em juros será de <strong>${formatCurrency(interestSaved)}</strong>.`;
-
-        currentSimulationResult.changes = { type: 'reduce_term', installmentsPaidOff };
-
-    } else {
-
-        const newPrincipal = remainingPrincipal - amount;
-
-        const newInstallments = calculateAmortization(newPrincipal, pendingInstallments.length, debt.interestRate, debt.amortizationType);
-
-        const oldInstallmentValue = pendingInstallments[0].value;
-
-        const newInstallmentValue = newInstallments[0].value;
-
-        const oldTotalInterest = pendingInstallments.reduce((sum, p) => sum + p.interest, 0);
-
-        const newTotalInterest = newInstallments.reduce((sum, p) => sum + p.interest, 0);
-
-        const interestSaved = oldTotalInterest - newTotalInterest;
-
-        resultText = `O valor das suas próximas <strong>${pendingInstallments.length} parcelas</strong> será reduzido de ${formatCurrency(oldInstallmentValue)} para <strong>${formatCurrency(newInstallmentValue)}</strong>. A economia total em juros será de <strong>${formatCurrency(interestSaved)}</strong>.`;
-
-        currentSimulationResult.changes = { type: 'reduce_installment', newInstallments };
-
-    }
-
-    prepaymentSimulationResult.innerHTML = resultText;
-
-    prepaymentSimulationResult.classList.remove('hidden');
-
-});
-
-
-
-confirmPrepaymentBtn.addEventListener('click', async () => {
-
-    if (!currentSimulationResult) {
-
-        await showGenericModal({type: 'alert', title: 'Ação Necessária', message: 'Por favor, clique em "Simular" antes de confirmar.'});
-
-        return;
-
-    }
-
-    const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Adiantamento', message: `Confirma o adiantamento de ${formatCurrency(currentSimulationResult.amount)}? Uma nova transação será criada.`});
-
-    if (!confirmed) return;
-
-    const debt = debts.find(d => d.id === currentSimulationResult.debtId);
-
-    if (!debt) return;
-
-    const changes = currentSimulationResult.changes;
-
-    if (changes.type === 'reduce_term') {
-
-        const paidOffCount = changes.installmentsPaidOff;
-
-        const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-
-        const paidOffInstallments = pendingInstallments.slice(-paidOffCount);
-
-        const paidOffNumbers = paidOffInstallments.map(p => p.number);
-
-        transactions = transactions.filter(t => !(t.debtId === debt.id && paidOffNumbers.includes(t.installmentNumber)));
-
-        debt.installments = debt.installments.filter(p => p.status === 'paid' || !paidOffNumbers.includes(p.number));
-
-    } else {
-
-        const newInstallmentsData = changes.newInstallments;
-
-        const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-
-        const firstPendingNumber = pendingInstallments[0].number;
-
-        transactions = transactions.filter(t => !(t.debtId === debt.id && t.status === 'pending'));
-
-        debt.installments = debt.installments.filter(p => p.status === 'paid');
-
-        newInstallmentsData.forEach((newInst, index) => {
-
-            const installmentNumber = firstPendingNumber + index;
-
-            const installmentDate = new Date(pendingInstallments[index].dueDate + 'T12:00:00Z');
-
-            const dueDate = installmentDate.toISOString().split('T')[0];
-
-            debt.installments.push({ ...newInst, number: installmentNumber, dueDate, status: 'pending' });
-
-            transactions.push({ id: Date.now() + index, debtId: debt.id, description: `${debt.description} - Parcela ${installmentNumber}/${debt.installmentsCount}`, amount: newInst.value, date: dueDate, type: 'saida', category: 'Dívidas', subcategory: 'Parcela Financiamento', status: 'pending', isFixed: true, isVariable: false, installmentNumber, installmentsTotal: debt.installmentsCount });
-
-        });
-
-    }
-
-    transactions.push({ id: Date.now() - 1, debtId: debt.id, description: `Adiantamento de Parcela: ${debt.description}`, amount: currentSimulationResult.amount, date: new Date().toISOString().split('T')[0], type: 'saida', category: 'Dívidas', subcategory: 'Adiantamento de Parcela', status: 'completed' });
-
-    await saveData();
-
-    updateDashboard();
-
-    renderDebtDetailsModal();
-
-    await showGenericModal({type: 'alert', title: 'Sucesso', message: 'Adiantamento confirmado e registrado com sucesso!'});
-
-});
-
-
-
-document.getElementById('amortize-fgts-btn').addEventListener('click', async () => {
-
-    const amountStr = await showGenericModal({type: 'prompt', title: 'Amortizar com FGTS', message: 'Digite o valor do FGTS a ser utilizado:'});
-
-    const amount = parseFloat(amountStr);
-
-    if (isNaN(amount) || amount <= 0) return;
-
-    
-
-    document.getElementById('prepayment-amount').value = amount;
-
-    document.getElementById('prepayment-strategy').value = 'reduce_term';
-
-    
-
-    simulatePrepaymentBtn.click();
-
-    
-
-    if(currentSimulationResult) {
-
-        const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Amortização com FGTS', message: `Confirma a amortização de ${formatCurrency(amount)}? Uma transação será criada.`});
-
-        if (!confirmed) {
-
-            currentSimulationResult = null; // Limpa a simulação se o usuário cancelar
-
+            renderDebtDetailsModal();
+            await showGenericModal({type: 'alert', title: 'Sucesso', message: 'Operação confirmada e registrada com sucesso!'});
+            currentSimulationResult = null; // Limpa a simulação após confirmar
             prepaymentSimulationResult.classList.add('hidden');
+        });
 
-            return;
+        document.getElementById('amortize-fgts-btn').addEventListener('click', async () => {
+            const amountStr = await showGenericModal({type: 'prompt', title: 'Amortizar com FGTS', message: 'Digite o valor do FGTS a ser utilizado:'});
+            const amount = parseFloat(amountStr);
+            if (isNaN(amount) || amount <= 0) return;
+            
+            document.getElementById('prepayment-amount').value = amount;
+            document.getElementById('prepayment-strategy').value = 'reduce_term';
+            
+            simulatePrepaymentBtn.click();
+            
+            if(currentSimulationResult) {
+                const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Amortização com FGTS', message: `Confirma a amortização de ${formatCurrency(amount)}? Uma transação será criada.`});
+                if (!confirmed) {
+                    currentSimulationResult = null; 
+                    prepaymentSimulationResult.classList.add('hidden');
+                    return;
+                }
 
-        }
+                const debt = debts.find(d => d.id === currentSimulationResult.debtId);
+                if (!debt) return;
+                
+                currentSimulationResult.description = `Amortização FGTS: ${debt.description}`;
+                currentSimulationResult.subcategory = 'Amortização FGTS';
 
-
-
-        const debt = debts.find(d => d.id === currentSimulationResult.debtId);
-
-        if (!debt) return;
-
-        
-
-        // Altera a descrição antes de confirmar
-
-        currentSimulationResult.description = `Amortização FGTS: ${debt.description}`;
-
-        currentSimulationResult.subcategory = 'Amortização FGTS';
-
-
-
-        confirmPrepaymentBtn.click();
-
-    }
-
-});
-
-        // FIM: Lógica de Simulação e Adiantamento
-
+                confirmPrepaymentBtn.click();
+            }
+        });
+        // FIM: Lógica de Simulação, Adiantamento e FGTS
 
 
     });
