@@ -137,8 +137,15 @@
         <div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 class="text-xl font-bold text-gray-800">Análise Inteligente</h2><button id="close-ai-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><div id="ai-content" class="overflow-y-auto flex-grow p-2"><div id="ai-initial-state"><div class="text-center p-6"><svg class="w-16 h-16 mx-auto text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg><h3 class="mt-4 text-lg font-medium text-gray-900">Insights para suas Finanças</h3><p class="mt-2 text-sm text-gray-500">Receba dicas personalizadas. A IA analisará anonimamente seus dados dos últimos 3 meses.</p><button id="analyze-finance-btn" class="mt-6 w-full bg-purple-600 text-white py-2.5 px-4 rounded-md hover:bg-purple-700">Analisar minhas finanças</button></div></div><div id="ai-loading-state" class="hidden text-center p-10"><svg class="animate-spin h-8 w-8 text-purple-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><p class="mt-4 text-gray-600 font-medium">Analisando seus dados...</p></div><div id="ai-result-state" class="hidden"></div></div></div></div>
         <div id="generic-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-[100] p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-auto"><h3 id="generic-modal-title" class="text-lg font-bold text-gray-800 mb-4"></h3><p id="generic-modal-message" class="text-gray-600 mb-6"></p><div id="generic-modal-input-container" class="hidden mb-4"><input type="text" id="generic-modal-input" class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div><div id="generic-modal-buttons" class="flex justify-end space-x-3"></div></div></div>
         <div id="debt-management-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 class="text-xl font-bold text-gray-800">Gerenciar Dívidas</h2><button id="close-debt-management-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><div id="debt-list-container" class="overflow-y-auto flex-grow mb-4"></div><div class="pt-4 border-t"><button id="add-new-debt-btn" class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700 font-semibold">+ Adicionar Nova Dívida</button></div></div></div>
-        <div id="add-edit-debt-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-60 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-auto"><div class="flex justify-between items-center mb-4"><h2 id="add-edit-debt-modal-title" class="text-xl font-bold text-gray-800">Nova Dívida</h2><button id="close-add-edit-debt-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button></div><form id="debt-form" novalidate class="space-y-4"><div><label for="debt-description" class="block text-sm font-medium text-gray-700">Descrição</label><input type="text" id="debt-description" placeholder="Ex: Financiamento do Carro" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div class="grid grid-cols-2 gap-4"><div><label for="debt-total-amount" class="block text-sm font-medium text-gray-700">Valor Total da Dívida</label><input type="number" id="debt-total-amount" step="0.01" placeholder="R$ 10.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-down-payment" class="block text-sm font-medium text-gray-700">Valor de Entrada (Opcional)</label><input type="number" id="debt-down-payment" step="0.01" placeholder="R$ 2.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div></div><div class="grid grid-cols-2 gap-4"><div><label for="debt-installments-count" class="block text-sm font-medium text-gray-700">Nº de Parcelas</label><input type="number" id="debt-installments-count" step="1" placeholder="12" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-start-date" class="block text-sm font-medium text-gray-700">Data da 1ª Parcela</label><input type="date" id="debt-start-date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div></div><div class="grid grid-cols-2 gap-4"><div><label for="debt-interest-rate" class="block text-sm font-medium text-gray-700">Taxa de Juros (%)</label><input type="number" id="debt-interest-rate" step="0.01" placeholder="1.99" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-interest-period" class="block text-sm font-medium text-gray-700">Período do Juro</label><select id="debt-interest-period" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"><option value="monthly">Ao Mês</option><option value="yearly">Ao Ano</option></select></div></div><div><span class="block text-sm font-medium text-gray-700 mb-2">Sistema de Amortização</span><div class="flex items-center gap-4"><label class="amortization-radio-label"><input type="radio" name="amortization-type" value="PRICE" class="sr-only" checked> Tabela PRICE</label><label class="amortization-radio-label"><input type="radio" name="amortization-type" value="SAC" class="sr-only"> Sistema SAC</label></div></div><div id="debt-form-error-message" class="hidden text-red-600 text-sm mb-4 p-3 bg-red-100 rounded-md text-center"></div><div class="pt-4"><button type="submit" class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700 font-semibold">Salvar Dívida</button></div></form></div></div>
-        <div id="debt-details-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-60 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 id="debt-details-modal-title" class="text-xl font-bold text-gray-800">Detalhes da Dívida</h2><button id="close-debt-details-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><div class="overflow-y-auto flex-grow space-y-6"><div id="debt-summary-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center p-4 bg-gray-50 rounded-lg"></div><div class="p-4 border rounded-lg"><h3 class="text-lg font-semibold text-gray-700 mb-3">Adiantar Pagamento / Simulação</h3><div class="flex flex-wrap items-end gap-4"><div><label for="prepayment-amount" class="block text-sm font-medium text-gray-700">Valor a Adiantar</label><input type="number" id="prepayment-amount" step="0.01" placeholder="R$ 1.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label for="prepayment-strategy" class="block text-sm font-medium text-gray-700">Estratégia</label><select id="prepayment-strategy" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"><option value="reduce_term">Reduzir Prazo</option><option value="reduce_installment">Reduzir Valor da Parcela</option></select></div><div class="flex items-center gap-2"><button id="simulate-prepayment-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 font-semibold text-sm">Simular</button><button id="confirm-prepayment-btn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 font-semibold text-sm">Confirmar</button></div></div><div id="prepayment-simulation-result" class="mt-3 text-sm text-gray-700 bg-blue-50 p-3 rounded-md hidden"></div></div><div><h3 class="text-lg font-semibold text-gray-700 mb-2">Tabela de Amortização</h3><div id="debt-amortization-table-container" class="overflow-auto border rounded-lg"></div></div></div></div></div>
+        <div id="add-edit-debt-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-60 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-auto"><div class="flex justify-between items-center mb-4"><h2 id="add-edit-debt-modal-title" class="text-xl font-bold text-gray-800">Nova Dívida</h2><button id="close-add-edit-debt-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button></div><form id="debt-form" novalidate class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div><label for="debt-description" class="block text-sm font-medium text-gray-700">Descrição</label><input type="text" id="debt-description" placeholder="Ex: Financiamento do Carro" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div>
+                <div><label for="debt-type" class="block text-sm font-medium text-gray-700">Tipo de Financiamento</label><select id="debt-type" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"><option value="pessoal">Empréstimo Pessoal</option><option value="veiculo">Financiamento de Veículo</option><option value="imobiliario">Financiamento Imobiliário</option><option value="outros">Outros</option></select></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4"><div><label for="debt-total-amount" class="block text-sm font-medium text-gray-700">Valor Total da Dívida</label><input type="number" id="debt-total-amount" step="0.01" placeholder="R$ 10.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-down-payment" class="block text-sm font-medium text-gray-700">Valor de Entrada (Opcional)</label><input type="number" id="debt-down-payment" step="0.01" placeholder="R$ 2.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div></div><div class="grid grid-cols-2 gap-4"><div><label for="debt-installments-count" class="block text-sm font-medium text-gray-700">Nº de Parcelas</label><input type="number" id="debt-installments-count" step="1" placeholder="12" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-start-date" class="block text-sm font-medium text-gray-700">Data da 1ª Parcela</label><input type="date" id="debt-start-date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div></div><div class="grid grid-cols-2 gap-4"><div><label for="debt-interest-rate" class="block text-sm font-medium text-gray-700">Taxa de Juros (%)</label><input type="number" id="debt-interest-rate" step="0.01" placeholder="1.99" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div><div><label for="debt-interest-period" class="block text-sm font-medium text-gray-700">Período do Juro</label><select id="debt-interest-period" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"><option value="monthly">Ao Mês</option><option value="yearly">Ao Ano</option></select></div></div><div><span class="block text-sm font-medium text-gray-700 mb-2">Sistema de Amortização</span><div class="flex items-center gap-4"><label class="amortization-radio-label"><input type="radio" name="amortization-type" value="PRICE" class="sr-only" checked> Tabela PRICE</label><label class="amortization-radio-label"><input type="radio" name="amortization-type" value="SAC" class="sr-only"> Sistema SAC</label></div></div><div id="debt-form-error-message" class="hidden text-red-600 text-sm mb-4 p-3 bg-red-100 rounded-md text-center"></div><div class="pt-4"><button type="submit" class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700 font-semibold">Salvar Dívida</button></div></form></div></div>
+        <div id="debt-details-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-60 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 id="debt-details-modal-title" class="text-xl font-bold text-gray-800">Detalhes da Dívida</h2><button id="close-debt-details-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><div class="overflow-y-auto flex-grow space-y-6"><div id="debt-summary-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center p-4 bg-gray-50 rounded-lg"></div><div class="p-4 border rounded-lg"><h3 class="text-lg font-semibold text-gray-700 mb-3">Adiantar Pagamento / Simulação</h3><div class="flex flex-wrap items-end gap-4"><div><label for="prepayment-amount" class="block text-sm font-medium text-gray-700">Valor a Adiantar</label><input type="number" id="prepayment-amount" step="0.01" placeholder="R$ 1.000,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></div><div><label for="prepayment-strategy" class="block text-sm font-medium text-gray-700">Estratégia</label><select id="prepayment-strategy" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"><option value="reduce_term">Reduzir Prazo (quitar últimas)</option><option value="reduce_installment">Reduzir Valor da Parcela</option></select></div><div class="flex items-center gap-2"><button id="simulate-prepayment-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 font-semibold text-sm">Simular</button><button id="confirm-prepayment-btn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 font-semibold text-sm">Confirmar</button></div></div>
+            <div id="fgts-amortization-container" class="hidden mt-4 pt-4 border-t"><button id="amortize-fgts-btn" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 font-semibold text-sm">Amortizar com Saldo do FGTS</button></div>
+            <div id="prepayment-simulation-result" class="mt-3 text-sm text-gray-700 bg-blue-50 p-3 rounded-md hidden"></div></div><div><h3 class="text-lg font-semibold text-gray-700 mb-2">Tabela de Amortização</h3><div id="debt-amortization-table-container" class="overflow-auto border rounded-lg"></div></div></div></div></div>
 
     </div>
 
@@ -259,7 +266,7 @@
         const defaultSettings = { invoiceClosingDay: 1, savingsGoal: 0, budgets: {} };
         const defaultCategories = {
             'entrada': { 'Salário': ['Adiantamento', 'Salário Mensal', 'Bônus', 'Férias'],'Investimentos': ['Dividendos', 'Venda de Ativos', 'Juros'],'Outras Receitas': ['Freelance', 'Vendas', 'Presente', 'Reembolso']},
-            'saida': {'Alimentação': ['Supermercado', 'Restaurante', 'Delivery', 'Lanche'],'Moradia': ['Aluguel', 'Condomínio', 'Luz', 'Água', 'Internet', 'Gás', 'Manutenção'],'Transporte': ['Combustível', 'App de Transporte', 'Transporte Público', 'Manutenção Veículo'],'Lazer': ['Cinema', 'Shows', 'Viagens', 'Hobbies', 'Streaming'],'Saúde': ['Farmácia', 'Consulta', 'Plano de Saúde', 'Academia'],'Educação': ['Cursos', 'Livros', 'Mensalidade'],'Compras': ['Roupas', 'Eletrônicos', 'Casa', 'Pets'],'Dívidas': ['Parcela Empréstimo', 'Parcela Financiamento', 'Entrada Financiamento', 'Adiantamento de Parcela'],'Outras Despesas': ['Impostos', 'Presentes', 'Doações', 'Serviços']},
+            'saida': {'Alimentação': ['Supermercado', 'Restaurante', 'Delivery', 'Lanche'],'Moradia': ['Aluguel', 'Condomínio', 'Luz', 'Água', 'Internet', 'Gás', 'Manutenção'],'Transporte': ['Combustível', 'App de Transporte', 'Transporte Público', 'Manutenção Veículo'],'Lazer': ['Cinema', 'Shows', 'Viagens', 'Hobbies', 'Streaming'],'Saúde': ['Farmácia', 'Consulta', 'Plano de Saúde', 'Academia'],'Educação': ['Cursos', 'Livros', 'Mensalidade'],'Compras': ['Roupas', 'Eletrônicos', 'Casa', 'Pets'],'Dívidas': ['Parcela Empréstimo', 'Parcela Financiamento', 'Entrada Financiamento', 'Adiantamento de Parcela', 'Amortização FGTS'],'Outras Despesas': ['Impostos', 'Presentes', 'Doações', 'Serviços']},
             'investimento': {'Renda Fixa': ['CDB', 'Tesouro Direto', 'LCI/LCA'],'Renda Variável': ['Ações', 'Fundos Imobiliários', 'ETFs'],'Outros': ['Criptomoedas', 'Previdência Privada']}
         };
         
@@ -351,26 +358,26 @@
             pendingListDashboard.innerHTML = html;
         };
 
-const updateDashboard = () => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    const completedTransactions = transactions.filter(t => t.status === 'completed');
-    const totalEntradas = completedTransactions.filter(t => t.type === 'entrada').reduce((acc, t) => acc + t.amount, 0);
-    const totalSaidas = completedTransactions.filter(t => t.type === 'saida' || t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
-    const totalInvestido = completedTransactions.filter(t => t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
-    const totalDebtBalance = debts.reduce((sum, debt) => debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.value, 0) + sum, 0);
-    const faturaAtual = completedTransactions.filter(t => {
-        const tDate = new Date(t.date + 'T00:00:00');
-        return t['payment-method']==='Cartão de Crédito' && tDate.getMonth()===currentMonth && tDate.getFullYear()===currentYear;
-    }).reduce((acc, t) => acc + t.amount, 0);
-    balanceValueEl.textContent = formatCurrency(totalEntradas - totalSaidas);
-    investmentsValueEl.textContent = formatCurrency(totalInvestido);
-    invoiceValueEl.textContent = formatCurrency(faturaAtual);
-    debtsValueEl.textContent = formatCurrency(totalDebtBalance);
-    renderPendingTransactionsOnDashboard();
-    updateOverviewCard();
-};
+        const updateDashboard = () => {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const completedTransactions = transactions.filter(t => t.status === 'completed');
+            const totalEntradas = completedTransactions.filter(t => t.type === 'entrada').reduce((acc, t) => acc + t.amount, 0);
+            const totalSaidas = completedTransactions.filter(t => t.type === 'saida' || t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
+            const totalInvestido = completedTransactions.filter(t => t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
+            const totalDebtBalance = debts.reduce((sum, debt) => debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.value, 0) + sum, 0);
+            const faturaAtual = completedTransactions.filter(t => {
+                const tDate = new Date(t.date + 'T00:00:00');
+                return t['payment-method']==='Cartão de Crédito' && tDate.getMonth()===currentMonth && tDate.getFullYear()===currentYear;
+            }).reduce((acc, t) => acc + t.amount, 0);
+            balanceValueEl.textContent = formatCurrency(totalEntradas - totalSaidas);
+            investmentsValueEl.textContent = formatCurrency(totalInvestido);
+            invoiceValueEl.textContent = formatCurrency(faturaAtual);
+            debtsValueEl.textContent = formatCurrency(totalDebtBalance);
+            renderPendingTransactionsOnDashboard();
+            updateOverviewCard();
+        };
 
         const generateTransactionListHTML = (data, cardType) => {
             if(data.length===0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
@@ -659,251 +666,66 @@ const updateDashboard = () => {
             }
         };
 
-        const updateOverviewCard = () => {
-            const currentMonth = currentPendingDate.getMonth();
-            const currentYear = currentPendingDate.getFullYear();
-            const transactionsThisMonth = transactions.filter(t => { const tDate=new Date(t.date+'T00:00:00'); return tDate.getMonth()===currentMonth&&tDate.getFullYear()===currentYear; });
-            const completedThisMonth = transactionsThisMonth.filter(t => t.status === 'completed');
-            const pendingThisMonth = transactionsThisMonth.filter(t => t.status === 'pending');
-            const income = completedThisMonth.filter(t => t.type === 'entrada').reduce((sum, t) => sum + t.amount, 0);
-            const expenses = completedThisMonth.filter(t => t.type === 'saida').reduce((sum, t) => sum + t.amount, 0);
-            const balance = income - expenses;
-            overviewIncomeEl.textContent = formatCurrency(income);
-            overviewExpensesEl.textContent = formatCurrency(expenses);
-            overviewBalanceEl.textContent = formatCurrency(balance);
-            const pendingIncome = pendingThisMonth.filter(t => t.type === 'entrada').reduce((sum, t) => sum + t.amount, 0);
-            const pendingExpenses = pendingThisMonth.filter(t => t.type === 'saida').reduce((sum, t) => sum + t.amount, 0);
-            overviewIncomePendingEl.textContent = pendingIncome > 0 ? `(+ ${formatCurrency(pendingIncome)} pendente)` : '';
-            overviewExpensesPendingEl.textContent = pendingExpenses > 0 ? `(+ ${formatCurrency(pendingExpenses)} pendente)` : '';
-            const expenseByCategory = completedThisMonth.filter(t => t.type === 'saida').reduce((acc, t) => { acc[t.category]=(acc[t.category]||0)+t.amount; return acc; }, {});
-            const chartLabels = Object.keys(expenseByCategory);
-            const chartData = Object.values(expenseByCategory);
-            if (categoryChartInstance) { categoryChartInstance.destroy(); }
-            if (chartLabels.length > 0) {
-                categoryChartInstance = new Chart(categoryChartCanvas, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#ec4899'], borderWidth: 0, }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            } else { categoryChartCanvas.getContext('2d').clearRect(0, 0, categoryChartCanvas.width, categoryChartCanvas.height); }
-            budgetBarsContainer.innerHTML = '';
-            const budgetedCategories = Object.keys(settings.budgets);
-            budgetedCategories.forEach(category => {
-                const budgetAmount = settings.budgets[category] || 0;
-                if (budgetAmount <= 0) return;
-                const spentCompleted = completedThisMonth.filter(t => t.category === category && t.type === 'saida').reduce((sum, t) => sum + t.amount, 0);
-                const spentPending = pendingThisMonth.filter(t => t.category === category && t.type === 'saida').reduce((sum, t) => sum + t.amount, 0);
-                const totalSpent = spentCompleted + spentPending;
-                const completedPercent = (spentCompleted / budgetAmount) * 100;
-                const pendingPercent = (spentPending / budgetAmount) * 100;
-                budgetBarsContainer.innerHTML += `<div class="budget-bar-container rounded-md p-2 cursor-pointer" data-category="${category}"><div class="flex justify-between items-center mb-1 text-sm"><span class="font-semibold text-gray-700">${category}</span><span class="text-gray-500"><span class="value-visible font-medium text-gray-800">${formatCurrency(totalSpent)}</span> / ${formatCurrency(budgetAmount)}</span></div><div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden flex"><div class="bg-green-500 h-4" style="width:${Math.min(completedPercent,100)}%"></div><div class="bg-gray-400 h-4" style="width:${Math.min(pendingPercent,100-completedPercent)}%"></div></div></div>`;
-            });
-            const allExpenseCategoriesThisMonth = [...new Set(transactionsThisMonth.filter(t => t.type === 'saida').map(t => t.category))];
-            const unbudgetedCategories = allExpenseCategoriesThisMonth.filter(cat => !budgetedCategories.includes(cat) || !settings.budgets[cat]);
-            if (unbudgetedCategories.length > 0) {
-                let unbudgetedHTML = '<h4 class="text-sm font-semibold text-gray-600 mt-4 border-t pt-3">Gastos Não Orçados</h4>';
-                unbudgetedCategories.forEach(category => {
-                    const totalSpent = transactionsThisMonth.filter(t => t.category === category && t.type === 'saida').reduce((sum, t) => sum + t.amount, 0);
-                    unbudgetedHTML += `<div class="flex items-center justify-between p-2 bg-yellow-50 border border-yellow-200 rounded-md"><div class="flex items-center"><svg class="w-5 h-5 text-yellow-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg><span class="font-semibold text-gray-700">${category}</span></div><div class="flex items-center"><span class="text-gray-600 mr-3 font-medium value-visible">${formatCurrency(totalSpent)}</span><button data-action="regularize" data-category="${category}" class="text-sm text-blue-600 hover:underline font-semibold">Regularizar</button></div></div>`;
-                });
-                budgetBarsContainer.innerHTML += unbudgetedHTML;
+        const openAddEditDebtModal = (debtId = null) => {
+            debtForm.reset();
+            debtForm.querySelectorAll('.invalid-field').forEach(el => el.classList.remove('invalid-field'));
+            document.getElementById('debt-form-error-message').classList.add('hidden');
+            editingDebtId = debtId;
+            const fields = ['debt-description', 'debt-type', 'debt-total-amount', 'debt-down-payment', 'debt-installments-count', 'debt-interest-rate', 'debt-interest-period', 'debt-start-date'];
+            fields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).disabled = false; });
+            debtForm.querySelectorAll('input[name="amortization-type"]').forEach(radio => radio.disabled = false);
+            if(debtId){
+                const debt = debts.find(d => d.id === debtId);
+                if(!debt) return;
+                addEditDebtModalTitle.textContent = "Editar Dívida";
+                debtForm.querySelector('button[type="submit"]').textContent = "Salvar Alterações (Recalcular)";
+                document.getElementById('debt-description').value = debt.description;
+                document.getElementById('debt-type').value = debt.type || 'outros';
+                document.getElementById('debt-total-amount').value = debt.totalAmount;
+                document.getElementById('debt-down-payment').value = debt.downPayment;
+                document.getElementById('debt-installments-count').value = debt.installmentsCount;
+                document.getElementById('debt-start-date').value = debt.startDate;
+                document.getElementById('debt-interest-rate').value = (debt.interestRate * 100).toFixed(2);
+                document.getElementById('debt-interest-period').value = debt.interestPeriod || 'monthly';
+                debtForm.querySelector(`input[name="amortization-type"][value="${debt.amortizationType}"]`).checked = true;
+            } else {
+                addEditDebtModalTitle.textContent = "Nova Dívida";
+                debtForm.querySelector('button[type="submit"]').textContent = "Salvar Dívida";
+                fields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
+                document.getElementById('debt-type').value = 'pessoal';
+                debtForm.querySelector('input[name="amortization-type"][value="PRICE"]').checked = true;
             }
-            if(settings.savingsGoal > 0){ const savedAmount=balance; const savedPercent=Math.max(0,(savedAmount/settings.savingsGoal)*100); budgetBarsContainer.innerHTML+=`<div class="mt-6 border-t pt-4"><div class="flex justify-between items-center mb-1 text-sm"><span class="font-semibold text-gray-700">Meta de Economia</span><span class="text-gray-500"><span class="value-visible font-medium text-gray-800">${formatCurrency(savedAmount)}</span> / ${formatCurrency(settings.savingsGoal)}</span></div><div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden"><div class="bg-blue-500 h-4" style="width:${Math.min(savedPercent,100)}%"></div></div></div>`; }
+            addEditDebtModal.classList.remove('hidden');
         };
 
-        const openForecastModal = () => { calculateAndRenderForecast(); forecastModal.classList.remove('hidden'); };
-        const closeForecastModal = () => forecastModal.classList.add('hidden');
-        const calculateAndRenderForecast = () => {
-            const completed = transactions.filter(t => t.status === 'completed' && !t.templateId);
-            const historicalMonths = new Set();
-            completed.forEach(t => { const [year, month] = t.date.split('-'); historicalMonths.add(`${year}-${month}`); });
-            const monthCount = historicalMonths.size > 0 ? historicalMonths.size : 1;
-            const avgVarIncome = completed.filter(t => t.type === 'entrada').reduce((s, t) => s + t.amount, 0) / monthCount;
-            const avgVarExpense = completed.filter(t => t.type === 'saida').reduce((s, t) => s + t.amount, 0) / monthCount;
-            const avgVarInvestment = completed.filter(t => t.type === 'investimento').reduce((s, t) => s + t.amount, 0) / monthCount;
-            const fixedIncome = fixedTransactionTemplates.filter(t => t.type === 'entrada').reduce((s, t) => s + t.amount, 0);
-            const fixedExpense = fixedTransactionTemplates.filter(t => t.type === 'saida').reduce((s, t) => s + t.amount, 0);
-            const fixedInvestment = fixedTransactionTemplates.filter(t => t.type === 'investimento').reduce((s, t) => s + t.amount, 0);
-            const totalAvgIncome = avgVarIncome + fixedIncome;
-            const totalAvgExpense = avgVarExpense + fixedExpense;
-            const totalAvgInvestment = avgVarInvestment + fixedInvestment;
-            const totalAvgBalance = totalAvgIncome - totalAvgExpense - totalAvgInvestment;
-            document.getElementById('forecast-avg-income').textContent = formatCurrency(totalAvgIncome);
-            document.getElementById('forecast-avg-expense').textContent = formatCurrency(totalAvgExpense);
-            document.getElementById('forecast-avg-investment').textContent = formatCurrency(totalAvgInvestment);
-            document.getElementById('forecast-avg-balance').textContent = formatCurrency(totalAvgBalance);
-            const labels = []; const incomeData = []; const expenseData = []; const balanceData = [];
-            const completedTransactions = transactions.filter(t => t.status === 'completed');
-            const currentBalance = completedTransactions.filter(t => t.type === 'entrada').reduce((acc, t) => acc + t.amount, 0) - completedTransactions.filter(t => t.type === 'saida' || t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
-            let cumulativeBalance = currentBalance;
-            forecastDataForExport = [];
-            for (let i = 1; i <= 12; i++) {
-                const futureDate = new Date(); futureDate.setMonth(futureDate.getMonth() + i);
-                labels.push(futureDate.toLocaleString('pt-BR', { month: 'short', year: '2-digit' }));
-                cumulativeBalance += totalAvgBalance;
-                incomeData.push(totalAvgIncome); expenseData.push(totalAvgExpense + totalAvgInvestment); balanceData.push(cumulativeBalance);
-                forecastDataForExport.push({ 'Mês': futureDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }), 'Receita Projetada': totalAvgIncome, 'Despesa Projetada': totalAvgExpense + totalAvgInvestment, 'Saldo Projetado': cumulativeBalance });
-            }
-            if(forecastChartInstance) forecastChartInstance.destroy();
-            forecastChartInstance = new Chart(forecastChartCanvas, { type: 'line', data: { labels: labels, datasets: [ { label: 'Saldo', data: balanceData, borderColor: '#3b82f6', backgroundColor: '#3b82f620', fill: true, tension: 0.1 }, { label: 'Receitas', data: incomeData, borderColor: '#22c55e', hidden: true }, { label: 'Despesas', data: expenseData, borderColor: '#ef4444', hidden: true } ] }, options: { responsive: true, maintainAspectRatio: false } });
-        };
-        const exportForecastDataToXLSX = () => {
-            if(forecastDataForExport.length===0){showGenericModal({type:'alert',title:'Aviso',message:'Não há dados para exportar.'});return}
-            const worksheet=XLSX.utils.json_to_sheet(forecastDataForExport);const workbook=XLSX.utils.book_new();XLSX.utils.book_append_sheet(workbook,worksheet,"Previsao_Futura");XLSX.writeFile(workbook,"previsao_financeira.xlsx");
-        };
-        const exportFilteredDataToXLSX = () => {
-            if(currentFilteredModalData.length===0){showGenericModal({type:'alert',title:'Aviso',message:'Não há dados para exportar.'});return}
-            const dataToExport=currentFilteredModalData.map(t=>({'Data':formatDate(t.date),'Descrição':t.description,'Tipo':t.type,'Categoria':t.category,'Subcategoria':t.subcategory||'','Valor':t.amount}));
-            const worksheet=XLSX.utils.json_to_sheet(dataToExport);const workbook=XLSX.utils.book_new();XLSX.utils.book_append_sheet(workbook,worksheet,"Transacoes");XLSX.writeFile(workbook,"extrato_financeiro.xlsx");
-        };
-        const downloadTemplateXLSX = () => {
-            const transactionsData = [ { Data: '2025-10-05', Descrição: 'Salário', Tipo: 'entrada', Categoria: 'Salário', Subcategoria: 'Salário Mensal', Valor: 5000.00, 'Forma Pagamento': '' }, { Data: '2025-10-07', Descrição: 'Aluguel', Tipo: 'saida', Categoria: 'Moradia', Subcategoria: 'Aluguel', Valor: 1500.00, 'Forma Pagamento': 'Transferência Bancária' } ];
-            const categoriesData = [ { Tipo: 'saida', Categoria: 'Alimentação', Subcategoria: 'Supermercado' }, { Tipo: 'saida', Categoria: 'Alimentação', Subcategoria: 'Restaurante' }, { Tipo: 'entrada', Categoria: 'Salário', Subcategoria: 'Salário Mensal' } ];
-            const wsTransactions = XLSX.utils.json_to_sheet(transactionsData);
-            const wsCategories = XLSX.utils.json_to_sheet(categoriesData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, wsTransactions, 'Transacoes');
-            XLSX.utils.book_append_sheet(wb, wsCategories, 'Categorias');
-            XLSX.writeFile(wb, 'modelo_importacao.xlsx');
-        };
-        const exportAllDataToXLSX = () => {
-            const transactionsToExport = transactions.map(t => ({...t}));
-            const flatCategories = [];
-            Object.keys(categoryData).forEach(type => { Object.keys(categoryData[type]).forEach(category => { if (categoryData[type][category].length > 0) { categoryData[type][category].forEach(subcategory => { flatCategories.push({ Tipo: type, Categoria: category, Subcategoria: subcategory }); }); } else { flatCategories.push({ Tipo: type, Categoria: category, Subcategoria: '' }); } }); });
-            const wsTransactions = XLSX.utils.json_to_sheet(transactionsToExport);
-            const wsCategories = XLSX.utils.json_to_sheet(flatCategories);
-            const wsSettings = XLSX.utils.json_to_sheet([settings]);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, wsTransactions, 'Transacoes');
-            XLSX.utils.book_append_sheet(wb, wsCategories, 'Categorias');
-            XLSX.utils.book_append_sheet(wb, wsSettings, 'Configuracoes');
-            XLSX.writeFile(wb, 'backup_financeiro_completo.xlsx');
-        };
-        const importDataFromXLSX = (file) => {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const data = e.target.result;
-                    const workbook = XLSX.read(data, { type: 'binary' });
-                    const wsTransactions = workbook.Sheets['Transacoes'];
-                    const wsCategories = workbook.Sheets['Categorias'];
-                    const wsSettings = workbook.Sheets['Configuracoes'];
-                    if(!wsTransactions || !wsCategories) { throw new Error('Arquivo deve conter "Transacoes" e "Categorias".'); }
-                    const confirmed = await showGenericModal({ type: 'confirm', title: 'Importar Dados', message: 'Isso substituirá TODOS os seus dados atuais. Continuar?' });
-                    if (!confirmed) return;
-                    const newTransactions = XLSX.utils.sheet_to_json(wsTransactions);
-                    transactions = newTransactions.map(t => ({...t, date: new Date((t.Data - (25567 + 2)) * 86400 * 1000).toISOString().split('T')[0]}));
-                    fixedTransactionTemplates = transactions.filter(t => t.templateId && !transactions.some(t2 => t2.id === t.templateId));
-                    const newCategoriesData = XLSX.utils.sheet_to_json(wsCategories);
-                    const importedCategoryData = {'entrada': {}, 'saida': {}, 'investimento': {}};
-                    newCategoriesData.forEach(row => { if (!importedCategoryData[row.Tipo]) return; if (!importedCategoryData[row.Tipo][row.Categoria]) { importedCategoryData[row.Tipo][row.Categoria] = []; } if (row.Subcategoria) { importedCategoryData[row.Tipo][row.Categoria].push(row.Subcategoria); } });
-                    categoryData = importedCategoryData;
-                    if(wsSettings) { const newSettings = XLSX.utils.sheet_to_json(wsSettings)[0]; if(newSettings) settings = newSettings; }
-                    updateDashboard();
-                    saveData();
-                    await showGenericModal({type: 'alert', title: 'Sucesso', message: 'Dados importados com sucesso!'});
-                } catch (error) { console.error("Erro ao importar:", error); await showGenericModal({type: 'alert', title: 'Erro de Importação', message: `Não foi possível ler o arquivo. Detalhe: ${error.message}`}); } 
-                finally { importFileInput.value = ''; }
-            };
-            reader.onerror = async () => { await showGenericModal({type: 'alert', title: 'Erro', message: 'Não foi possível ler o arquivo.'}); importFileInput.value = ''; };
-            reader.readAsBinaryString(file);
-        };
-        const openAiModal = () => { aiInitialState.classList.remove('hidden'); aiLoadingState.classList.add('hidden'); aiResultState.classList.add('hidden'); aiResultState.innerHTML = ''; aiModal.classList.remove('hidden'); };
-        const closeAiModal = () => aiModal.classList.add('hidden');
-        const simpleMarkdownToHtml = (markdown) => markdown.replace(/^### (.*$)/gim, '<h3>$1</h3>').replace(/^## (.*$)/gim, '<h3>$1</h3>').replace(/^# (.*$)/gim, '<h3>$1</h3>').replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>').replace(/<\/ul>\s?<ul>/g, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-        const analyzeFinancesWithAI = async () => {
-            aiInitialState.classList.add('hidden'); aiLoadingState.classList.remove('hidden');
-            try {
-                const threeMonthsAgo = new Date(); threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-                const recentTransactions = transactions.filter(t => new Date(t.date) >= threeMonthsAgo && t.status === 'completed');
-                if (recentTransactions.length < 5) { aiResultState.innerHTML = '<p>Dados insuficientes para uma análise. Adicione mais transações.</p>'; aiLoadingState.classList.add('hidden'); aiResultState.classList.remove('hidden'); return; }
-                const income = recentTransactions.filter(t => t.type === 'entrada').reduce((s, t) => s + t.amount, 0);
-                const expenses = recentTransactions.filter(t => t.type === 'saida').reduce((s, t) => s + t.amount, 0);
-                const expensesByCategory = recentTransactions.filter(t => t.type === 'saida').reduce((acc, t) => { acc[t.category] = (acc[t.category] || 0) + t.amount; return acc; }, {});
-                const expenseSummary = Object.entries(expensesByCategory).sort(([, a], [, b]) => b - a).slice(0, 5).map(([cat, val]) => `  - ${cat}: ${formatCurrency(val)} (Orçamento: ${settings.budgets[cat] ? formatCurrency(settings.budgets[cat]) : 'Não definido'})`).join('\n');
-                const userPrompt = `Analise meus dados financeiros dos últimos 3 meses:\n- Renda Total: ${formatCurrency(income)}\n- Despesas Totais: ${formatCurrency(expenses)}\n- Principais Categorias de Despesa:\n${expenseSummary}\n- Meta de economia mensal: ${formatCurrency(settings.savingsGoal)}\n- Saldo médio mensal: ${formatCurrency((income - expenses) / 3)}\n\nCom base nisso, quais os principais insights e o que posso fazer para melhorar?`;
-                const systemPrompt = "Você é um analista financeiro. Analise os dados e forneça insights e dicas práticas em português do Brasil. Seja claro, objetivo e encorajador. Formate a resposta usando markdown com títulos (###), listas (*) e negrito (**). Comece com 'Resumo Geral', depois 'Pontos Positivos', 'Pontos de Atenção/Melhora' e, por fim, 'Sugestões Práticas'.";
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-                const payload = { contents: [{ parts: [{ text: userPrompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, };
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                const result = await response.json();
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) { aiResultState.innerHTML = simpleMarkdownToHtml(text); } else { throw new Error("A resposta da IA está vazia."); }
-            } catch (error) { console.error("Erro na IA:", error); aiResultState.innerHTML = `<p class="text-red-600">Ocorreu um erro. Tente novamente.</p><p class="text-xs text-gray-500 mt-2">${error.message}</p>`; } 
-            finally { aiLoadingState.classList.add('hidden'); aiResultState.classList.remove('hidden'); }
-        };
-        const openDebtManagementModal = () => { renderDebtManagementList(); debtManagementModal.classList.remove('hidden'); };
-        const closeDebtManagementModal = () => debtManagementModal.classList.add('hidden');
-        
-        // SUBSTITUA A FUNÇÃO ANTIGA POR ESTA:
-const openAddEditDebtModal = (debtId = null) => {
-    debtForm.reset();
-    debtForm.querySelectorAll('.invalid-field').forEach(el => el.classList.remove('invalid-field'));
-    document.getElementById('debt-form-error-message').classList.add('hidden');
-    editingDebtId = debtId;
-    
-    const fields = ['debt-description', 'debt-type', 'debt-total-amount', 'debt-down-payment', 'debt-installments-count', 'debt-interest-rate', 'debt-interest-period', 'debt-start-date'];
-    fields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).disabled = false; });
-    debtForm.querySelectorAll('input[name="amortization-type"]').forEach(radio => radio.disabled = false);
-
-    if(debtId){
-        const debt = debts.find(d => d.id === debtId);
-        if(!debt) return;
-        
-        addEditDebtModalTitle.textContent = "Editar Dívida";
-        debtForm.querySelector('button[type="submit"]').textContent = "Salvar Alterações (Recalcular)";
-        
-        document.getElementById('debt-description').value = debt.description;
-        document.getElementById('debt-type').value = debt.type || 'outros';
-        document.getElementById('debt-total-amount').value = debt.totalAmount;
-        document.getElementById('debt-down-payment').value = debt.downPayment;
-        document.getElementById('debt-installments-count').value = debt.installmentsCount;
-        document.getElementById('debt-start-date').value = debt.startDate;
-        document.getElementById('debt-interest-rate').value = (debt.interestRate * 100).toFixed(2);
-        document.getElementById('debt-interest-period').value = debt.interestPeriod || 'monthly';
-        debtForm.querySelector(`input[name="amortization-type"][value="${debt.amortizationType}"]`).checked = true;
-    } else {
-        addEditDebtModalTitle.textContent = "Nova Dívida";
-        debtForm.querySelector('button[type="submit"]').textContent = "Salvar Dívida";
-        fields.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
-        document.getElementById('debt-type').value = 'pessoal';
-        debtForm.querySelector('input[name="amortization-type"][value="PRICE"]').checked = true;
-    }
-    addEditDebtModal.classList.remove('hidden');
-};
-        
         const closeAddEditDebtModal = () => addEditDebtModal.classList.add('hidden');
         const openDebtDetailsModal = (debtId) => { viewingDebtId = debtId; renderDebtDetailsModal(); debtDetailsModal.classList.remove('hidden'); };
         const closeDebtDetailsModal = () => { debtDetailsModal.classList.add('hidden'); currentSimulationResult = null; };
         
-        // SUBSTITUA A FUNÇÃO ANTIGA POR ESTA:
-const renderDebtManagementList = () => {
-    if (debts.length === 0) { debtListContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhuma dívida cadastrada.</p>'; return; }
-    const typeLabels = { imobiliario: 'Imobiliário', veiculo: 'Veículo', pessoal: 'Pessoal', outros: 'Outros' };
-    debtListContainer.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-4 py-3">Descrição</th><th class="px-4 py-3 text-right">Saldo Devedor</th><th class="px-4 py-3 text-right">Próxima Parcela</th><th class="px-4 py-3 text-center">Ações</th></tr></thead><tbody>${debts.map(debt => { const remainingValue=debt.installments.filter(p=>p.status==='pending').reduce((s,p)=>s+p.value,0); const nextInstallment=debt.installments.find(p=>p.status==='pending'); return `<tr class="border-b hover:bg-gray-50" data-id="${debt.id}" title="Clique para ver detalhes"><td class="px-4 py-3 font-medium text-gray-900">${debt.description} <span class="text-xs font-semibold bg-gray-200 text-gray-700 py-0.5 px-1.5 rounded-full ml-2">${typeLabels[debt.type] || 'Outros'}</span></td><td class="px-4 py-3 text-right font-semibold">${formatCurrency(remainingValue)}</td><td class="px-4 py-3 text-right">${nextInstallment?`${formatCurrency(nextInstallment.value)} em ${formatDate(nextInstallment.dueDate)}`:'Quitada'}</td><td class="px-4 py-3 flex justify-center items-center space-x-2"><button data-action="edit-debt" data-id="${debt.id}" class="font-medium text-blue-600 hover:underline p-1">Editar</button><button data-action="delete-debt" data-id="${debt.id}" class="font-medium text-red-600 hover:underline p-1">Excluir</button></td></tr>`; }).join('')}</tbody></table></div>`;
-};
-
-// SUBSTITUA A FUNÇÃO ANTIGA POR ESTA:
-const renderDebtDetailsModal = () => {
-    const debt = debts.find(d => d.id === viewingDebtId);
-    if (!debt) return;
-    debtDetailsModalTitle.textContent = debt.description;
-    const paidInstallments = debt.installments.filter(p => p.status === 'paid');
-    const totalPaid = paidInstallments.reduce((sum, p) => sum + p.value, 0) + (debt.downPayment || 0);
-    const remainingValue = debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.value, 0);
-    const totalInterest = debt.installments.reduce((sum, p) => sum + p.interest, 0);
-    debtSummaryContainer.innerHTML = `<div><p class="text-sm text-gray-500">Valor Total</p><p class="text-lg font-bold">${formatCurrency(debt.totalAmount)}</p></div><div><p class="text-sm text-gray-500">Total Pago</p><p class="text-lg font-bold text-green-600">${formatCurrency(totalPaid)}</p></div><div><p class="text-sm text-gray-500">Saldo Devedor</p><p class="text-lg font-bold text-red-600">${formatCurrency(remainingValue)}</p></div><div><p class="text-sm text-gray-500">Total Juros</p><p class="text-lg font-bold">${formatCurrency(totalInterest)}</p></div>`;
-    
-    const fgtsContainer = document.getElementById('fgts-amortization-container');
-    fgtsContainer.classList.toggle('hidden', debt.type !== 'imobiliario');
-
-    const tableHeader = `<thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0"><tr><th class="px-4 py-2 text-center">#</th><th class="px-4 py-2">Vencimento</th><th class="px-4 py-2 text-right">Parcela</th><th class="px-4 py-2 text-right">Juros</th><th class="px-4 py-2 text-right">Amortização</th><th class="px-4 py-2 text-right">Saldo Devedor</th><th class="px-4 py-2 text-center">Status</th></tr></thead>`;
-    const tableBody = debt.installments.map(p => `<tr class="border-b ${p.status === 'paid' ? 'bg-green-50' : 'bg-white'}"><td class="px-4 py-2 text-center font-medium ${p.status==='paid'?'installment-paid':''}">${p.number}</td><td class="px-4 py-2 ${p.status==='paid'?'installment-paid':''}">${formatDate(p.dueDate)}</td><td class="px-4 py-2 text-right font-semibold ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.value)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.interest)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.principal)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.remainingBalance)}</td><td class="px-4 py-2 text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full ${p.status==='paid'?'bg-green-200 text-green-800':'bg-yellow-200 text-yellow-800'}">${p.status==='paid'?'Pago':'Pendente'}</span></td></tr>`).join('');
-    debtAmortizationTableContainer.innerHTML = `<table class="w-full text-sm">${tableHeader}<tbody>${tableBody}</tbody></table>`;
-    document.getElementById('prepayment-amount').value = '';
-    prepaymentSimulationResult.classList.add('hidden');
-    prepaymentSimulationResult.innerHTML = '';
-    currentSimulationResult = null;
-};
-        
+        const renderDebtManagementList = () => {
+            if (debts.length === 0) { debtListContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhuma dívida cadastrada.</p>'; return; }
+            const typeLabels = { imobiliario: 'Imobiliário', veiculo: 'Veículo', pessoal: 'Pessoal', outros: 'Outros' };
+            debtListContainer.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-100"><tr><th class="px-4 py-3">Descrição</th><th class="px-4 py-3 text-right">Saldo Devedor</th><th class="px-4 py-3 text-right">Próxima Parcela</th><th class="px-4 py-3 text-center">Ações</th></tr></thead><tbody>${debts.map(debt => { const remainingValue=debt.installments.filter(p=>p.status==='pending').reduce((s,p)=>s+p.value,0); const nextInstallment=debt.installments.find(p=>p.status==='pending'); return `<tr class="border-b hover:bg-gray-50" data-id="${debt.id}" title="Clique para ver detalhes"><td class="px-4 py-3 font-medium text-gray-900">${debt.description} <span class="text-xs font-semibold bg-gray-200 text-gray-700 py-0.5 px-1.5 rounded-full ml-2">${typeLabels[debt.type] || 'Outros'}</span></td><td class="px-4 py-3 text-right font-semibold">${formatCurrency(remainingValue)}</td><td class="px-4 py-3 text-right">${nextInstallment?`${formatCurrency(nextInstallment.value)} em ${formatDate(nextInstallment.dueDate)}`:'Quitada'}</td><td class="px-4 py-3 flex justify-center items-center space-x-2"><button data-action="edit-debt" data-id="${debt.id}" class="font-medium text-blue-600 hover:underline p-1">Editar</button><button data-action="delete-debt" data-id="${debt.id}" class="font-medium text-red-600 hover:underline p-1">Excluir</button></td></tr>`; }).join('')}</tbody></table></div>`;
+        };
+        const renderDebtDetailsModal = () => {
+            const debt = debts.find(d => d.id === viewingDebtId);
+            if (!debt) return;
+            debtDetailsModalTitle.textContent = debt.description;
+            const paidInstallments = debt.installments.filter(p => p.status === 'paid');
+            const totalPaid = paidInstallments.reduce((sum, p) => sum + p.value, 0) + (debt.downPayment || 0);
+            const remainingValue = debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.value, 0);
+            const totalInterest = debt.installments.reduce((sum, p) => sum + p.interest, 0);
+            debtSummaryContainer.innerHTML = `<div><p class="text-sm text-gray-500">Valor Total</p><p class="text-lg font-bold">${formatCurrency(debt.totalAmount)}</p></div><div><p class="text-sm text-gray-500">Total Pago</p><p class="text-lg font-bold text-green-600">${formatCurrency(totalPaid)}</p></div><div><p class="text-sm text-gray-500">Saldo Devedor</p><p class="text-lg font-bold text-red-600">${formatCurrency(remainingValue)}</p></div><div><p class="text-sm text-gray-500">Total Juros</p><p class="text-lg font-bold">${formatCurrency(totalInterest)}</p></div>`;
+            const fgtsContainer = document.getElementById('fgts-amortization-container');
+            fgtsContainer.classList.toggle('hidden', debt.type !== 'imobiliario');
+            const tableHeader = `<thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0"><tr><th class="px-4 py-2 text-center">#</th><th class="px-4 py-2">Vencimento</th><th class="px-4 py-2 text-right">Parcela</th><th class="px-4 py-2 text-right">Juros</th><th class="px-4 py-2 text-right">Amortização</th><th class="px-4 py-2 text-right">Saldo Devedor</th><th class="px-4 py-2 text-center">Status</th></tr></thead>`;
+            const tableBody = debt.installments.map(p => `<tr class="border-b ${p.status === 'paid' ? 'bg-green-50' : 'bg-white'}"><td class="px-4 py-2 text-center font-medium ${p.status==='paid'?'installment-paid':''}">${p.number}</td><td class="px-4 py-2 ${p.status==='paid'?'installment-paid':''}">${formatDate(p.dueDate)}</td><td class="px-4 py-2 text-right font-semibold ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.value)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.interest)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.principal)}</td><td class="px-4 py-2 text-right ${p.status==='paid'?'installment-paid':''}">${formatCurrency(p.remainingBalance)}</td><td class="px-4 py-2 text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full ${p.status==='paid'?'bg-green-200 text-green-800':'bg-yellow-200 text-yellow-800'}">${p.status==='paid'?'Pago':'Pendente'}</span></td></tr>`).join('');
+            debtAmortizationTableContainer.innerHTML = `<table class="w-full text-sm">${tableHeader}<tbody>${tableBody}</tbody></table>`;
+            document.getElementById('prepayment-amount').value = '';
+            prepaymentSimulationResult.classList.add('hidden');
+            prepaymentSimulationResult.innerHTML = '';
+            currentSimulationResult = null;
+        };
         const calculateAmortization = (principal, term, monthlyRate, type) => {
             const installments = [];
             let remainingBalance = principal;
@@ -1043,14 +865,11 @@ const renderDebtDetailsModal = () => {
         transactionsModalList.addEventListener('click', async (e) => {
             const deleteButton = e.target.closest('button[data-action="delete-transaction"]');
             const row = e.target.closest('tr[data-id]');
-
             if (deleteButton) {
                 const transactionId = parseInt(deleteButton.dataset.id);
                 const transactionIndex = transactions.findIndex(t => t.id === transactionId);
                 if (transactionIndex === -1) return;
-
                 const transaction = transactions[transactionIndex];
-                
                 let confirmed = false;
                 if (transaction.debtId) {
                     if(transaction.subcategory === 'Entrada Financiamento') {
@@ -1061,21 +880,16 @@ const renderDebtDetailsModal = () => {
                 } else {
                     confirmed = await showGenericModal({ type: 'confirm', title: 'Excluir Transação', message: 'Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.' });
                 }
-
                 if (confirmed) {
                     if (transaction.debtId && transaction.installmentNumber) {
                         const debt = debts.find(d => d.id === transaction.debtId);
                         if (debt) {
                             const installment = debt.installments.find(p => p.number === transaction.installmentNumber);
-                            if (installment) {
-                                installment.status = 'pending';
-                            }
+                            if (installment) installment.status = 'pending';
                         }
                     }
-
                     transactions.splice(transactionIndex, 1);
                     modalTransactionData = modalTransactionData.filter(t => t.id !== transactionId);
-
                     await saveData();
                     updateDashboard();
                     applyFiltersAndRender(modalTransactionData, 'balance');
@@ -1085,7 +899,6 @@ const renderDebtDetailsModal = () => {
                 openModalForEdit(transactionId);
             }
         });
-
         categoryManagementContainer.addEventListener('click', handleCategoryManagementAction);
         categoryManagementContainer.addEventListener('change', handleCategoryManagementAction);
         pendingListDashboard.addEventListener('click', handlePendingAction);
@@ -1101,7 +914,6 @@ const renderDebtDetailsModal = () => {
             const row = e.target.closest('tr[data-id]');
             const deleteBtn = e.target.closest('button[data-action="delete-debt"]');
             const editBtn = e.target.closest('button[data-action="edit-debt"]');
-
             if (deleteBtn) {
                 const debtId = parseInt(deleteBtn.dataset.id);
                 handleDebtDeletion(debtId);
@@ -1114,55 +926,53 @@ const renderDebtDetailsModal = () => {
             }
         });
         
-        // SUBSTITUA O BLOCO ANTIGO POR ESTE:
-debtForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!validateDebtForm()) return;
-    let isEditing = !!editingDebtId;
-    let originalDebtId = editingDebtId;
-    if (isEditing) {
-        const confirmed = await showGenericModal({ type: 'confirm', title: 'Recalcular Dívida', message: 'Você está editando os dados financeiros de uma dívida. Isso irá apagar a dívida antiga e todas as suas parcelas, criando uma nova com os valores informados. Deseja continuar?' });
-        if (!confirmed) return;
-        
-        debts = debts.filter(d => d.id !== originalDebtId);
-        transactions = transactions.filter(t => t.debtId !== originalDebtId);
-        editingDebtId = null; 
-    }
-    const totalAmount = parseFloat(document.getElementById('debt-total-amount').value);
-    const downPayment = parseFloat(document.getElementById('debt-down-payment').value) || 0;
-    const principal = totalAmount - downPayment;
-    const term = parseInt(document.getElementById('debt-installments-count').value);
-    const rate = (parseFloat(document.getElementById('debt-interest-rate').value) || 0) / 100;
-    const ratePeriod = document.getElementById('debt-interest-period').value;
-    const startDate = document.getElementById('debt-start-date').value;
-    const amortizationType = debtForm.querySelector('input[name="amortization-type"]:checked').value;
-    const description = document.getElementById('debt-description').value;
-    const debtType = document.getElementById('debt-type').value;
-    const monthlyRate = ratePeriod === 'yearly' && rate > 0 ? Math.pow(1 + rate, 1/12) - 1 : rate;
-    const installments = calculateAmortization(principal, term, monthlyRate, amortizationType);
-    const newDebtId = Date.now();
-    const newDebt = { id: newDebtId, description, type: debtType, totalAmount, downPayment, financedAmount: principal, installmentsCount: term, interestRate: monthlyRate, interestPeriod: 'monthly', startDate, amortizationType, installments: [] };
-    const firstInstallmentDate = new Date(startDate + 'T12:00:00Z');
-    
-    installments.forEach((inst, index) => {
-        const installmentDate = new Date(firstInstallmentDate.getTime());
-        installmentDate.setUTCMonth(installmentDate.getUTCMonth() + index);
-        const dueDate = installmentDate.toISOString().split('T')[0];
-        newDebt.installments.push({ ...inst, dueDate, status: 'pending' });
-        transactions.push({ id: Date.now() + index, debtId: newDebtId, description: `${description} - Parcela ${inst.number}/${term}`, amount: inst.value, date: dueDate, type: 'saida', category: 'Dívidas', subcategory: 'Parcela Financiamento', status: 'pending', isFixed: true, isVariable: false, installmentNumber: inst.number, installmentsTotal: term });
-    });
-    
-    if (downPayment > 0) {
-        transactions.push({ id: Date.now() - 1, debtId: newDebtId, description: `Entrada: ${description}`, amount: downPayment, date: startDate, type: 'saida', category: 'Dívidas', subcategory: 'Entrada Financiamento', status: 'completed', isFixed: false, isVariable: false });
-    }
-    
-    debts.push(newDebt);
-    await saveData();
-    updateDashboard();
-    closeAddEditDebtModal();
-    renderDebtManagementList();
-});
-        // INÍCIO: Lógica de Simulação e Adiantamento
+        debtForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validateDebtForm()) return;
+            let isEditing = !!editingDebtId;
+            let originalDebtId = editingDebtId;
+            if (isEditing) {
+                const confirmed = await showGenericModal({ type: 'confirm', title: 'Recalcular Dívida', message: 'Você está editando os dados financeiros de uma dívida. Isso irá apagar a dívida antiga e todas as suas parcelas, criando uma nova com os valores informados. Deseja continuar?' });
+                if (!confirmed) return;
+                debts = debts.filter(d => d.id !== originalDebtId);
+                transactions = transactions.filter(t => t.debtId !== originalDebtId);
+                editingDebtId = null; 
+            }
+            const totalAmount = parseFloat(document.getElementById('debt-total-amount').value);
+            const downPayment = parseFloat(document.getElementById('debt-down-payment').value) || 0;
+            const principal = totalAmount - downPayment;
+            const term = parseInt(document.getElementById('debt-installments-count').value);
+            const rate = (parseFloat(document.getElementById('debt-interest-rate').value) || 0) / 100;
+            const ratePeriod = document.getElementById('debt-interest-period').value;
+            const startDate = document.getElementById('debt-start-date').value;
+            const amortizationType = debtForm.querySelector('input[name="amortization-type"]:checked').value;
+            const description = document.getElementById('debt-description').value;
+            const debtType = document.getElementById('debt-type').value;
+            const monthlyRate = ratePeriod === 'yearly' && rate > 0 ? Math.pow(1 + rate, 1/12) - 1 : rate;
+            const installments = calculateAmortization(principal, term, monthlyRate, amortizationType);
+            const newDebtId = Date.now();
+            const newDebt = { id: newDebtId, description, type: debtType, totalAmount, downPayment, financedAmount: principal, installmentsCount: term, interestRate: monthlyRate, interestPeriod: 'monthly', startDate, amortizationType, installments: [] };
+            const firstInstallmentDate = new Date(startDate + 'T12:00:00Z');
+            
+            installments.forEach((inst, index) => {
+                const installmentDate = new Date(firstInstallmentDate.getTime());
+                installmentDate.setUTCMonth(installmentDate.getUTCMonth() + index);
+                const dueDate = installmentDate.toISOString().split('T')[0];
+                newDebt.installments.push({ ...inst, dueDate, status: 'pending' });
+                transactions.push({ id: Date.now() + index, debtId: newDebtId, description: `${description} - Parcela ${inst.number}/${term}`, amount: inst.value, date: dueDate, type: 'saida', category: 'Dívidas', subcategory: 'Parcela Financiamento', status: 'pending', isFixed: true, isVariable: false, installmentNumber: inst.number, installmentsTotal: term });
+            });
+            
+            if (downPayment > 0) {
+                transactions.push({ id: Date.now() - 1, debtId: newDebtId, description: `Entrada: ${description}`, amount: downPayment, date: startDate, type: 'saida', category: 'Dívidas', subcategory: 'Entrada Financiamento', status: 'completed', isFixed: false, isVariable: false });
+            }
+            
+            debts.push(newDebt);
+            await saveData();
+            updateDashboard();
+            closeAddEditDebtModal();
+            renderDebtManagementList();
+        });
+
         simulatePrepaymentBtn.addEventListener('click', () => {
             const amount = parseFloat(document.getElementById('prepayment-amount').value);
             const strategy = document.getElementById('prepayment-strategy').value;
@@ -1173,38 +983,31 @@ debtForm.addEventListener('submit', async (e) => {
                 currentSimulationResult = null;
                 return;
             }
-
             const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
             const remainingPrincipal = pendingInstallments.reduce((sum, p) => sum + p.principal, 0);
-
             if (amount > remainingPrincipal) {
                 prepaymentSimulationResult.innerHTML = `<strong class="text-red-600">O valor a adiantar não pode ser maior que o saldo devedor principal (${formatCurrency(remainingPrincipal)}).</strong>`;
                 prepaymentSimulationResult.classList.remove('hidden');
                 currentSimulationResult = null;
                 return;
             }
-            
             let resultText = '';
             currentSimulationResult = { amount, strategy, debtId: debt.id, changes: {} };
-
             if (strategy === 'reduce_term') {
                 let remainingAmount = amount;
                 let installmentsPaidOff = 0;
                 let interestSaved = 0;
                 const installmentsToPay = [...pendingInstallments].reverse();
-
                 for (const inst of installmentsToPay) {
                     if (remainingAmount >= inst.principal) {
                         remainingAmount -= inst.principal;
                         installmentsPaidOff++;
                         interestSaved += inst.interest;
-                    } else {
-                        break; 
-                    }
+                    } else break; 
                 }
                 resultText = `Com ${formatCurrency(amount)}, você quitará <strong>${installmentsPaidOff} parcelas</strong> do final do contrato. A economia total em juros será de <strong>${formatCurrency(interestSaved)}</strong>.`;
                 currentSimulationResult.changes = { type: 'reduce_term', installmentsPaidOff };
-            } else { // reduce_installment
+            } else {
                 const newPrincipal = remainingPrincipal - amount;
                 const newInstallments = calculateAmortization(newPrincipal, pendingInstallments.length, debt.interestRate, debt.amortizationType);
                 const oldInstallmentValue = pendingInstallments[0].value;
@@ -1212,11 +1015,9 @@ debtForm.addEventListener('submit', async (e) => {
                 const oldTotalInterest = pendingInstallments.reduce((sum, p) => sum + p.interest, 0);
                 const newTotalInterest = newInstallments.reduce((sum, p) => sum + p.interest, 0);
                 const interestSaved = oldTotalInterest - newTotalInterest;
-                
                 resultText = `O valor das suas próximas <strong>${pendingInstallments.length} parcelas</strong> será reduzido de ${formatCurrency(oldInstallmentValue)} para <strong>${formatCurrency(newInstallmentValue)}</strong>. A economia total em juros será de <strong>${formatCurrency(interestSaved)}</strong>.`;
                 currentSimulationResult.changes = { type: 'reduce_installment', newInstallments };
             }
-            
             prepaymentSimulationResult.innerHTML = resultText;
             prepaymentSimulationResult.classList.remove('hidden');
         });
@@ -1226,172 +1027,69 @@ debtForm.addEventListener('submit', async (e) => {
                 await showGenericModal({type: 'alert', title: 'Ação Necessária', message: 'Por favor, clique em "Simular" antes de confirmar.'});
                 return;
             }
-
             const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Adiantamento', message: `Confirma o adiantamento de ${formatCurrency(currentSimulationResult.amount)}? Uma nova transação será criada.`});
             if (!confirmed) return;
-
             const debt = debts.find(d => d.id === currentSimulationResult.debtId);
             if (!debt) return;
-
             const changes = currentSimulationResult.changes;
-
             if (changes.type === 'reduce_term') {
                 const paidOffCount = changes.installmentsPaidOff;
                 const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
                 const paidOffInstallments = pendingInstallments.slice(-paidOffCount);
                 const paidOffNumbers = paidOffInstallments.map(p => p.number);
-                
-                // Remove as transações pendentes correspondentes
                 transactions = transactions.filter(t => !(t.debtId === debt.id && paidOffNumbers.includes(t.installmentNumber)));
-                
-                // Remove as parcelas da dívida
                 debt.installments = debt.installments.filter(p => p.status === 'paid' || !paidOffNumbers.includes(p.number));
-
-            } else { // reduce_installment
+            } else {
                 const newInstallmentsData = changes.newInstallments;
                 const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
                 const firstPendingNumber = pendingInstallments[0].number;
-                
-                // Remove as transações pendentes antigas
                 transactions = transactions.filter(t => !(t.debtId === debt.id && t.status === 'pending'));
-
-                // Atualiza as parcelas na dívida e cria novas transações
                 debt.installments = debt.installments.filter(p => p.status === 'paid');
                 newInstallmentsData.forEach((newInst, index) => {
                     const installmentNumber = firstPendingNumber + index;
                     const installmentDate = new Date(pendingInstallments[index].dueDate + 'T12:00:00Z');
                     const dueDate = installmentDate.toISOString().split('T')[0];
-                    
                     debt.installments.push({ ...newInst, number: installmentNumber, dueDate, status: 'pending' });
                     transactions.push({ id: Date.now() + index, debtId: debt.id, description: `${debt.description} - Parcela ${installmentNumber}/${debt.installmentsCount}`, amount: newInst.value, date: dueDate, type: 'saida', category: 'Dívidas', subcategory: 'Parcela Financiamento', status: 'pending', isFixed: true, isVariable: false, installmentNumber, installmentsTotal: debt.installmentsCount });
                 });
             }
-
-            // Adiciona a transação do adiantamento
-            transactions.push({ id: Date.now() - 1, debtId: debt.id, description: `Adiantamento de Parcela: ${debt.description}`, amount: currentSimulationResult.amount, date: new Date().toISOString().split('T')[0], type: 'saida', category: 'Dívidas', subcategory: 'Adiantamento de Parcela', status: 'completed' });
-
+            const transDescription = currentSimulationResult.description || `Adiantamento de Parcela: ${debt.description}`;
+            const transSubcategory = currentSimulationResult.subcategory || 'Adiantamento de Parcela';
+            transactions.push({ id: Date.now() - 1, debtId: debt.id, description: transDescription, amount: currentSimulationResult.amount, date: new Date().toISOString().split('T')[0], type: 'saida', category: 'Dívidas', subcategory: transSubcategory, status: 'completed' });
+            
             await saveData();
             updateDashboard();
-            renderDebtDetailsModal(); // Re-renderiza o modal com os dados atualizados
-            await showGenericModal({type: 'alert', title: 'Sucesso', message: 'Adiantamento confirmado e registrado com sucesso!'});
+            renderDebtDetailsModal();
+            await showGenericModal({type: 'alert', title: 'Sucesso', message: 'Operação confirmada e registrada com sucesso!'});
         });
-        // ADICIONE ESTE BLOCO NOVO NO FINAL DO SEU SCRIPT
-simulatePrepaymentBtn.addEventListener('click', () => {
-    const amount = parseFloat(document.getElementById('prepayment-amount').value);
-    const strategy = document.getElementById('prepayment-strategy').value;
-    const debt = debts.find(d => d.id === viewingDebtId);
-    if (!debt || isNaN(amount) || amount <= 0) {
-        prepaymentSimulationResult.innerHTML = `<strong class="text-red-600">Por favor, insira um valor válido.</strong>`;
-        prepaymentSimulationResult.classList.remove('hidden');
-        currentSimulationResult = null;
-        return;
-    }
-    const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-    const remainingPrincipal = pendingInstallments.reduce((sum, p) => sum + p.principal, 0);
-    if (amount > remainingPrincipal) {
-        prepaymentSimulationResult.innerHTML = `<strong class="text-red-600">O valor a adiantar não pode ser maior que o saldo devedor principal (${formatCurrency(remainingPrincipal)}).</strong>`;
-        prepaymentSimulationResult.classList.remove('hidden');
-        currentSimulationResult = null;
-        return;
-    }
-    let resultText = '';
-    currentSimulationResult = { amount, strategy, debtId: debt.id, changes: {} };
-    if (strategy === 'reduce_term') {
-        let remainingAmount = amount;
-        let installmentsPaidOff = 0;
-        let interestSaved = 0;
-        const installmentsToPay = [...pendingInstallments].reverse();
-        for (const inst of installmentsToPay) {
-            if (remainingAmount >= inst.principal) {
-                remainingAmount -= inst.principal;
-                installmentsPaidOff++;
-                interestSaved += inst.interest;
-            } else break; 
-        }
-        resultText = `Com ${formatCurrency(amount)}, você quitará <strong>${installmentsPaidOff} parcelas</strong> do final do contrato. A economia total em juros será de <strong>${formatCurrency(interestSaved)}</strong>.`;
-        currentSimulationResult.changes = { type: 'reduce_term', installmentsPaidOff };
-    } else {
-        const newPrincipal = remainingPrincipal - amount;
-        const newInstallments = calculateAmortization(newPrincipal, pendingInstallments.length, debt.interestRate, debt.amortizationType);
-        const oldInstallmentValue = pendingInstallments[0].value;
-        const newInstallmentValue = newInstallments[0].value;
-        const oldTotalInterest = pendingInstallments.reduce((sum, p) => sum + p.interest, 0);
-        const newTotalInterest = newInstallments.reduce((sum, p) => sum + p.interest, 0);
-        const interestSaved = oldTotalInterest - newTotalInterest;
-        resultText = `O valor das suas próximas <strong>${pendingInstallments.length} parcelas</strong> será reduzido de ${formatCurrency(oldInstallmentValue)} para <strong>${formatCurrency(newInstallmentValue)}</strong>. A economia total em juros será de <strong>${formatCurrency(interestSaved)}</strong>.`;
-        currentSimulationResult.changes = { type: 'reduce_installment', newInstallments };
-    }
-    prepaymentSimulationResult.innerHTML = resultText;
-    prepaymentSimulationResult.classList.remove('hidden');
-});
 
-confirmPrepaymentBtn.addEventListener('click', async () => {
-    if (!currentSimulationResult) {
-        await showGenericModal({type: 'alert', title: 'Ação Necessária', message: 'Por favor, clique em "Simular" antes de confirmar.'});
-        return;
-    }
-    const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Adiantamento', message: `Confirma o adiantamento de ${formatCurrency(currentSimulationResult.amount)}? Uma nova transação será criada.`});
-    if (!confirmed) return;
-    const debt = debts.find(d => d.id === currentSimulationResult.debtId);
-    if (!debt) return;
-    const changes = currentSimulationResult.changes;
-    if (changes.type === 'reduce_term') {
-        const paidOffCount = changes.installmentsPaidOff;
-        const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-        const paidOffInstallments = pendingInstallments.slice(-paidOffCount);
-        const paidOffNumbers = paidOffInstallments.map(p => p.number);
-        transactions = transactions.filter(t => !(t.debtId === debt.id && paidOffNumbers.includes(t.installmentNumber)));
-        debt.installments = debt.installments.filter(p => p.status === 'paid' || !paidOffNumbers.includes(p.number));
-    } else {
-        const newInstallmentsData = changes.newInstallments;
-        const pendingInstallments = debt.installments.filter(p => p.status === 'pending');
-        const firstPendingNumber = pendingInstallments[0].number;
-        transactions = transactions.filter(t => !(t.debtId === debt.id && t.status === 'pending'));
-        debt.installments = debt.installments.filter(p => p.status === 'paid');
-        newInstallmentsData.forEach((newInst, index) => {
-            const installmentNumber = firstPendingNumber + index;
-            const installmentDate = new Date(pendingInstallments[index].dueDate + 'T12:00:00Z');
-            const dueDate = installmentDate.toISOString().split('T')[0];
-            debt.installments.push({ ...newInst, number: installmentNumber, dueDate, status: 'pending' });
-            transactions.push({ id: Date.now() + index, debtId: debt.id, description: `${debt.description} - Parcela ${installmentNumber}/${debt.installmentsCount}`, amount: newInst.value, date: dueDate, type: 'saida', category: 'Dívidas', subcategory: 'Parcela Financiamento', status: 'pending', isFixed: true, isVariable: false, installmentNumber, installmentsTotal: debt.installmentsCount });
+        document.getElementById('amortize-fgts-btn').addEventListener('click', async () => {
+            const amountStr = await showGenericModal({type: 'prompt', title: 'Amortizar com FGTS', message: 'Digite o valor do FGTS a ser utilizado:'});
+            const amount = parseFloat(amountStr);
+            if (isNaN(amount) || amount <= 0) return;
+            
+            document.getElementById('prepayment-amount').value = amount;
+            document.getElementById('prepayment-strategy').value = 'reduce_term';
+            
+            simulatePrepaymentBtn.click();
+            
+            if(currentSimulationResult) {
+                const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Amortização com FGTS', message: `Confirma a amortização de ${formatCurrency(amount)}? Uma transação será criada.`});
+                if (!confirmed) {
+                    currentSimulationResult = null; 
+                    prepaymentSimulationResult.classList.add('hidden');
+                    return;
+                }
+
+                const debt = debts.find(d => d.id === currentSimulationResult.debtId);
+                if (!debt) return;
+                
+                currentSimulationResult.description = `Amortização FGTS: ${debt.description}`;
+                currentSimulationResult.subcategory = 'Amortização FGTS';
+
+                await confirmPrepaymentBtn.dispatchEvent(new Event('click'));
+            }
         });
-    }
-    transactions.push({ id: Date.now() - 1, debtId: debt.id, description: `Adiantamento de Parcela: ${debt.description}`, amount: currentSimulationResult.amount, date: new Date().toISOString().split('T')[0], type: 'saida', category: 'Dívidas', subcategory: 'Adiantamento de Parcela', status: 'completed' });
-    await saveData();
-    updateDashboard();
-    renderDebtDetailsModal();
-    await showGenericModal({type: 'alert', title: 'Sucesso', message: 'Adiantamento confirmado e registrado com sucesso!'});
-});
-
-document.getElementById('amortize-fgts-btn').addEventListener('click', async () => {
-    const amountStr = await showGenericModal({type: 'prompt', title: 'Amortizar com FGTS', message: 'Digite o valor do FGTS a ser utilizado:'});
-    const amount = parseFloat(amountStr);
-    if (isNaN(amount) || amount <= 0) return;
-    
-    document.getElementById('prepayment-amount').value = amount;
-    document.getElementById('prepayment-strategy').value = 'reduce_term';
-    
-    simulatePrepaymentBtn.click();
-    
-    if(currentSimulationResult) {
-        const confirmed = await showGenericModal({type: 'confirm', title: 'Confirmar Amortização com FGTS', message: `Confirma a amortização de ${formatCurrency(amount)}? Uma transação será criada.`});
-        if (!confirmed) {
-            currentSimulationResult = null; // Limpa a simulação se o usuário cancelar
-            prepaymentSimulationResult.classList.add('hidden');
-            return;
-        }
-
-        const debt = debts.find(d => d.id === currentSimulationResult.debtId);
-        if (!debt) return;
-        
-        // Altera a descrição antes de confirmar
-        currentSimulationResult.description = `Amortização FGTS: ${debt.description}`;
-        currentSimulationResult.subcategory = 'Amortização FGTS';
-
-        confirmPrepaymentBtn.click();
-    }
-});
-        // FIM: Lógica de Simulação e Adiantamento
 
     });
     </script>
