@@ -351,27 +351,26 @@
             pendingListDashboard.innerHTML = html;
         };
 
-        const updateDashboard = () => {
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-            const completedTransactions = transactions.filter(t => t.status === 'completed');
-            const totalEntradas = completedTransactions.filter(t => t.type === 'entrada').reduce((acc, t) => acc + t.amount, 0);
-            const totalSaidas = completedTransactions.filter(t => t.type === 'saida' || t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
-            const totalInvestido = completedTransactions.filter(t => t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
-            // CORREÇÃO: Usar o valor total da parcela (value) para o saldo devedor
-            const totalDebtBalance = debts.reduce((sum, debt) => debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.value, 0) + sum, 0);
-            const faturaAtual = completedTransactions.filter(t => {
-                const tDate = new Date(t.date + 'T00:00:00');
-                return t['payment-method']==='Cartão de Crédito' && tDate.getMonth()===currentMonth && tDate.getFullYear()===currentYear;
-            }).reduce((acc, t) => acc + t.amount, 0);
-            balanceValueEl.textContent = formatCurrency(totalEntradas - totalSaidas);
-            investmentsValueEl.textContent = formatCurrency(totalInvestido);
-            invoiceValueEl.textContent = formatCurrency(faturaAtual);
-            debtsValueEl.textContent = formatCurrency(totalDebtBalance);
-            renderPendingTransactionsOnDashboard();
-            updateOverviewCard();
-        };
+const updateDashboard = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const completedTransactions = transactions.filter(t => t.status === 'completed');
+    const totalEntradas = completedTransactions.filter(t => t.type === 'entrada').reduce((acc, t) => acc + t.amount, 0);
+    const totalSaidas = completedTransactions.filter(t => t.type === 'saida' || t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
+    const totalInvestido = completedTransactions.filter(t => t.type === 'investimento').reduce((acc, t) => acc + t.amount, 0);
+    const totalDebtBalance = debts.reduce((sum, debt) => debt.installments.filter(p => p.status === 'pending').reduce((s, p) => s + p.value, 0) + sum, 0);
+    const faturaAtual = completedTransactions.filter(t => {
+        const tDate = new Date(t.date + 'T00:00:00');
+        return t['payment-method']==='Cartão de Crédito' && tDate.getMonth()===currentMonth && tDate.getFullYear()===currentYear;
+    }).reduce((acc, t) => acc + t.amount, 0);
+    balanceValueEl.textContent = formatCurrency(totalEntradas - totalSaidas);
+    investmentsValueEl.textContent = formatCurrency(totalInvestido);
+    invoiceValueEl.textContent = formatCurrency(faturaAtual);
+    debtsValueEl.textContent = formatCurrency(totalDebtBalance);
+    renderPendingTransactionsOnDashboard();
+    updateOverviewCard();
+};
 
         const generateTransactionListHTML = (data, cardType) => {
             if(data.length===0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
