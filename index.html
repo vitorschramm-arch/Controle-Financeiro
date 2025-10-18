@@ -878,8 +878,26 @@
                 renderDebtManagementList();
             }
         };
-        
+
         // --- Event Listeners ---
+
+        // Ação para abrir e popular o modal de configurações
+        const openSettingsModal = () => {
+            invoiceClosingDayInput.value = settings.invoiceClosingDay;
+            savingsGoalInput.value = settings.savingsGoal > 0 ? settings.savingsGoal : '';
+            renderCategoryManagement();
+            settingsModal.classList.remove('hidden');
+        };
+
+        // *** AQUI ESTÁ A CORREÇÃO FUNDAMENTAL ***
+        // Conecta o clique no botão de engrenagem à função que abre o modal
+        settingsBtn.addEventListener('click', openSettingsModal);
+        
+        // Listeners para fechar o modal de configurações
+        closeSettingsModalBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.classList.add('hidden'); });
+
+        // Demais Listeners do aplicativo
         addTransactionBtn.addEventListener('click', openModal);
         closeModalBtn.addEventListener('click', closeModal);
         transactionModal.addEventListener('click', (e) => { if (e.target === transactionModal) closeModal(); });
@@ -976,30 +994,7 @@
                 closeModal();
             }
         });
-
-        // =============================================================
-        // LÓGICA DO MODAL DE CONFIGURAÇÕES - CORREÇÃO DEFINITIVA
-        // =============================================================
-        const openSettingsModal = () => {
-            invoiceClosingDayInput.value = settings.invoiceClosingDay;
-            savingsGoalInput.value = settings.savingsGoal > 0 ? settings.savingsGoal : '';
-            renderCategoryManagement();
-            settingsModal.classList.remove('hidden');
-        };
-
-        settingsBtn.addEventListener('click', openSettingsModal);
         
-        closeSettingsModalBtn.addEventListener('click', () => {
-            settingsModal.classList.add('hidden');
-        });
-        
-        settingsModal.addEventListener('click', (e) => { 
-            if (e.target === settingsModal) {
-                settingsModal.classList.add('hidden');
-            }
-        });
-        // =============================================================
-
         settingsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             settings.invoiceClosingDay = parseInt(invoiceClosingDayInput.value) || 1;
@@ -1010,7 +1005,7 @@
             await showGenericModal({ type: 'alert', title: 'Sucesso', message: 'Configurações salvas!'});
             settingsModal.classList.add('hidden');
         });
-
+        
         budgetBarsContainer.addEventListener('click', (e) => {
             const regularizeButton = e.target.closest('button[data-action="regularize"]');
             if(regularizeButton) { e.stopPropagation(); openSettingsModal(); return; }
