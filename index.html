@@ -243,7 +243,7 @@
         </div>
 
     </div>
-    
+
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const { auth, database, provider, signInWithPopup, signOut, onAuthStateChanged, ref, set, get } = window.firebaseSDK;
@@ -357,6 +357,7 @@
         const closeQuickInvoiceModalBtn = document.getElementById('close-quick-invoice-modal-btn');
         const quickInvoiceForm = document.getElementById('quick-invoice-form');
         const quickAddInvoiceBtn = document.getElementById('quick-add-invoice-btn');
+
 
         const overviewIncomeCard = document.getElementById('overview-income-card');
         const overviewExpensesCard = document.getElementById('overview-expenses-card');
@@ -512,10 +513,8 @@
             return { startDate, endDate };
         };
         
-        // ALTERAÇÃO: Nova função para gerar pagamentos de fatura pendentes
         const generatePendingInvoicePayments = async () => {
             const today = new Date();
-            // Verificar os últimos 12 meses para gerar faturas que possam não ter sido criadas
             for (let i = 0; i < 12; i++) {
                 const checkDate = new Date();
                 checkDate.setMonth(checkDate.getMonth() - i);
@@ -701,7 +700,6 @@
             if(config.filters.includes('type')){mainFiltersHTML+=`<div class="flex-shrink-0"><span class="text-sm font-medium text-gray-700 block mb-1">Tipo:</span><div id="modal-type-filter-buttons" class="flex rounded-md shadow-sm"><button data-type="all" class="filter-type-btn active">Todos</button><button data-type="entrada" class="filter-type-btn">Entrada</button><button data-type="saida" class="filter-type-btn">Saída</button><button data-type="investimento" class="filter-type-btn">Invest.</button></div></div>`}
             if(config.filters.includes('category')){const allCategories=[...new Set(modalTransactionData.map(t=>t.category))].sort();let options='<option value="all">Todas as Categorias</option>';allCategories.forEach(cat=>{options+=`<option value="${cat}">${cat}</option>`});mainFiltersHTML+=`<div class="flex-grow"><label for="modal-category-filter" class="text-sm font-medium text-gray-700">Categoria:</label><select id="modal-category-filter" class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">${options}</select></div>`}
             if(config.filters.includes('subcategory')){const allSubcategories=[...new Set(modalTransactionData.map(t=>t.subcategory).filter(Boolean))].sort();let options='<option value="all">Todas as Subcategorias</option>';allSubcategories.forEach(sub=>{options+=`<option value="${sub}">${sub}</option>`});mainFiltersHTML+=`<div class="flex-grow"><label for="modal-subcategory-filter" class="text-sm font-medium text-gray-700">Subcategoria:</label><select id="modal-subcategory-filter" class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">${options}</select></div>`}
-            // ALTERAÇÃO: Adiciona filtro de forma de pagamento
             if(config.filters.includes('paymentMethod')){const allMethods=[...new Set(modalTransactionData.map(t=>t['payment-method']).filter(Boolean))].sort();let options='<option value="all">Todas as Formas</option>';allMethods.forEach(m=>{options+=`<option value="${m}">${m}</option>`});mainFiltersHTML+=`<div class="flex-grow"><label for="modal-payment-filter" class="text-sm font-medium text-gray-700">Forma de Pag.:</label><select id="modal-payment-filter" class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">${options}</select></div>`}
             
             mainFiltersHTML+='</div>';filtersHTML+=mainFiltersHTML;
