@@ -182,7 +182,14 @@
         <div id="transactions-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4">
             <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-auto max-h-[90vh] flex flex-col">
                 <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <h2 id="transactions-modal-title" class="text-xl font-bold text-gray-800">Detalhes</h2>
+                    <div id="transactions-modal-header" class="flex items-center space-x-2">
+                        <h2 id="transactions-modal-title" class="text-xl font-bold text-gray-800">Detalhes</h2>
+                        <div id="extrato-month-nav" class="hidden items-center space-x-2">
+                            <button id="prev-extrato-month-btn" class="p-1 rounded-full hover:bg-gray-200"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
+                            <span id="extrato-month-display" class="font-semibold text-gray-700 w-32 text-center"></span>
+                            <button id="next-extrato-month-btn" class="p-1 rounded-full hover:bg-gray-200"><svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
+                        </div>
+                    </div>
                     <div class="flex items-center space-x-3">
                         <button id="export-btn" class="hidden bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-green-700 text-sm font-semibold flex items-center space-x-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span>Exportar XLSX</span></button>
                         <button id="close-transactions-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
@@ -298,6 +305,13 @@
         const prevMonthBtn = document.getElementById('prev-month-btn');
         const nextMonthBtn = document.getElementById('next-month-btn');
         const pendingMonthDisplay = document.getElementById('pending-month-display');
+        
+        // ALTERAÇÃO: Seletores da navegação do extrato
+        const extratoMonthNav = document.getElementById('extrato-month-nav');
+        const prevExtratoMonthBtn = document.getElementById('prev-extrato-month-btn');
+        const nextExtratoMonthBtn = document.getElementById('next-extrato-month-btn');
+        const extratoMonthDisplay = document.getElementById('extrato-month-display');
+
         const settingsBtn = document.getElementById('settings-btn');
         const settingsModal = document.getElementById('settings-modal');
         const closeSettingsModalBtn = document.getElementById('close-settings-modal-btn');
@@ -368,6 +382,7 @@
         let debts = [];
         let currentPendingDate = new Date();
         let invoiceMonthOffset = 0; 
+        let extratoMonthOffset = 0; // Para o modal de extrato completo
         let selectedTransactionType = null;
         let areValuesVisible = true;
         let currentSort = { key: 'date', direction: 'desc' };
@@ -454,8 +469,8 @@
         
         const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const formatDate = (dateString) => new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR');
-        
-        // CORREÇÃO: A função generateTransactionListHTML foi movida para o escopo correto.
+
+        // CORREÇÃO: Função movida para o escopo global do DOMContentLoaded
         const generateTransactionListHTML = (data, cardType) => {
             if (data.length === 0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
 
@@ -491,12 +506,12 @@
 
                 let typeColorClass = '';
                 switch (t.type) {
-                    case 'entrada': typeColorClass = 'bg-green-50'; break;
-                    case 'saida': typeColorClass = 'bg-red-50'; break;
-                    case 'investimento': typeColorClass = 'bg-blue-50'; break;
+                    case 'entrada': typeColorClass = 'bg-green-100'; break;
+                    case 'saida': typeColorClass = 'bg-red-100'; break;
+                    case 'investimento': typeColorClass = 'bg-blue-100'; break;
                 }
 
-                return `<tr class="${typeColorClass} ${rowClass}" data-id="${t.id}" title="Clique para editar">
+                return `<tr class="border-b ${typeColorClass} ${rowClass}" data-id="${t.id}" title="Clique para editar">
                             <td class="p-3 whitespace-nowrap">${formatDate(t.date)}</td>
                             <td class="p-3">${t.description || '-'}</td>
                             <td class="p-3">${t.category}${t.subcategory ? ' (' + t.subcategory + ')' : ''}</td>
@@ -508,7 +523,7 @@
 
             return `<div class="overflow-x-auto"><table class="w-full border-collapse">${headerHTML ? `<thead class="bg-gray-100"><tr>${headerHTML}</tr></thead>` : ''}<tbody id="transaction-list-body">${rowsHTML}</tbody></table></div>`;
         };
-
+        
         const renderPendingModalList = () => {
             const monthName = currentPendingDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
             pendingModalTitle.textContent = `Pendentes de ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`;
@@ -775,7 +790,20 @@
             const updateOnChange=()=>{applyFiltersAndRender(modalTransactionData, config.cardType)};
             document.querySelectorAll('.filter-type-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.filter-type-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeFilters.type=btn.dataset.type;updateOnChange()})});
             ['modal-start-date-filter','modal-end-date-filter','modal-category-filter','modal-subcategory-filter', 'modal-payment-filter'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change', (e) => { const filterType = id === 'modal-payment-filter' ? 'paymentMethod' : e.target.id.split('-')[1]; activeFilters[filterType] = e.target.value; updateOnChange(); }); });
-            applyFiltersAndRender(modalTransactionData, config.cardType);
+            
+            // CORREÇÃO: Lógica de exibição da navegação de mês
+            if (config.cardType === 'balance') {
+                transactionsModalTitle.classList.add('hidden');
+                extratoMonthNav.classList.remove('hidden');
+                extratoMonthNav.classList.add('flex');
+                renderExtratoModalContent();
+            } else {
+                transactionsModalTitle.classList.remove('hidden');
+                extratoMonthNav.classList.add('hidden');
+                extratoMonthNav.classList.remove('flex');
+                applyFiltersAndRender(modalTransactionData, config.cardType);
+            }
+            
             transactionsModal.classList.remove('hidden');
         };
 
@@ -1260,6 +1288,25 @@
                 renderDebtManagementList();
             }
         };
+
+        const renderExtratoModalContent = () => {
+            const date = new Date();
+            date.setMonth(date.getMonth() + extratoMonthOffset);
+            
+            const monthName = date.toLocaleString('pt-BR', { month: 'long' });
+            const year = date.getFullYear();
+            extratoMonthDisplay.textContent = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} ${year}`;
+
+            const month = date.getMonth();
+            const currentYear = date.getFullYear();
+            
+            const monthTransactions = transactions.filter(t => {
+                const tDate = new Date(t.date + 'T00:00:00');
+                return tDate.getMonth() === month && tDate.getFullYear() === currentYear;
+            });
+
+            applyFiltersAndRender(monthTransactions, 'balance');
+        };
         
         // --- Event Listeners ---
         addTransactionBtn.addEventListener('click', openModal);
@@ -1294,29 +1341,43 @@
         
         prevInvoiceBtn.addEventListener('click', () => { if (invoiceMonthOffset > 0) { invoiceMonthOffset--; updateDashboard(); } });
         nextInvoiceBtn.addEventListener('click', () => { invoiceMonthOffset++; updateDashboard(); });
-
-        cards.forEach(card => card.addEventListener('click', (e) => {
-            if (e.target.closest('#prev-invoice-btn') || e.target.closest('#next-invoice-btn') || e.target.closest('#quick-add-invoice-btn')) {
-                return;
-            }
-            const cardType = card.dataset.cardType;
-            switch (cardType) {
-                case 'balance': openTransactionsModal({ cardType: 'balance', title: 'Extrato Completo', transactions: transactions, filters: ['period', 'type', 'category', 'subcategory', 'paymentMethod'] }); break;
-                case 'investments': openTransactionsModal({ cardType: 'investments', title: 'Total Investido', transactions: transactions.filter(t => t.status === 'completed' && t.type === 'investimento'), filters: [] }); break;
-                case 'invoice': 
-                    const { startDate, endDate } = getInvoicePeriod(invoiceMonthOffset);
-                    const invoiceTransactions = transactions.filter(t => {
-                        if (t['payment-method'] !== 'Cartão de Crédito') return false;
-                        const tDate = new Date(t.date + 'T00:00:00');
-                        return tDate >= startDate && tDate <= endDate;
-                    });
-                    const title = `Fatura (Fecha em ${endDate.toLocaleDateString('pt-BR')})`;
-                    openTransactionsModal({ cardType: 'invoice', title: title, transactions: invoiceTransactions, filters: [] }); 
-                    break;
-                case 'debts': openDebtManagementModal(); break;
-            }
-        }));
         
+        // CORREÇÃO: Listener do card de saldo
+        document.querySelector('[data-card-type="balance"]').addEventListener('click', (e) => {
+            if (e.target.closest('.toggle-visibility-btn')) return;
+            extratoMonthOffset = 0;
+            openTransactionsModal({ 
+                cardType: 'balance', 
+                title: 'Extrato Completo', 
+                transactions: [], // Será preenchido por renderExtratoModalContent
+                filters: ['type', 'category', 'subcategory', 'paymentMethod'] 
+            });
+        });
+
+        cards.forEach(card => {
+             if (card.dataset.cardType === 'balance') return; // Já tratado acima
+             card.addEventListener('click', (e) => {
+                if (e.target.closest('#prev-invoice-btn') || e.target.closest('#next-invoice-btn') || e.target.closest('#quick-add-invoice-btn') || e.target.closest('.toggle-visibility-btn')) {
+                    return;
+                }
+                const cardType = card.dataset.cardType;
+                switch (cardType) {
+                    case 'investments': openTransactionsModal({ cardType: 'investments', title: 'Total Investido', transactions: transactions.filter(t => t.status === 'completed' && t.type === 'investimento'), filters: [] }); break;
+                    case 'invoice': 
+                        const { startDate, endDate } = getInvoicePeriod(invoiceMonthOffset);
+                        const invoiceTransactions = transactions.filter(t => {
+                            if (t['payment-method'] !== 'Cartão de Crédito') return false;
+                            const tDate = new Date(t.date + 'T00:00:00');
+                            return tDate >= startDate && tDate <= endDate;
+                        });
+                        const title = `Fatura (Fecha em ${endDate.toLocaleDateString('pt-BR')})`;
+                        openTransactionsModal({ cardType: 'invoice', title: title, transactions: invoiceTransactions, filters: [] }); 
+                        break;
+                    case 'debts': openDebtManagementModal(); break;
+                }
+            });
+        });
+
         const addOverviewCardListeners = () => {
             const getMonthTransactions = (includePending = false) => {
                 const currentMonth = currentPendingDate.getMonth();
@@ -1362,6 +1423,16 @@
             });
         };
         addOverviewCardListeners();
+
+        // CORREÇÃO: Listeners para a nova navegação do extrato
+        prevExtratoMonthBtn.addEventListener('click', () => {
+            extratoMonthOffset--;
+            renderExtratoModalContent();
+        });
+        nextExtratoMonthBtn.addEventListener('click', () => {
+            extratoMonthOffset++;
+            renderExtratoModalContent();
+        });
 
         transactionForm.addEventListener('submit', async (e) => {
             e.preventDefault();
