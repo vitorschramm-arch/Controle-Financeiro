@@ -454,6 +454,60 @@
         
         const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const formatDate = (dateString) => new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR');
+        
+        // CORREÇÃO: A função generateTransactionListHTML foi movida para o escopo correto.
+        const generateTransactionListHTML = (data, cardType) => {
+            if (data.length === 0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let headers = [{ key: 'date', label: 'Data' }, { key: 'description', label: 'Descrição' }, { key: 'category', label: 'Categoria' }, { key: 'amount', label: 'Valor' }, { key: 'status', label: 'Status' }];
+            if (cardType === 'balance') {
+                headers.push({ key: 'actions', label: 'Ações' });
+            }
+            const headerHTML = headers.map(h => `<th class="p-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider ${h.key !== 'actions' && h.key !== 'status' ? `sortable-header ${currentSort.key === h.key ? currentSort.direction : ''}` : ''}" data-sort-key="${h.key}">${h.label} ${h.key !== 'actions' && h.key !== 'status' ? '<span class="sort-icon">▲</span>' : ''}</th>`).join('');
+
+            const rowsHTML = data.map(t => {
+                let actionCell = '';
+                if (cardType === 'balance' && t.status === 'completed') {
+                    actionCell = `<td class="p-3 text-center">
+                                        <button data-action="delete-transaction" data-id="${t.id}" class="p-1 text-gray-400 hover:text-red-600 rounded-full" title="Excluir Transação">
+                                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </td>`;
+                } else if (cardType === 'balance') {
+                    actionCell = `<td class="p-3 text-center"></td>`;
+                }
+
+                const statusCell = `<td class="p-3 text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full ${t.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${t.status === 'completed' ? 'Concluído' : 'Pendente'}</span></td>`;
+                
+                const tDate = new Date(t.date + 'T00:00:00');
+                const isFuture = tDate > today;
+                
+                let rowClass = 'hover:bg-opacity-80';
+                if (t.status === 'pending') rowClass += ' opacity-80';
+                if (isFuture) rowClass += ' text-gray-400';
+
+                let typeColorClass = '';
+                switch (t.type) {
+                    case 'entrada': typeColorClass = 'bg-green-50'; break;
+                    case 'saida': typeColorClass = 'bg-red-50'; break;
+                    case 'investimento': typeColorClass = 'bg-blue-50'; break;
+                }
+
+                return `<tr class="${typeColorClass} ${rowClass}" data-id="${t.id}" title="Clique para editar">
+                            <td class="p-3 whitespace-nowrap">${formatDate(t.date)}</td>
+                            <td class="p-3">${t.description || '-'}</td>
+                            <td class="p-3">${t.category}${t.subcategory ? ' (' + t.subcategory + ')' : ''}</td>
+                            <td class="p-3 text-right font-medium">${(t.type === 'saida' || t.type === 'investimento') ? '-' : ''}${formatCurrency(t.amount)}</td>
+                            ${statusCell}
+                            ${actionCell}
+                        </tr>`;
+            }).join('');
+
+            return `<div class="overflow-x-auto"><table class="w-full border-collapse">${headerHTML ? `<thead class="bg-gray-100"><tr>${headerHTML}</tr></thead>` : ''}<tbody id="transaction-list-body">${rowsHTML}</tbody></table></div>`;
+        };
 
         const renderPendingModalList = () => {
             const monthName = currentPendingDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
@@ -570,6 +624,7 @@
             }
              await saveData();
         };
+
 
         const updateDashboard = () => {
             const today = new Date();
