@@ -48,11 +48,15 @@
         .sortable-header.asc .sort-icon { opacity: 1; transform: rotate(0deg); }
         .sortable-header.desc .sort-icon { opacity: 1; transform: rotate(180deg); }
         #transactions-modal-list tr[data-id], #debt-list-container tr[data-id] { cursor: pointer; }
+        #transactions-modal-list tr.fatura-summary { cursor: default; }
+        #transactions-modal-list tr.fatura-summary:hover { background-color: #f9fafb; }
+        .fatura-details { background-color: #fafafa; }
+        .fatura-details td { padding-top: 0.5rem; padding-bottom: 0.5rem; }
         .invalid-field { border-color: #ef4444 !important; box-shadow: 0 0 0 1px #ef4444 !important; }
-        .category-item summary::-webkit-details-marker, .type-item summary::-webkit-details-marker { display: none; }
-        .category-item summary, .type-item summary { list-style: none; }
-        .type-item[open] > summary .details-arrow, .category-item[open] > summary .details-arrow { transform: rotate(180deg); }
-        .details-arrow { transition: transform 0.2s; }
+        .category-item summary::-webkit-details-marker, .type-item summary::-webkit-details-marker, details.fatura-group summary::-webkit-details-marker { display: none; }
+        .category-item summary, .type-item summary, details.fatura-group summary { list-style: none; }
+        .type-item[open] > summary .details-arrow, .category-item[open] > summary .details-arrow, details.fatura-group[open] > summary .details-arrow { transform: rotate(180deg); }
+        .details-arrow { transition: transform 0.2s; display: inline-block; }
         .filter-type-btn { padding: 0.25rem 0.75rem; border: 1px solid #d1d5db; background-color: white; font-size: 0.875rem; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
         .filter-type-btn:first-child { border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem; }
         .filter-type-btn:last-child { border-top-right-radius: 0.375rem; border-bottom-right-radius: 0.375rem; }
@@ -354,7 +358,6 @@
         const quickInvoiceForm = document.getElementById('quick-invoice-form');
         const quickAddInvoiceBtn = document.getElementById('quick-add-invoice-btn');
 
-
         const overviewIncomeCard = document.getElementById('overview-income-card');
         const overviewExpensesCard = document.getElementById('overview-expenses-card');
         const overviewBalanceCard = document.getElementById('overview-balance-card');
@@ -369,7 +372,7 @@
         let currentSort = { key: 'date', direction: 'desc' };
         let modalTransactionData = [];
         let currentFilteredModalData = [];
-        let activeFilters = { type: 'all', category: 'all', startDate: '', endDate: '' };
+        let activeFilters = { type: 'all', category: 'all', startDate: '', endDate: '', paymentMethod: 'all' };
         let categoryChartInstance = null;
         let forecastChartInstance = null;
         let forecastDataForExport = [];
@@ -469,7 +472,8 @@
 
             let html = '<div class="space-y-2">' + pendingTransactionsThisMonth.map(t => {
                 const isDebtPayment = t.debtId;
-                const amountField = t.isVariable && !isDebtPayment
+                const isInvoicePayment = t.category === 'Dívidas' && t.subcategory === 'Fatura do Cartão';
+                const amountField = t.isVariable && !isDebtPayment && !isInvoicePayment
                     ? `<input type="number" step="0.01" data-amount-input-id="${t.id}" value="${t.amount.toFixed(2)}" class="w-28 border border-gray-300 rounded-md py-1 px-2 text-sm text-right font-semibold text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500">`
                     : `<p class="font-semibold text-gray-800 text-sm">${formatCurrency(t.amount)}</p>`;
                 
@@ -483,7 +487,7 @@
                             </div>
                             <div class="flex-shrink-0">${amountField}</div>
                             <div class="flex-shrink-0 flex items-center space-x-1">
-                                <button data-action="edit" data-id="${t.id}" title="Editar" class="p-1.5 text-blue-600 hover:bg-blue-100 rounded-full ${t.debtId ? 'hidden' : ''}"><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z"></path></svg></button>
+                                <button data-action="edit" data-id="${t.id}" title="Editar" class="p-1.5 text-blue-600 hover:bg-blue-100 rounded-full ${t.debtId || isInvoicePayment ? 'hidden' : ''}"><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z"></path></svg></button>
                                 <button data-action="approve" data-id="${t.id}" title="Aprovar" class="p-1.5 text-green-600 hover:bg-green-100 rounded-full"><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>
                                 <button data-action="delete" data-id="${t.id}" title="Excluir" class="p-1.5 text-red-600 hover:bg-red-100 rounded-full"><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                             </div>
@@ -493,7 +497,7 @@
         };
         
         const getInvoicePeriod = (offset = 0) => {
-            const closingDay = settings.invoiceClosingDay || 1;
+            const closingDay = settings.invoiceClosingDay || 20;
             const now = new Date();
             now.setMonth(now.getMonth() + offset);
 
@@ -508,11 +512,71 @@
             return { startDate, endDate };
         };
         
+        // ALTERAÇÃO: Nova função para gerar pagamentos de fatura pendentes
+        const generatePendingInvoicePayments = async () => {
+            const today = new Date();
+            // Verificar os últimos 12 meses para gerar faturas que possam não ter sido criadas
+            for (let i = 0; i < 12; i++) {
+                const checkDate = new Date();
+                checkDate.setMonth(checkDate.getMonth() - i);
+
+                const closingDay = settings.invoiceClosingDay || 20;
+                const paymentDay = settings.invoicePaymentDay || 27;
+
+                let closingDateForPeriod = new Date(checkDate.getFullYear(), checkDate.getMonth(), closingDay);
+                let paymentDate = new Date(checkDate.getFullYear(), checkDate.getMonth(), paymentDay);
+
+                if (checkDate.getDate() > closingDay) {
+                    closingDateForPeriod.setMonth(closingDateForPeriod.getMonth() + 1);
+                }
+                
+                if (paymentDay < closingDay) {
+                    paymentDate.setMonth(paymentDate.getMonth() + 1);
+                }
+                if(checkDate.getDate() > closingDay && paymentDay > closingDay) {
+                    paymentDate.setMonth(paymentDate.getMonth() + 1);
+                }
+                
+                const startDate = new Date(closingDateForPeriod.getFullYear(), closingDateForPeriod.getMonth() - 1, closingDay + 1);
+                const endDate = closingDateForPeriod;
+                
+                const invoiceIdentifier = `fatura-${endDate.getFullYear()}-${endDate.getMonth()}`;
+
+                const existingPayment = transactions.find(t => t.invoiceId === invoiceIdentifier);
+
+                if (today >= endDate && !existingPayment) {
+                    const invoiceTransactions = transactions.filter(t => {
+                        const tDate = new Date(t.date + 'T00:00:00');
+                        return t['payment-method'] === 'Cartão de Crédito' && t.status === 'completed' && tDate >= startDate && tDate <= endDate;
+                    });
+                    const invoiceTotal = invoiceTransactions.reduce((acc, t) => acc + t.amount, 0);
+
+                    if (invoiceTotal > 0) {
+                        const monthName = endDate.toLocaleString('pt-BR', { month: 'long' });
+                        transactions.push({
+                            id: Date.now() + Math.random(),
+                            invoiceId: invoiceIdentifier,
+                            amount: invoiceTotal,
+                            date: paymentDate.toISOString().split('T')[0],
+                            description: `Pagamento Fatura ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`,
+                            type: 'saida',
+                            category: 'Dívidas',
+                            subcategory: 'Fatura do Cartão',
+                            status: 'pending',
+                            isFixed: true,
+                            isVariable: true
+                        });
+                    }
+                }
+            }
+             await saveData();
+        };
+
+
         const updateDashboard = () => {
             const today = new Date();
             today.setHours(0,0,0,0);
 
-            // ALTERAÇÃO: Filtra transações até a data atual para o saldo
             const transactionsForBalance = transactions.filter(t => {
                 const tDate = new Date(t.date + 'T00:00:00');
                 return t.status === 'completed' && tDate <= today && t['payment-method'] !== 'Cartão de Crédito';
@@ -538,49 +602,6 @@
             invoiceValueEl.textContent = formatCurrency(faturaAtual);
             debtsValueEl.textContent = formatCurrency(totalDebtBalance);
             updateOverviewCard();
-        };
-
-        const generateTransactionListHTML = (data, cardType) => {
-            if (data.length === 0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
-            let headers = [{ key: 'date', label: 'Data' }, { key: 'description', label: 'Descrição' }, { key: 'category', label: 'Categoria' }, { key: 'amount', label: 'Valor' }, { key: 'status', label: 'Status' }];
-            if (cardType === 'balance') {
-                headers.push({ key: 'actions', label: 'Ações' });
-            }
-            const headerHTML = headers.map(h => `<th class="p-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider ${h.key !== 'actions' && h.key !== 'status' ? `sortable-header ${currentSort.key === h.key ? currentSort.direction : ''}` : ''}" data-sort-key="${h.key}">${h.label} ${h.key !== 'actions' && h.key !== 'status' ? '<span class="sort-icon">▲</span>' : ''}</th>`).join('');
-
-            const rowsHTML = data.map(t => {
-                let actionCell = '';
-                if (cardType === 'balance' && t.status === 'completed') {
-                    actionCell = `<td class="p-3 text-center">
-                                        <button data-action="delete-transaction" data-id="${t.id}" class="p-1 text-gray-400 hover:text-red-600 rounded-full" title="Excluir Transação">
-                                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
-                                    </td>`;
-                } else if (cardType === 'balance') {
-                    actionCell = `<td class="p-3 text-center"></td>`;
-                }
-
-                const statusCell = `<td class="p-3 text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full ${t.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${t.status === 'completed' ? 'Concluído' : 'Pendente'}</span></td>`;
-                const rowClass = t.status === 'pending' ? 'bg-yellow-50/50 opacity-80 hover:opacity-100' : 'hover:bg-gray-50';
-                
-                let typeColorClass = '';
-                switch (t.type) {
-                    case 'entrada': typeColorClass = 'border-l-green-500'; break;
-                    case 'saida': typeColorClass = 'border-l-red-500'; break;
-                    case 'investimento': typeColorClass = 'border-l-blue-500'; break;
-                }
-
-                return `<tr class="border-b border-gray-200 border-l-4 ${typeColorClass} ${rowClass}" data-id="${t.id}" title="Clique para editar">
-                            <td class="p-3 whitespace-nowrap">${formatDate(t.date)}</td>
-                            <td class="p-3">${t.description || '-'}</td>
-                            <td class="p-3">${t.category}${t.subcategory ? ' (' + t.subcategory + ')' : ''}</td>
-                            <td class="p-3 text-right font-medium">${(t.type === 'saida' || t.type === 'investimento') ? '-' : ''}${formatCurrency(t.amount)}</td>
-                            ${statusCell}
-                            ${actionCell}
-                        </tr>`;
-            }).join('');
-
-            return `<div class="overflow-x-auto"><table class="w-full"><thead class="bg-gray-100"><tr>${headerHTML}</tr></thead><tbody id="transaction-list-body">${rowsHTML}</tbody></table></div>`;
         };
         
         const handlePendingAction = async (e) => {
@@ -640,6 +661,7 @@
             if (activeFilters.type !== 'all') filteredData = filteredData.filter(t => t.type === activeFilters.type);
             if (activeFilters.category !== 'all') filteredData = filteredData.filter(t => t.category === activeFilters.category);
             if (activeFilters.subcategory !== 'all') filteredData = filteredData.filter(t => t.subcategory === activeFilters.subcategory);
+            if (activeFilters.paymentMethod !== 'all') filteredData = filteredData.filter(t => t['payment-method'] === activeFilters.paymentMethod);
             
             const totalAmount = filteredData.reduce((sum, t) => {
                 if (cardType === 'overview-expenses' || cardType === 'overview-income' || t.type === 'entrada') return sum + t.amount;
@@ -670,7 +692,7 @@
             modalTransactionData = [...config.transactions];
             transactionsModalFilters.innerHTML = '';
             transactionsModalList.innerHTML = '';
-            activeFilters = { type: 'all', category: 'all', subcategory: 'all', startDate: '', endDate: '' };
+            activeFilters = { type: 'all', category: 'all', subcategory: 'all', startDate: '', endDate: '', paymentMethod: 'all' };
             currentSort = { key: 'date', direction: 'desc' };
             exportBtn.classList.toggle('hidden', config.cardType !== 'balance');
             let filtersHTML = '<div class="space-y-4 p-3 bg-gray-50 rounded-md border">';
@@ -679,6 +701,9 @@
             if(config.filters.includes('type')){mainFiltersHTML+=`<div class="flex-shrink-0"><span class="text-sm font-medium text-gray-700 block mb-1">Tipo:</span><div id="modal-type-filter-buttons" class="flex rounded-md shadow-sm"><button data-type="all" class="filter-type-btn active">Todos</button><button data-type="entrada" class="filter-type-btn">Entrada</button><button data-type="saida" class="filter-type-btn">Saída</button><button data-type="investimento" class="filter-type-btn">Invest.</button></div></div>`}
             if(config.filters.includes('category')){const allCategories=[...new Set(modalTransactionData.map(t=>t.category))].sort();let options='<option value="all">Todas as Categorias</option>';allCategories.forEach(cat=>{options+=`<option value="${cat}">${cat}</option>`});mainFiltersHTML+=`<div class="flex-grow"><label for="modal-category-filter" class="text-sm font-medium text-gray-700">Categoria:</label><select id="modal-category-filter" class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">${options}</select></div>`}
             if(config.filters.includes('subcategory')){const allSubcategories=[...new Set(modalTransactionData.map(t=>t.subcategory).filter(Boolean))].sort();let options='<option value="all">Todas as Subcategorias</option>';allSubcategories.forEach(sub=>{options+=`<option value="${sub}">${sub}</option>`});mainFiltersHTML+=`<div class="flex-grow"><label for="modal-subcategory-filter" class="text-sm font-medium text-gray-700">Subcategoria:</label><select id="modal-subcategory-filter" class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">${options}</select></div>`}
+            // ALTERAÇÃO: Adiciona filtro de forma de pagamento
+            if(config.filters.includes('paymentMethod')){const allMethods=[...new Set(modalTransactionData.map(t=>t['payment-method']).filter(Boolean))].sort();let options='<option value="all">Todas as Formas</option>';allMethods.forEach(m=>{options+=`<option value="${m}">${m}</option>`});mainFiltersHTML+=`<div class="flex-grow"><label for="modal-payment-filter" class="text-sm font-medium text-gray-700">Forma de Pag.:</label><select id="modal-payment-filter" class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">${options}</select></div>`}
+            
             mainFiltersHTML+='</div>';filtersHTML+=mainFiltersHTML;
             filtersHTML+='</div>';transactionsModalFilters.innerHTML=filtersHTML;
 
@@ -697,7 +722,7 @@
 
             const updateOnChange=()=>{applyFiltersAndRender(modalTransactionData, config.cardType)};
             document.querySelectorAll('.filter-type-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.filter-type-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeFilters.type=btn.dataset.type;updateOnChange()})});
-            ['modal-start-date-filter','modal-end-date-filter','modal-category-filter','modal-subcategory-filter'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change', (e) => { const filterType = e.target.id.split('-')[1]; activeFilters[filterType] = e.target.value; updateOnChange(); }); });
+            ['modal-start-date-filter','modal-end-date-filter','modal-category-filter','modal-subcategory-filter', 'modal-payment-filter'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change', (e) => { const filterType = id === 'modal-payment-filter' ? 'paymentMethod' : e.target.id.split('-')[1]; activeFilters[filterType] = e.target.value; updateOnChange(); }); });
             applyFiltersAndRender(modalTransactionData, config.cardType);
             transactionsModal.classList.remove('hidden');
         };
@@ -715,8 +740,8 @@
             const transaction = transactions.find(t => t.id === transactionId);
             if (!transaction) return;
 
-            if (transaction.debtId) { 
-                showGenericModal({type:'alert',title:'Aviso',message:'Pagamentos de dívidas não podem ser editados diretamente.'}); 
+            if (transaction.debtId || (transaction.category === 'Dívidas' && transaction.subcategory === 'Fatura do Cartão')) { 
+                showGenericModal({type:'alert',title:'Aviso',message:'Pagamentos de dívidas ou faturas não podem ser editados diretamente.'}); 
                 return; 
             }
 
@@ -1224,7 +1249,7 @@
             }
             const cardType = card.dataset.cardType;
             switch (cardType) {
-                case 'balance': openTransactionsModal({ cardType: 'balance', title: 'Extrato Completo', transactions: transactions, filters: ['period', 'type', 'category', 'subcategory'] }); break;
+                case 'balance': openTransactionsModal({ cardType: 'balance', title: 'Extrato Completo', transactions: transactions, filters: ['period', 'type', 'category', 'subcategory', 'paymentMethod'] }); break;
                 case 'investments': openTransactionsModal({ cardType: 'investments', title: 'Total Investido', transactions: transactions.filter(t => t.status === 'completed' && t.type === 'investimento'), filters: [] }); break;
                 case 'invoice': 
                     const { startDate, endDate } = getInvoicePeriod(invoiceMonthOffset);
@@ -1537,7 +1562,6 @@
             renderDebtManagementList();
         });
 
-        // ALTERAÇÃO: Listeners para o novo modal de lançamento rápido
         quickAddInvoiceBtn.addEventListener('click', () => {
             quickInvoiceForm.reset();
             const quickCategorySelect = document.getElementById('quick-category');
@@ -1582,6 +1606,10 @@
                 showGenericModal({type: 'alert', title: 'Erro', message: 'Preencha todos os campos obrigatórios.'});
                 return;
             }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const transactionDate = new Date(date + 'T00:00:00');
+            const status = transactionDate > today ? 'pending' : 'completed';
 
             const transactionData = {
                 id: Date.now(),
@@ -1592,7 +1620,7 @@
                 description,
                 type: 'saida',
                 'payment-method': 'Cartão de Crédito',
-                status: 'completed',
+                status: status,
                 isFixed: false,
                 isVariable: false
             };
