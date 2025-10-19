@@ -55,7 +55,7 @@
         .invalid-field { border-color: #ef4444 !important; box-shadow: 0 0 0 1px #ef4444 !important; }
         .category-item summary::-webkit-details-marker, .type-item summary::-webkit-details-marker, details.fatura-group summary::-webkit-details-marker { display: none; }
         .category-item summary, .type-item summary, details.fatura-group summary { list-style: none; }
-        .type-item[open] > summary .details-arrow, .category-item[open] > summary .details-arrow, details.fatura-group[open] > summary .details-arrow { transform: rotate(180deg); }
+        .type-item[open] > summary .details-arrow, .category-item[open] > summary .details-arrow, details.fatura-group[open] > summary .details-arrow { transform: rotate(90deg); }
         .details-arrow { transition: transform 0.2s; display: inline-block; }
         .filter-type-btn { padding: 0.25rem 0.75rem; border: 1px solid #d1d5db; background-color: white; font-size: 0.875rem; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
         .filter-type-btn:first-child { border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem; }
@@ -243,7 +243,7 @@
         </div>
 
     </div>
-
+    
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const { auth, database, provider, signInWithPopup, signOut, onAuthStateChanged, ref, set, get } = window.firebaseSDK;
