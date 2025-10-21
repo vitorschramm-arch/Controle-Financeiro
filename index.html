@@ -305,6 +305,7 @@
         const prevMonthBtn = document.getElementById('prev-month-btn');
         const nextMonthBtn = document.getElementById('next-month-btn');
         const pendingMonthDisplay = document.getElementById('pending-month-display');
+        
         const extratoMonthNav = document.getElementById('extrato-month-nav');
         const prevExtratoMonthBtn = document.getElementById('prev-extrato-month-btn');
         const nextExtratoMonthBtn = document.getElementById('next-extrato-month-btn');
@@ -316,6 +317,8 @@
         const settingsForm = document.getElementById('settings-form');
         const categoryManagementContainer = document.getElementById('category-management-container');
         const invoiceClosingDayInput = document.getElementById('invoice-closing-day');
+        // ALTERAÇÃO: Adicionado seletor para data de pagamento
+        const invoicePaymentDayInput = document.getElementById('invoice-payment-day');
         const savingsGoalInput = document.getElementById('savings-goal');
         const downloadTemplateBtn = document.getElementById('download-template-btn');
         const exportAllBtn = document.getElementById('export-all-btn');
@@ -394,6 +397,7 @@
         let editingDebtId = null;
         let viewingDebtId = null;
         
+        // ALTERAÇÃO: Adicionada data de pagamento e removida subcategoria "Fatura do Cartão"
         const defaultSettings = { invoiceClosingDay: 20, invoicePaymentDay: 27, savingsGoal: 0, budgets: {} };
         const defaultCategories = {
             'entrada': { 'Salário': ['Adiantamento', 'Salário Mensal', 'Bônus', 'Férias'],'Investimentos': ['Dividendos', 'Venda de Ativos', 'Juros'],'Outras Receitas': ['Freelance', 'Vendas', 'Presente', 'Reembolso']},
@@ -431,6 +435,7 @@
                 console.error("Firebase load error:", error);
                 showGenericModal({type: 'alert', title: 'Erro ao Carregar', message: 'Não foi possível carregar seus dados.'});
             }
+            // ALTERAÇÃO: Chamada da nova função de fatura
             await generatePendingInvoicePayments();
             updateDashboard();
         };
@@ -467,7 +472,8 @@
         
         const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const formatDate = (dateString) => new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR');
-
+        
+        // CORREÇÃO: Função movida para o escopo global do DOMContentLoaded
         const generateTransactionListHTML = (data, cardType) => {
             if (data.length === 0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
 
@@ -499,16 +505,16 @@
                 
                 let rowClass = 'hover:bg-opacity-80';
                 if (t.status === 'pending') rowClass += ' opacity-80';
-                if (isFuture) rowClass += ' text-gray-400';
+                if (isFuture) rowClass += ' text-gray-400'; // Data futura em cinza
 
-                let typeColorClass = '';
+                let typeColorClass = ''; // Cor de fundo
                 switch (t.type) {
                     case 'entrada': typeColorClass = 'bg-green-100'; break;
                     case 'saida': typeColorClass = 'bg-red-100'; break;
                     case 'investimento': typeColorClass = 'bg-blue-100'; break;
                 }
 
-                return `<tr class="${typeColorClass} ${rowClass}" data-id="${t.id}" title="Clique para editar">
+                return `<tr class="border-b ${typeColorClass} ${rowClass}" data-id="${t.id}" title="Clique para editar">
                             <td class="p-3 whitespace-nowrap">${formatDate(t.date)}</td>
                             <td class="p-3">${t.description || '-'}</td>
                             <td class="p-3">${t.category}${t.subcategory ? ' (' + t.subcategory + ')' : ''}</td>
@@ -520,7 +526,7 @@
 
             return `<div class="overflow-x-auto"><table class="w-full border-collapse">${headerHTML ? `<thead class="bg-gray-100"><tr>${headerHTML}</tr></thead>` : ''}<tbody id="transaction-list-body">${rowsHTML}</tbody></table></div>`;
         };
-        
+
         const renderPendingModalList = () => {
             const monthName = currentPendingDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
             pendingModalTitle.textContent = `Pendentes de ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`;
@@ -644,7 +650,7 @@
 
             const transactionsForBalance = transactions.filter(t => {
                 const tDate = new Date(t.date + 'T00:00:00');
-                // Saldo agora inclui gastos no cartão de crédito
+                // ALTERAÇÃO: Saldo agora reflete lançamentos de cartão de crédito
                 return t.status === 'completed' && tDate <= today;
             });
 
@@ -793,7 +799,7 @@
                 transactionsModalTitle.classList.add('hidden');
                 extratoMonthNav.classList.remove('hidden');
                 extratoMonthNav.classList.add('flex');
-                renderExtratoModalContent();
+                // Não chamamos applyFiltersAndRender aqui, pois renderExtratoModalContent fará isso.
             } else {
                 transactionsModalTitle.classList.remove('hidden');
                 extratoMonthNav.classList.add('hidden');
@@ -916,6 +922,7 @@
 
         const openSettingsModal = () => {
             invoiceClosingDayInput.value = settings.invoiceClosingDay;
+            invoicePaymentDayInput.value = settings.invoicePaymentDay; // Carrega data de pagamento
             savingsGoalInput.value = settings.savingsGoal > 0 ? settings.savingsGoal : '';
             renderCategoryManagement();
             settingsModal.classList.remove('hidden');
@@ -1344,13 +1351,12 @@
         prevInvoiceBtn.addEventListener('click', () => { if (invoiceMonthOffset > 0) { invoiceMonthOffset--; updateDashboard(); } });
         nextInvoiceBtn.addEventListener('click', () => { invoiceMonthOffset++; updateDashboard(); });
         
-        // CORREÇÃO: Listeners movidos para garantir que funcionem
         document.querySelector('[data-card-type="balance"]').addEventListener('click', (e) => {
             if (e.target.closest('.toggle-visibility-btn')) return;
             extratoMonthOffset = 0;
             renderExtratoModalContent();
         });
-        
+
         cards.forEach(card => {
              if (card.dataset.cardType === 'balance') return;
              card.addEventListener('click', (e) => {
@@ -1381,7 +1387,7 @@
                 const currentYear = currentPendingDate.getFullYear();
                 return transactions.filter(t => {
                     const tDate = new Date(t.date + 'T00:00:00');
-                    const statusCondition = includePending ? true : t.status === 'completed';
+                    const statusCondition = includePending ? true : (t.status === 'completed');
                     return statusCondition && tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear;
                 });
             };
@@ -1525,6 +1531,7 @@
         settingsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             settings.invoiceClosingDay = parseInt(invoiceClosingDayInput.value) || 1;
+            settings.invoicePaymentDay = parseInt(invoicePaymentDayInput.value) || 27; // Salva data de pagamento
             settings.savingsGoal = parseFloat(savingsGoalInput.value) || 0;
             document.querySelectorAll('input[data-budget-category]').forEach(input => { const category = input.dataset.budgetCategory; const value = parseFloat(input.value); if (value > 0) { settings.budgets[category] = value; } else { delete settings.budgets[category]; } });
             await saveData();
