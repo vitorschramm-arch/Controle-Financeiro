@@ -209,7 +209,7 @@
                 </div>
             </div>
         </div>
-        <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 class="text-xl font-bold text-gray-800">Configurações</h2><button id="close-settings-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><form id="settings-form" class="flex-grow overflow-y-auto pr-2 space-y-6"><div class="p-4 border rounded-md"><h3 class="text-lg font-semibold text-gray-700 mb-3">Geral</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="invoice-closing-day" class="block text-sm font-medium text-gray-700">Dia de Fechamento do Cartão</label><input type="number" id="invoice-closing-day" name="invoice-closing-day" min="1" max="31" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div><div><label for="savings-goal" class="block text-sm font-medium text-gray-700">Meta de Economia Mensal</label><input type="number" id="savings-goal" name="savings-goal" step="0.01" placeholder="R$ 0,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div></div></div><div class="p-4 border rounded-md"><h3 class="text-lg font-semibold text-gray-700 mb-3">Gerenciar Categorias e Orçamentos</h3><p class="text-sm text-gray-500 mb-4">Defina orçamentos e gerencie suas categorias e subcategorias.</p><div id="category-management-container" class="space-y-2"></div></div><div class="p-4 border rounded-md"><h3 class="text-lg font-semibold text-gray-700 mb-3">Importar & Exportar Dados</h3><p class="text-sm text-gray-500 mb-4">Faça backup ou restaure seus dados.</p><div class="grid grid-cols-1 md:grid-cols-3 gap-3"><button id="download-template-btn" type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 font-semibold text-sm">Baixar Modelo</button><button id="export-all-btn" type="button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-semibold text-sm">Exportar Tudo</button><button id="import-all-btn" type="button" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 font-semibold text-sm">Importar Dados</button></div><input type="file" id="import-file-input" class="hidden" accept=".xlsx"></div></form><div class="mt-6 pt-4 border-t"><button type="submit" form="settings-form" class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700">Salvar Alterações</button></div></div></div>
+        <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 class="text-xl font-bold text-gray-800">Configurações</h2><button id="close-settings-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><form id="settings-form" class="flex-grow overflow-y-auto pr-2 space-y-6"><div class="p-4 border rounded-md"><h3 class="text-lg font-semibold text-gray-700 mb-3">Geral</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="invoice-closing-day" class="block text-sm font-medium text-gray-700">Dia de Fechamento do Cartão</label><input type="number" id="invoice-closing-day" name="invoice-closing-day" min="1" max="31" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div><div><label for="invoice-payment-day" class="block text-sm font-medium text-gray-700">Dia de Pagamento do Cartão</label><input type="number" id="invoice-payment-day" name="invoice-payment-day" min="1" max="31" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div><div><label for="savings-goal" class="block text-sm font-medium text-gray-700">Meta de Economia Mensal</label><input type="number" id="savings-goal" name="savings-goal" step="0.01" placeholder="R$ 0,00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div></div></div><div class="p-4 border rounded-md"><h3 class="text-lg font-semibold text-gray-700 mb-3">Gerenciar Categorias e Orçamentos</h3><p class="text-sm text-gray-500 mb-4">Defina orçamentos e gerencie suas categorias e subcategorias.</p><div id="category-management-container" class="space-y-2"></div></div><div class="p-4 border rounded-md"><h3 class="text-lg font-semibold text-gray-700 mb-3">Importar & Exportar Dados</h3><p class="text-sm text-gray-500 mb-4">Faça backup ou restaure seus dados.</p><div class="grid grid-cols-1 md:grid-cols-3 gap-3"><button id="download-template-btn" type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 font-semibold text-sm">Baixar Modelo</button><button id="export-all-btn" type="button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-semibold text-sm">Exportar Tudo</button><button id="import-all-btn" type="button" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 font-semibold text-sm">Importar Dados</button></div><input type="file" id="import-file-input" class="hidden" accept=".xlsx"></div></form><div class="mt-6 pt-4 border-t"><button type="submit" form="settings-form" class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700">Salvar Alterações</button></div></div></div>
         <div id="forecast-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 class="text-xl font-bold text-gray-800">Previsão Futura</h2><div class="flex items-center space-x-3"><button id="export-forecast-btn" class="bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-green-700 text-sm font-semibold flex items-center space-x-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span>Exportar XLSX</span></button><button id="close-forecast-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div></div><div class="overflow-y-auto flex-grow"><div class="mb-6 p-4 bg-gray-50 rounded-lg border"><h3 class="text-lg font-semibold text-gray-700 mb-3">Médias Mensais Projetadas</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center"><div><p class="text-sm text-gray-500">Renda Média</p><p id="forecast-avg-income" class="text-xl font-bold text-green-600">R$ 0,00</p></div><div><p class="text-sm text-gray-500">Despesa Média</p><p id="forecast-avg-expense" class="text-xl font-bold text-red-600">R$ 0,00</p></div><div><p class="text-sm text-gray-500">Investimento Médio</p><p id="forecast-avg-investment" class="text-xl font-bold text-blue-600">R$ 0,00</p></div><div><p class="text-sm text-gray-500">Saldo Médio</p><p id="forecast-avg-balance" class="text-xl font-bold text-gray-800">R$ 0,00</p></div></div></div><div><h3 class="text-lg font-semibold text-gray-700 mb-3">Projeção de Saldo para os Próximos 12 Meses</h3><div class="h-80"><canvas id="forecast-chart"></canvas></div></div></div></div></div>
         <div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50 p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl mx-auto max-h-[90vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h2 class="text-xl font-bold text-gray-800">Análise Inteligente</h2><button id="close-ai-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><div id="ai-content" class="overflow-y-auto flex-grow p-2"><div id="ai-initial-state"><div class="text-center p-6"><svg class="w-16 h-16 mx-auto text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg><h3 class="mt-4 text-lg font-medium text-gray-900">Insights para suas Finanças</h3><p class="mt-2 text-sm text-gray-500">Receba dicas personalizadas. A IA analisará anonimamente seus dados dos últimos 3 meses.</p><button id="analyze-finance-btn" class="mt-6 w-full bg-purple-600 text-white py-2.5 px-4 rounded-md hover:bg-purple-700">Analisar minhas finanças</button></div></div><div id="ai-loading-state" class="hidden text-center p-10"><svg class="animate-spin h-8 w-8 text-purple-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><p class="mt-4 text-gray-600 font-medium">Analisando seus dados...</p></div><div id="ai-result-state" class="hidden"></div></div></div></div>
         <div id="generic-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-[100] p-4"><div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-auto"><h3 id="generic-modal-title" class="text-lg font-bold text-gray-800 mb-4"></h3><p id="generic-modal-message" class="text-gray-600 mb-6"></p><div id="generic-modal-input-container" class="hidden mb-4"><input type="text" id="generic-modal-input" class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></div><div id="generic-modal-buttons" class="flex justify-end space-x-3"></div></div></div>
@@ -317,7 +317,7 @@
         const settingsForm = document.getElementById('settings-form');
         const categoryManagementContainer = document.getElementById('category-management-container');
         const invoiceClosingDayInput = document.getElementById('invoice-closing-day');
-        // ALTERAÇÃO: Adicionado seletor para data de pagamento
+        // CORREÇÃO: Adicionando o seletor que faltava
         const invoicePaymentDayInput = document.getElementById('invoice-payment-day');
         const savingsGoalInput = document.getElementById('savings-goal');
         const downloadTemplateBtn = document.getElementById('download-template-btn');
@@ -397,7 +397,6 @@
         let editingDebtId = null;
         let viewingDebtId = null;
         
-        // ALTERAÇÃO: Adicionada data de pagamento e removida subcategoria "Fatura do Cartão"
         const defaultSettings = { invoiceClosingDay: 20, invoicePaymentDay: 27, savingsGoal: 0, budgets: {} };
         const defaultCategories = {
             'entrada': { 'Salário': ['Adiantamento', 'Salário Mensal', 'Bônus', 'Férias'],'Investimentos': ['Dividendos', 'Venda de Ativos', 'Juros'],'Outras Receitas': ['Freelance', 'Vendas', 'Presente', 'Reembolso']},
@@ -435,8 +434,7 @@
                 console.error("Firebase load error:", error);
                 showGenericModal({type: 'alert', title: 'Erro ao Carregar', message: 'Não foi possível carregar seus dados.'});
             }
-            // ALTERAÇÃO: Chamada da nova função de fatura
-            await generatePendingInvoicePayments();
+            await updateInvoicePayments();
             updateDashboard();
         };
         
@@ -472,7 +470,7 @@
         
         const formatCurrency = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const formatDate = (dateString) => new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR');
-        
+
         // CORREÇÃO: Função movida para o escopo global do DOMContentLoaded
         const generateTransactionListHTML = (data, cardType) => {
             if (data.length === 0) return '<p class="text-gray-500 text-center py-4">Nenhuma transação encontrada.</p>';
@@ -505,14 +503,16 @@
                 
                 let rowClass = 'hover:bg-opacity-80';
                 if (t.status === 'pending') rowClass += ' opacity-80';
-                if (isFuture) rowClass += ' text-gray-400'; // Data futura em cinza
-
-                let typeColorClass = ''; // Cor de fundo
+                
+                let typeColorClass = '';
                 switch (t.type) {
                     case 'entrada': typeColorClass = 'bg-green-100'; break;
                     case 'saida': typeColorClass = 'bg-red-100'; break;
                     case 'investimento': typeColorClass = 'bg-blue-100'; break;
                 }
+                
+                // Sobrescreve a cor se for futuro
+                if (isFuture) rowClass += ' text-gray-400';
 
                 return `<tr class="border-b ${typeColorClass} ${rowClass}" data-id="${t.id}" title="Clique para editar">
                             <td class="p-3 whitespace-nowrap">${formatDate(t.date)}</td>
@@ -526,7 +526,7 @@
 
             return `<div class="overflow-x-auto"><table class="w-full border-collapse">${headerHTML ? `<thead class="bg-gray-100"><tr>${headerHTML}</tr></thead>` : ''}<tbody id="transaction-list-body">${rowsHTML}</tbody></table></div>`;
         };
-
+        
         const renderPendingModalList = () => {
             const monthName = currentPendingDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
             pendingModalTitle.textContent = `Pendentes de ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`;
@@ -585,64 +585,49 @@
             return { startDate, endDate };
         };
         
-        const generatePendingInvoicePayments = async () => {
+        // ALTERAÇÃO: Lógica de fatura simplificada
+        const updateInvoicePayments = async () => {
             const today = new Date();
-            for (let i = 0; i < 12; i++) {
-                const checkDate = new Date();
-                checkDate.setMonth(checkDate.getMonth() - i);
-
-                const closingDay = settings.invoiceClosingDay || 20;
-                const paymentDay = settings.invoicePaymentDay || 27;
-
-                let closingDateForPeriod = new Date(checkDate.getFullYear(), checkDate.getMonth(), closingDay);
-                let paymentDate = new Date(checkDate.getFullYear(), checkDate.getMonth(), paymentDay);
-
-                if (checkDate.getDate() > closingDay) {
-                    closingDateForPeriod.setMonth(closingDateForPeriod.getMonth() + 1);
-                }
+            // 1. Identificar todas as faturas pendentes
+            const pendingInvoices = transactions.filter(t => t.invoiceId && t.status === 'pending');
+            let needsSave = false;
+            
+            for (const invoice of pendingInvoices) {
+                const { startDate, endDate } = getInvoiceDatesFromId(invoice.invoiceId);
                 
-                if (paymentDay < closingDay) {
-                    paymentDate.setMonth(paymentDate.getMonth() + 1);
+                // 2. Recalcular o total dessa fatura
+                const invoiceTransactions = transactions.filter(t => {
+                    const tDate = new Date(t.date + 'T00:00:00');
+                    return t['payment-method'] === 'Cartão de Crédito' && 
+                           t.status === 'completed' && // Apenas transações completas
+                           tDate >= startDate && tDate <= endDate;
+                });
+                const invoiceTotal = invoiceTransactions.reduce((acc, t) => acc + t.amount, 0);
+
+                // 3. Atualizar o valor da fatura pendente, se for diferente
+                if (invoice.amount !== invoiceTotal) {
+                    invoice.amount = invoiceTotal;
+                    needsSave = true;
                 }
-                if(checkDate.getDate() > closingDay && paymentDay > closingDay) {
-                    paymentDate.setMonth(paymentDate.getMonth() + 1);
-                }
-                
-                const startDate = new Date(closingDateForPeriod.getFullYear(), closingDateForPeriod.getMonth() - 1, closingDay + 1);
-                const endDate = closingDateForPeriod;
-                
-                const invoiceIdentifier = `fatura-${endDate.getFullYear()}-${endDate.getMonth()}`;
-
-                const existingPayment = transactions.find(t => t.invoiceId === invoiceIdentifier);
-
-                if (today >= endDate && !existingPayment) {
-                    const invoiceTransactions = transactions.filter(t => {
-                        const tDate = new Date(t.date + 'T00:00:00');
-                        return t['payment-method'] === 'Cartão de Crédito' && t.status === 'completed' && tDate >= startDate && tDate <= endDate;
-                    });
-                    const invoiceTotal = invoiceTransactions.reduce((acc, t) => acc + t.amount, 0);
-
-                    if (invoiceTotal > 0) {
-                        const monthName = endDate.toLocaleString('pt-BR', { month: 'long' });
-                        transactions.push({
-                            id: Date.now() + Math.random(),
-                            invoiceId: invoiceIdentifier,
-                            amount: invoiceTotal,
-                            date: paymentDate.toISOString().split('T')[0],
-                            description: `Pagamento Fatura ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`,
-                            type: 'saida',
-                            category: 'Dívidas',
-                            subcategory: 'Fatura do Cartão',
-                            status: 'pending',
-                            isFixed: true,
-                            isVariable: true
-                        });
-                    }
+                // 4. Se a fatura estiver zerada (ex: transações excluídas), remove a pendência
+                if (invoice.amount === 0) {
+                    transactions = transactions.filter(t => t.id !== invoice.id);
+                    needsSave = true;
                 }
             }
-             await saveData();
+
+            if (needsSave) {
+                await saveData();
+            }
         };
 
+        const getInvoiceDatesFromId = (invoiceId) => {
+            const [, year, month] = invoiceId.split('-').map(Number);
+            const closingDay = settings.invoiceClosingDay || 20;
+            const endDate = new Date(year, month, closingDay);
+            const startDate = new Date(year, month - 1, closingDay + 1);
+            return { startDate, endDate };
+        };
 
         const updateDashboard = () => {
             const today = new Date();
@@ -650,7 +635,7 @@
 
             const transactionsForBalance = transactions.filter(t => {
                 const tDate = new Date(t.date + 'T00:00:00');
-                // ALTERAÇÃO: Saldo agora reflete lançamentos de cartão de crédito
+                // Saldo agora reflete lançamentos de cartão de crédito
                 return t.status === 'completed' && tDate <= today;
             });
 
@@ -799,7 +784,8 @@
                 transactionsModalTitle.classList.add('hidden');
                 extratoMonthNav.classList.remove('hidden');
                 extratoMonthNav.classList.add('flex');
-                // Não chamamos applyFiltersAndRender aqui, pois renderExtratoModalContent fará isso.
+                // CORREÇÃO: Chamada única para renderizar
+                applyFiltersAndRender(modalTransactionData, config.cardType); 
             } else {
                 transactionsModalTitle.classList.remove('hidden');
                 extratoMonthNav.classList.add('hidden');
@@ -922,7 +908,7 @@
 
         const openSettingsModal = () => {
             invoiceClosingDayInput.value = settings.invoiceClosingDay;
-            invoicePaymentDayInput.value = settings.invoicePaymentDay; // Carrega data de pagamento
+            invoicePaymentDayInput.value = settings.invoicePaymentDay; 
             savingsGoalInput.value = settings.savingsGoal > 0 ? settings.savingsGoal : '';
             renderCategoryManagement();
             settingsModal.classList.remove('hidden');
@@ -1293,6 +1279,7 @@
             }
         };
         
+        // CORREÇÃO: Função para renderizar o extrato movida aqui
         const renderExtratoModalContent = () => {
             const date = new Date();
             date.setMonth(date.getMonth() + extratoMonthOffset);
@@ -1311,7 +1298,7 @@
 
             openTransactionsModal({
                 cardType: 'balance',
-                title: 'Extrato Completo',
+                title: 'Extrato do Mês',
                 transactions: monthTransactions,
                 filters: ['type', 'category', 'subcategory', 'paymentMethod']
             });
@@ -1351,6 +1338,7 @@
         prevInvoiceBtn.addEventListener('click', () => { if (invoiceMonthOffset > 0) { invoiceMonthOffset--; updateDashboard(); } });
         nextInvoiceBtn.addEventListener('click', () => { invoiceMonthOffset++; updateDashboard(); });
         
+        // CORREÇÃO: Listener do card de saldo
         document.querySelector('[data-card-type="balance"]').addEventListener('click', (e) => {
             if (e.target.closest('.toggle-visibility-btn')) return;
             extratoMonthOffset = 0;
@@ -1531,7 +1519,7 @@
         settingsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             settings.invoiceClosingDay = parseInt(invoiceClosingDayInput.value) || 1;
-            settings.invoicePaymentDay = parseInt(invoicePaymentDayInput.value) || 27; // Salva data de pagamento
+            settings.invoicePaymentDay = parseInt(invoicePaymentDayInput.value) || 27;
             settings.savingsGoal = parseFloat(savingsGoalInput.value) || 0;
             document.querySelectorAll('input[data-budget-category]').forEach(input => { const category = input.dataset.budgetCategory; const value = parseFloat(input.value); if (value > 0) { settings.budgets[category] = value; } else { delete settings.budgets[category]; } });
             await saveData();
